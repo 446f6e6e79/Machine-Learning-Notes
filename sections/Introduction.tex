@@ -1,0 +1,98 @@
+\section{Introduction}
+
+\paragraph{Machine Learning:} a computer \textbf{program} is said to \textbf{learn} from \textbf{experience} $E$, with respect to a \textbf{class of task} $T$ and a \textbf{performance measure} $P$, if its performance at the task $T$, as measured by $P$, increases with the experience $E$.
+\begin{itemize}
+    \item \textbf{Task} $T$: the problem to be addressed (resolved) by the computer;
+    \item \textbf{Performance measure} $P$: evaluate the learned system. Can be tricky to design in cases of data generation;
+    \item \textbf{Training experience} $E$: data, used to train the system.
+\end{itemize}
+
+\paragraph{Designing a Machine Learning System:} to design a \textbf{Machine Learning System}, we have to follow these steps:
+\begin{enumerate}
+    \item \textbf{Formalizing} the \textbf{learning taks};
+    \item \textbf{Collecting} the \textbf{data};
+    \item \textbf{Features extraction};
+    \item \textbf{Choose} the class of the \textbf{learning model};
+    \item \textbf{Train} the model;
+    \item \textbf{Evaluate} the model;
+\end{enumerate}
+Going more in depth for each step, we can say:
+
+\paragraph{Formalizing the learning task:} we are going to define the task that should be addressed by the learning system. A learning problem is often composed of many related tasks. During this phase, also an appropriate performance measure for the learning system should be defined.
+
+\paragraph{Collecting the data:} a set of training examples must be collected in a machine-readable format.
+The data could be of two types:
+\begin{itemize}
+    \item \textbf{Labeled data}, used for supervised learning, requires manual intervention for its generation;
+    \item \textbf{Unlabeled data}: used in unsupervised learning or in semi-supervised learning.
+\end{itemize}
+
+\paragraph{Extracting Features:} from the raw data, a relevant set of features (a subset of all the features of the data, only containing relevant information) must be extracted before feeding it as input to the learning system.
+\\\\Too \textbf{few features} can miss relevant information contained in the data, preventing the system from learning the task with reasonable performance.
+\\\\Too \textbf{many features} (usually done in deep learning) requires more training data to achieve the same levels of generalization.
+
+\paragraph{Choosing learning model:} Based on the task:
+\begin{itemize}
+    \item \textbf{Simple linear model} is easy to train, but might not be enough for non linearly separate data. Although, if the task can be resolved by a simple model, you should always use that;
+    \item \textbf{Complex model} can learn even non linearly separable data. A too complex model could learn from noise in the data, failing to generalize on new unseen data.
+\end{itemize}
+
+\paragraph{Training the model:} this implies searching through the space of possible models, trying to fit the available training examples, according to the chosen performance measure.
+
+\paragraph{Evaluating the model}: applying \textbf{performance measures} on the \textbf{learned model}, using unseen data. This phase can provide insights into the model's weaknesses, giving suggestions for refining it.
+
+\paragraph{Learning settings}
+\begin{itemize}
+    \item \textbf{Supervised Learning}:\label{Supervised-learing} the learner is provided with a \textbf{set} of input/output pairs $(x_i, y_i) \in X \times Y$, where:
+    \begin{itemize}
+        \item $X$: input space (set of possible feature vectors);
+        \item $Y$: output space (set of possible labels or target values);
+        \item $x_i$: the $i$-th input feature vector, with dimension $X$;
+        \item $y_i$: the corresponding output (label or target), with dimension $Y$.
+    \end{itemize}
+    The learned model $f:X\rightarrow Y$ should map input into their outputs.
+    
+    \item \textbf{Unsupervised Learning}: the learner is provided with a set of input examples $x_i \in X$, with no labeling information. Often used for task as grouping data;
+    
+    
+    \item \textbf{Semi-supervised Learning}: as in the Supervised Learning, the learner is provided with a set of input/output pairs. Also, a much larger group of unlabeled data $x_i \in X$ is provided. Like in supervised learning, the learned model $f: X\rightarrow Y$ should map input examples into their outputs.
+    \\The additional unlabeled data can be exploited to improve performances of the model.
+
+    \item \textbf{Reinforcement Learning}: The learner is provided with a set of possible \textbf{STATES} $S$, and for each state, a set of possible \textbf{actions} $A$, moving it to a next state.
+    while performing an action a, the learner is provided with an immediate reward $r(s,a)$.
+    The task is to learn a \textbf{POLICY} (set of states $s$ and action $a$) that maximize the overall reward (including future moves).
+\end{itemize}
+
+\paragraph{Supervised Learning Task}:
+\begin{itemize}
+    \item \textbf{CLASSIFICATION}: learning a discrete label (finite number of options). Could be:
+    \begin{itemize}
+        \item \textbf{Binary}: assign one of two possible classes;
+        \item \textbf{Multiclass}: assign one of $n > 2$ possible classes;
+        \item \textbf{Multi-Label}: assign a \textit{subsets} of size $m \le n$ of all the possible labels;
+    \end{itemize}
+    \item \textbf{REGRESSION}: assigning a \textit{real} value to an example
+    \item \textbf{RANKING}: ordering a set of examples, according to their importance with the task
+\end{itemize}
+
+\paragraph{Unsupervised Learning tasks}:
+\begin{itemize}
+    \item \textbf{Dimensionality reduction}: reduce the dimensionality of the data, maintaining as much information as possible;
+    \item \textbf{Clustering}: clustering the data into \textbf{homogeneous groups}, according to their similarity;
+    \item \textbf{Anomaly detection}:finding instancies in the given examples, that contains errors. This can be used in example for the recognition of anomalous network traffic;
+\end{itemize}
+
+\paragraph{Probabilistic reasoning}: reasoning in presence of uncertainty. It can be used for:
+\begin{itemize}
+    \item evaluating the effect of a certain piece of evidence on other related variables;
+    \item Estimate probability and relations between variables from a set of observation.
+\end{itemize}
+
+\paragraph{Choice of learning algorithms}
+Based on the information about the task available to us, we can choose the learning algorithms accordingly:
+\begin{itemize}
+    \item \textbf{Full knowledge} of distribution of data: \textbf{Bayesian decision theory};
+    \item Form of \textbf{distribution known}, \textbf{parameters unknown}: parameter estimation from training data;
+    \item \textbf{Distribution unknown}, \textbf{training examples available}: \textbf{discriminative methods}, learn a function predicting the output;
+    \item \textbf{Distribution unknown}, \textbf{training examples unavailable}: \textbf{unsupervised methods}.
+\end{itemize}

@@ -1,0 +1,129 @@
+\section{Decision Tree Learning}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{img/decision-tree.png}
+    \caption{An example of a \textbf{learned decision tree}, \textit{Go to lesson}}
+    \label{fig:decision tree}
+\end{figure}
+A \textbf{decision Tree} represent a \textit{disjunction} ($\lor$: represent the different path to reach the same outcome) of \textit{conjunction} ($\land$: represent the \textbf{and} between the conditions to reach the leafs) of constraints over attribute value.
+As just described, it's used to encode logical formulas:
+\begin{itemize}
+    \item Each path from the root to a leaf is a \textbf{conjunction} of the \textbf{constraints} specified on the node along it;
+    \item The leaf contains the \textbf{label} to be assigned to istances reaching it;
+    \item The \textbf{disjunction} of all paths is the logical formula represented by the tree.
+\end{itemize}
+\subsection{Appropriate problems}
+There are several tasks where decision trees. In particular, the task must have these features:
+\begin{itemize}
+    \item Binary or multi-class \textbf{classification};
+    \item Instancies are represented as \textbf{attribute value pair} (tabular data);
+    \item Some instancies have missing attributes;
+    \item There is a \textbf{need} for an \textbf{interpretable explanation} for the output.
+\end{itemize}
+\subsection{Learning decision tree}
+To learn \textbf{decision trees}, there is a simple \textbf{greedy top-down} strategy. 
+\\Starting from the \textbf{root node} with the full training set, the algorithm follow these steps:
+\begin{enumerate}
+    \item Choose best attribute to be evaluated (\textbf{fig}\ref{fig:decision tree}: \textbf{outlook} is the first chosen attribute);
+    \item Add a child node for each attribute value (\textbf{fig}\ref{fig:decision tree}: rain, overcast and sunny are \textbf{all possible values} for outlook);
+    \item Split node training set into children nodes, according to the value of chosen attribute
+    \item \textbf{Stop splitting} a node if all it's training set belongs to a single class (\textbf{homogeneous leaf}), or there are no more attributes to test
+\end{enumerate}
+
+\subsubsection{Choosing the best attribute}
+To understand how we can choose the best attribute to be evaluated, we first have to define \textbf{entropy}.
+
+\paragraph{Entropy:} a measure of the \textbf{amount of information} contained in a \textbf{collection of instances} $S$ which can take a number of $c$ possible values. In easier words, entropy quantifies the amount of uncertainty (or impurity) in a dataset:
+\begin{itemize}
+    \item If all examples belong to the same class (homogeneous group), then entropy = 0
+    \item If examples are evenly split among classes, then entropy is maximal.
+\end{itemize}
+It's defined as follows:
+\begin{equation}
+\label{eq:entropy}
+    H(S) = - \sum^c_{i = 1} p_i \log_2 p_i
+\end{equation}
+Where:
+\begin{itemize}
+    \item $S$ is the collection of training examples, the dataset or a subset of it;
+    \item $i$ is the $i$-th possible class labels (yes or no in our example);
+    \item $p_i$ is the fraction of $S$, with value $i$. In other words, it represents the probability of finding the label $i$, inside $S$.
+\end{itemize}
+\paragraph{Information Gain:} represents the \textbf{expected reduction of entropy}, obtained by partitioning $S$ according to the values of attribute $A$
+\begin{equation}
+\label{eq:information-gain}
+    IG(S,A) = H(S) - \sum_{v \in Values(A)}\frac{|S_v|}{|S|}H(S_v)
+\end{equation}
+Where:
+\begin{itemize}
+    \item $Values(A)$: set of possible values, taken by the attribute $A$;
+    \item $S_v$: the subset of $S$, taking value $v$ at attribute $A$;
+    \item The second term represents the \textbf{sum of entropies} of all the subsets $S_v$, obtained by partitioning over the attribute $A$, weighted by their respective sizes.
+\end{itemize}
+We can derive that an attribute with \textbf{high information game} IG tends to produce homogeneous groups in terms of labels, thus favoring their classification.
+
+\subsection{Issues in decision tree learning}
+
+\subsubsection{Overfitting avoidance}
+Requiring that each leaf contains only examples of a certain class can lead to very complex trees. A complex tree can easily overfit the training set, incorporating noise in the data.
+\\To solve this problem, it's possible to accept impure leaves, assigning them the label of the majority of their training examples. This process is called \textbf{pruning}.
+There are two possible strategies to prune a decision tree:
+\begin{itemize}
+    \item \textbf{pre-pruning}: decide whether to stop splitting a node, even if it contains training examples with different labels.
+    \item \textbf{post-pruning}: learn the full tree and successively prune it, removing sub-trees.
+\end{itemize}
+
+\paragraph{Reduces Error Pruning:} a \textbf{post-pruning} strategy, using the validation set. The procedure follows these next steps:
+\begin{enumerate}
+    \item for each node in the tree:
+    \begin{itemize}
+        \item evaluate the performance on the validation set, after removing the subtree rooted at it;
+    \end{itemize}
+    \item If all node removals made the performance worse, STOP;
+    \item Choose the node that gave the best performance improvement;
+    \item Replace the subtree rooted at it with a leaf;
+    \item Assign to the lead the majority label of all the example in the subtree;
+    \item Return to 1.
+\end{enumerate}
+
+\subsubsection{Dealing with continuous-valued attributes:}
+Continuous valued attributes must be discretized in order to be used as internal node tests, or otherwise, we could end up with an infinite decision tree. The procedure follows these next steps:
+\begin{enumerate}
+    \item Examples are \textbf{sorted} according to their continuous value;
+    \item For \textbf{each pair of successive examples}, having \textbf{different labels}, a \textbf{candidate treshold} is placed at the average of the two values;
+    \item For \textbf{each candidate treshold}, the \textbf{IG} obtained by splitting the examples, at the given treshold, is computed;
+    \item The treshold with the \textbf{highest IG} is used to discretize the attribute;
+\end{enumerate}
+
+\subsubsection{Alternative attributes test measure}
+The previously defined \textbf{Information Gain} criterion tends to \textbf{prefer attributes} with a \textbf{larger number of possible values}, since it will cause data to be split into very small subsets.
+\\As an extreme case, if we consider a unique attribute in our data, such as an ID, it will cause the data to be \textbf{perfectly split into singletons}. This may look like a perfect split, but offers no generalization on new examples.
+
+\paragraph{Attribute Value Entropy:} To resolve this issue, a measure of the entropy of the attribute distribution itself is defined:
+\begin{equation}
+    H_A(S) = - \sum_{v\in Values(A)} \frac{|S_v|}{S} \log_2 \frac{|S_v|}{S}
+\end{equation}
+\begin{itemize}
+    \item If, for a certain attribute (ex: ID), every value is unique, then $H_A(S)$ is very high;
+    \item If a certain attribute has only a few values (ex: binary attribute), then $H_A(S)$ is very low;
+\end{itemize}
+\paragraph{Information gain Ratio:}We can then define an \textbf{Information Gain Ratio} measure, that \textbf{down weights} the \textbf{IG} by the \textbf{Attribute Value Entropy}
+\begin{equation}
+    IGR(S, A) = \frac{IG(S,A)}{H_A(S)}
+\end{equation}
+\begin{itemize}
+    \item If the attribute A has many unique values, then $H_A(S)$ is high, resulting in a lower \textbf{IGR}, for the attribute $A$;
+    \item If the attribute A has few unique values, then $H_A(S)$ is low, resulting in a higher \textbf{IGR}.
+\end{itemize}
+
+\subsubsection{Handling Attributes with missing values}
+Assuming an \textbf{example} $x$, belonging to \textbf{class} $c(x)$ has a missing value for the attribute $A$.
+When the attribute A is to be tested at node n, we can apply two solutions:
+\begin{itemize}
+    \item \textbf{SIMPLE SOLUTION}: Assign, to the example x, the most common attribute $A$ values among examples in n;
+    \item \textbf{COMPLEX SOLUTION}: propagate x to each children of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
+    \\At test times, when a leaf is reached, for each candidate class, all fraction belonging to the same class are summed. The example is assigned the class with the highest overall value.
+\end{itemize}
+\begin{comment}
+    ADD IMAGE FOR COMPLEX SOLUTION
+\end{comment}

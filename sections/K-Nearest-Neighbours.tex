@@ -1,0 +1,106 @@
+\section{K-Nearest Neighbors}
+To better understand this \textbf{non-parametric} machine learning algorithm, we will first analyze its \textbf{1-Nearest Neighbor} variant.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{img/1-NearestNeighbour.png}
+    \caption{Example of a 1-Nearest Neighbor}
+    \label{fig:decision tree}
+\end{figure}
+
+\begin{itemize}
+    \item Each \textbf{red dot} represents one instance of the \textbf{training set}. Each instance has two features, and every label is unique;
+    \item The \textbf{blue lines} represent the \textbf{decision boundaries}. Each region contains the set of points that are \textbf{closer} to the \textbf{red dot inside that region} than to any other red dot;
+    \item For every instance of the test set, we can determine in \textbf{which region} it falls, and the predicted label will be the one associated with the red dot of that region.
+\end{itemize}
+\subsection{Metric function}
+To implement this algorithm, we first have to define a \textbf{metric} to measure the \textbf{distance between instances}. 
+\\Given a set $\chi$, a function $d:\chi \times \chi \rightarrow R_0^*$ is a \textbf{metric} iff for any $x,y,z \in \chi$ the following properties are satisfied:
+\begin{itemize}
+    \item \textbf{reflexivity}: $d(x, y) = 0 \;\; iff \;\; x = y$
+    \item \textbf{symmetry}: $d(x, y) = d(y, x)$
+    \item \textbf{triangle inequality}: $d(x,y) + d(y, z) \ge d(x,z)$
+\end{itemize}
+An example of \textbf{metric} is the \textbf{Euclidean distance in} $R^n$. It's defined as follows:
+
+\begin{equation}
+    d(x,y) = \sqrt{\sum_{i=1}^{n}(x_i - y_i)^2}
+\end{equation}
+
+\subsection{Classification}
+\begin{algorithm}
+\caption{$k$-Nearest Neighbor Classification}
+\begin{algorithmic}[1]
+\ForAll{test examples $x$}
+    \ForAll{training examples $(x_i, y_i)$}
+        \State compute distance $d(x, x_i)$
+    \EndFor
+    \State select the $k$-nearest neighbors of $x$
+    \State return class of $x$ as majority class among neighbors:
+    \[
+        \arg\max_y \sum_{i=1}^{k} \delta(y, y_i)
+    \]
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Where:
+\[
+\delta(x,y) = 
+\begin{cases}
+    1 & \text{if } x = y \\
+    0 & \text{otherwise}
+\end{cases}
+\]
+Assigns a class to a test example by looking at the k training examples closest to it. Given a text example $x$, the predicted class of x is the majority class among its K-nearest neighbors.
+
+\subsection{Regression}
+\begin{algorithm}
+\caption{$k$-Nearest Neighbor Regression}
+\begin{algorithmic}[1]
+\ForAll{test examples $x$}
+    \ForAll{training examples $(x_i, y_i)$}
+        \State compute distance $d(x, x_i)$
+    \EndFor
+    \State select the $k$-nearest neighbors of $x$
+    \State return the average output value among neighbors:
+    \[
+        \frac{1}{K} \sum_{i=1}^ky_i
+    \]
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+Here, given a text example $x$, the predicted value of x is the mean of the values among its K-nearest neighbors.
+
+\subsection{Characteristics}
+\begin{itemize}
+    \item \textbf{Instance-based learning}: the model used for prediction is calibrated for test example to be processed. This model doesn't build a real general representation for data, but it's limited to the example on the training set.
+    \item \textbf{Lazy learning}: computation is mostly deferred to the classification phase. In fact for every test example we compare it with every other example saved. There is no real training phase.
+    \item \textbf{Local learner}: assumes prediction should be mainly influenced by nearby instances.
+    \item \textbf{Uniform feature weighting}: every feature contribute at the same way on computing distance. So there are not parameters to be learned.
+\end{itemize}
+\subsection{Distance-weighted K-Nearest Neighbor}
+The just presented algorithm can be enhanced with its \textbf{Distance-Weighted K-Nearest Neighbor} variation.
+\\Take as an example this case here, using 3-Nearest Neighbors:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{img/image.png}
+    \caption{Issue with K-Nearest Neighbors}
+    \label{fig:placeholder}
+\end{figure}
+Even though the \textbf{blue dot}, representing the testing instance, is closer to the \textbf{- label}, the algorithm will still assign the \textbf{+ label}, since it represents the majority label among its neighbors. \\
+\\We can weight the \textbf{influence} that each neighbor has on the label, based on its distance from the testing instance, giving closer neighbors a higher impact on the final classification.
+\\We first define a new function:
+\[
+    w_i = \frac{1}{d(x, x_i)}
+\]
+The algorithms now present as follows:
+\paragraph{Classification}
+  \[
+    \arg\max_y \sum_{i=1}^k w_i  \delta(y, y_i)
+  \]
+  
+\paragraph{Regression}
+  \[
+    \frac{\sum_{i=1}^k w_iy_i}{\sum_{i=1}^w y_i} 
+  \]
