@@ -103,3 +103,33 @@ In addition, we can extend the definition of accuracy to the multiclass setting.
 \end{equation}}
 
 \subsection{Regression}
+The typical performance measures in the regression domain is the \textbf{Root Mean Squared Error} (RMSE).
+It represents the \textbf{distance} between the predicted values $f(x_i)$ and the actual values $y_i$.
+\defib{Root Mean Squared Error}{\textit{Root Mean Squared Error} is defined as:
+\begin{equation}
+\mathit{RMSE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (f(x_i) - y_i)^2}
+\end{equation}
+For a dataset $\mathcal{D}$ with $|\mathcal{D}| = N$ examples.
+}
+\subsection{Performance estimation}
+To estimate the performance of a learning algorithm, we need to evaluate it on data that has not been used for training.
+To ensure this, we can use two main strategies.
+\subsubsection{Hold-out procedure}
+Given a dataset $\mathcal{D}$, we split it into three disjoint subsets:
+\begin{itemize}
+	\item \textbf{Training set} $\mathcal{D}_{train}$: used to train the model;
+	\item \textbf{Validation set} $\mathcal{D}_{val}$: used to tune hyper-parameters and select the best model;
+	\item \textbf{Test set} $\mathcal{D}_{test}$: used to evaluate the final performance of the selected model.
+\end{itemize} 
+This procedure is simple and effective, but can be applied only when we have a sufficiently large dataset are available.
+
+\subsubsection{K-Fold Cross-validation}
+The \textbf{k-fold} cross validation approach \textbf{splits} the dataset $\mathcal{D}$ into $k$ disjoint subsets (folds) of equal size.
+Then, for each $i \in [1, k]$:
+\begin{itemize}
+	\item \textbf{Train} a predictor $\mathcal{L}$ using dataset $T_i = \mathcal{D} \setminus \mathcal{D}_i$ (all folds except the $i$-th one);
+	\item \textbf{Compute score} $S$ of the \textbf{predictor} $\mathcal{L}(T_i)$:
+	\[S_i = S_{\mathcal{D}_i}[\mathcal{L}(T_i)]\]
+\end{itemize}
+After this iterative procedure, we can compute the \textbf{average score} over all folds:
+\[\bar{S} = \frac{1}{k} \sum_{i=1}^{k} S_i\]

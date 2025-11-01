@@ -1,0 +1,89 @@
+\section{Parameter Estimation}
+\paragraph{Setting:}
+In order to understand what we will be doing in this section, we need to first introduce the setting of 
+the environment we are working in. We have:
+\begin{itemize}
+    \item A \textbf{collection of data} sampled from a \textbf{probability distribution} $p(x,y)$;
+    \item The \textbf{probability distribution} $p(x,y)$ is \textbf{known}, but the parameters $\theta$ of the distribution are \textbf{unknown};
+    \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}$ of $N$ examples, sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
+\end{itemize}
+\defib{I.I.D.}{\textit{Independent and Identically Distributed} (i.i.d.) refers to a set of random variables that are all drawn from the same probability distribution and are mutually independent.}
+
+\paragraph{Multiclass classification setting:}
+\begin{itemize}
+    \item The training set $\mathcal{D}$ can be divided into $\mathcal{D}_1,\dots,\mathcal{D}_c$, where each $\mathcal{D}_i = \{\boldsymbol{x}_1,\dots,\boldsymbol{x}_{n}\}$ contains examples of class $y_i$;
+    \item For any new example $\boldsymbol{x}$, we can compute the posterior probability for each class $y_i$ (what's the probability of $y_i$ given $\boldsymbol{x}$) using Bayes' theorem:
+    \begin{equation}\label{eq:multiclass-bayes}
+        p(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}
+    \end{equation}
+\end{itemize}
+\defib{A posteriori probability}{The probability of a class $y_i$ given the features $\boldsymbol{x}$ and the training set $\mathcal{D}$, denoted as $p(y_i|\boldsymbol{x}, \mathcal{D})$, is called the posterior probability. 
+It represents the probability of $x$ belonging to class $y_i$ after observing the features $\boldsymbol{x}$.}
+
+\paragraph{Simplification:}
+Starting from the equation \ref{eq:multiclass-bayes}, we can simplify it by making some assumptions:
+\begin{itemize}
+    \item We assume $\boldsymbol{x}$ is independent of $\mathcal{D}_j (j \neq i)$, so:
+    \[P(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}\]
+    \item Without additional knowledge, $P(y_i|\mathcal{D})$ can be computed as the \textbf{relative frequency} of class $y_i$ in the training set:
+    \[P(y_i|\mathcal{D}) = \frac{|\mathcal{D}_i|}{|\mathcal{D}|}\]
+    \item The denominator $p(\boldsymbol{x}|\mathcal{D})$ can be computed using the \textbf{law of total probability}:
+    \[p(\boldsymbol{x}|\mathcal{D}) = \sum_{i=1}^{c} p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})\]
+\end{itemize}
+At this point the only factor of equation \ref{eq:multiclass-bayes} that remains unknown is $p(\boldsymbol{x}|y_i, \mathcal{D})$.
+In order to estimate it, we need to estimate the parameter $\theta$ of the distribution.
+\\This can be done in two ways:
+\begin{enumerate}
+    \item \textbf{Maximum Likelihood Estimation} (MLE): we assume that the parameter $\theta_i$ is a fixed but unknown value,
+     and we estimate it by maximizing the likelihood of the observed data $\mathcal{D}_i$. Obtained values are used to compute probabilities of new examples:
+     \[p(\boldsymbol{x}|y_i, \mathcal{D}_i) \approx p(\boldsymbol{x}|{\theta}_i)\]
+    \item \textbf{Bayesian estimation}: we assume that the parameter $\theta_i$ is a random variable with a prior distribution $p(\theta_i)$.
+    Observed data turns the prior into a posterior distribution. 
+    The prediction for new examples is obtained by integrating over all possible values of $\theta_i$:
+    \[p(\boldsymbol{x}|y_i, \mathcal{D}_i) = \int_{\theta_i} p(\boldsymbol{x},\theta_i|y_i, \mathcal{D}_i) d\theta_i\]
+\end{enumerate}
+
+\subsection{Maximum Likelihood Estimation}
+Maximum Likelihood Estimation (\textbf{MLE}) is a method used to estimate the parameters of a statistical model.
+Given a set of training data $\mathcal{D} = \{\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n\}$, the estimation of 
+the parameter $\theta$ is done by finding the combination of parameters that fits at best the distribution 
+of the observed data, without any prior knowledge about the parameters.
+\begin{equation}
+    \theta_i^* = \text{argmax}_{\theta} p(\theta_i|\mathcal{D}_i, y_i) = \text{argmax}_{\theta_i} p(\mathcal{D}_i,y_i | \theta_i) p(\theta_i)
+\end{equation}
+From this, assuming that $p(\theta_i)$ (prior probability) is given, we can derive the most common form of MLE, which doesn't take into account the prior:
+\begin{equation}
+    \theta^* = \text{argmax}_{\theta} p(\mathcal{D}, y|\theta)
+\end{equation}
+Since the examples are \textbf{i.i.d.}, we can rewrite the equation as:
+\begin{equation}\label{eq:mle-likelihood}
+    \theta^* = \text{argmax}_{\theta} \prod_{j=1}^{n} p(\boldsymbol{x}_j|\theta)
+\end{equation}
+To find the value of $\theta$ we would have to compute the derivative of the likelihood function and set it to zero. 
+This is often difficult, so instead we work with the \textbf{log-likelihood}.
+
+\subsubsection{Maximizing the log-likelihood}
+The \textbf{log-likelihood} is defined as the logarithm of the likelihood function (equation \ref{eq:mle-likelihood}):
+\begin{equation}
+    \theta^* = \text{argmax}_{\theta} \sum_{j = 1}^{n} \ln p(\boldsymbol{x}_j|\theta)
+\end{equation}
+In order to \textbf{find the maximum}, we compute the derivative of the log-likelihood and set it to zero:
+\begin{equation}
+    \nabla_{\theta} \sum_{j = 1}^{n} \ln p(\boldsymbol{x}_j|\theta) = 0
+\end{equation}
+
+\subsubsection{Example: MLE for Gaussian distribution}
+Assuming that the data is generated from a Gaussian distribution, we can estimate the parameters $\mu$ and $\sigma^2$ using MLE.
+\\First, the probability density function of a Gaussian distribution is given by:
+\[
+    p(x|\mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+\]
+Considering its logarithm, we have:
+\[
+    \sum_{j = 1}^{n} \ln p(\boldsymbol{x}_j|\theta) = \sum_{j = 1}^{n} \ln \left[\frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2}\right)\right] =
+    \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2}
+\]
+\paragraph{Estimating $\mu$:}
+
+\paragraph{Estimating $\sigma^2$:}
+
