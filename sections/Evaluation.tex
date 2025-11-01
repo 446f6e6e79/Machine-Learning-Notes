@@ -1,0 +1,105 @@
+\section{Evaluation}
+Evaluation requires to define a \textbf{performance measures} to be optimized.
+Performance of learning algorithms cannot be evaluated on the entire domain. We have to
+introduce some approximations.
+Performance evaluation is needed for
+\begin{itemize}
+    \item \textbf{Tune} the hyper-parameters of learning methods;
+    \item \textbf{Evaluating} the performance of the learned model;
+    \item \textbf{Computing statistical significance} of results.
+\end{itemize}
+\subsection{Binary classification}
+The typical way to evaluate a binary classifier is by means of a \textbf{confusion matrix}:
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{cc|cc|}
+		\cline{3-4}                                         &   & \multicolumn{2}{c|}{prediction} \\
+		\cline{3-4}                                         &   & \multicolumn{1}{c|}{P}         & N  \\
+		\hline
+		\multicolumn{1}{|c|}{ground truth} & P & \multicolumn{1}{c|}{TP}        & FN \\
+		\cline{2-4} \multicolumn{1}{|c|}{}                  & N & \multicolumn{1}{c|}{FP}        & TN \\
+		\hline
+	\end{tabular}
+	\caption{Confusion matrix for binary classification}
+	\label{fig:binClassConfusionMatrix}
+\end{table}
+Where:
+\begin{itemize}
+	\item \textbf{TP} (True Positive): number of positive examples correctly classified as positive;
+	\item \textbf{TN} (True Negative): number of negative examples correctly classified
+	\item \textbf{FN} (False Negative): number of positive examples incorrectly classified as negative;
+	\item \textbf{FP} (False Positive): number of negative examples incorrectly classified as positive;
+\end{itemize}
+From the confusion matrix we can derive several performance measures.
+\subsubsection{Accuracy}
+\defib{Accuracy}{\textit{Accuracy} is the fraction of correctly labelled example among all predictions.
+\begin{equation}
+\mathit{Acc}= \frac{\mathit{TP}+\mathit{TN}}{\mathit{TP}+\mathit{TN}+\mathit{FP}+\mathit{FN}}
+\end{equation}
+}
+Accuracy metric is not very reliable when the classes are imbalanced. For example, if in a dataset the
+positive class represents a small fraction of the examples, a classifier that always predicts negative will achieve 
+a high accuracy, but it wouldn't be able to predict any positive example.
+\\ A possible solution consists in \textbf{rebalancing costs}, making each positive example worth more than a negative one.
+\subsubsection{Precision and Recall}
+\defib{Precision}{\textit{Precision} is the fraction of correctly predicted positive examples among all predicted positive examples.
+\begin{equation}
+\mathit{Prec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FP}}
+\end{equation}
+}
+This metric measures the precision of the learner in predicting positive examples. A problem with precision is that
+the learner can achieve a high precision by predicting only a few positive examples, only when 100\% sure.
+
+\defib{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all actual positive examples.
+\begin{equation}
+\mathit{Rec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FN}}
+\end{equation}
+}
+It measures the ability of the learner to find all positive examples.
+\\\\Since these last two metrics are complementary, we can combine them into a single one, called \textbf{F-measure}.
+\defib{F-measure}{\textit{F-measure} combines \textbf{precision} and \textbf{recall}, balancing their trade-off.  
+\begin{equation}
+\mathit{F_\beta} = \frac{(1+\beta^2) \cdot \mathit{Prec} \cdot \mathit{Rec}}{\beta^2 \cdot \mathit{Prec} + \mathit{Rec}}
+\end{equation}
+}
+$F_1$ is usually a good performance measure in the case of unbalanced datasets.
+
+\subsection{Multi-class classification}
+In the case of multi-class classification, we can extend the concepts of precision, recall, and F-measure to multiple classes.
+We first redefine the \textbf{confusion matrix} as a generalization of the binary case:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cc|c|c|c|}
+        \cline{3-5}                                         &   & \multicolumn{3}{c|}{prediction} \\
+        \cline{3-5}                                         &   & \multicolumn{1}{c|}{$y_1$} & \multicolumn{1}{c|}{$y_2$} & \multicolumn{1}{c|}{$y_3$}  \\
+        \hline
+        \multicolumn{1}{|c|}{ground truth} & $y_1$ & \multicolumn{1}{c|}{$n_{11}$} & \multicolumn{1}{c|}{$n_{12}$} & \multicolumn{1}{c|}{$n_{13}$} \\
+        \cline{2-5} \multicolumn{1}{|c|}{} & $y_2$ & \multicolumn{1}{c|}{$n_{21}$} & \multicolumn{1}{c|}{$n_{22}$} & \multicolumn{1}{c|}{$n_{23}$} \\
+        \cline{2-5} \multicolumn{1}{|c|}{} & $y_3$ & \multicolumn{1}{c|}{$n_{31}$} & \multicolumn{1}{c|}{$n_{32}$} & \multicolumn{1}{c|}{$n_{33}$} \\
+        \hline
+    \end{tabular}
+    \caption{Confusion matrix for multi-class classification}
+    \label{fig:multiClassConfusionMatrix}
+\end{table}
+Where:
+\begin{itemize}
+	\item $n_{ij}$ is the number of examples of class $y_i$ predicted as class $y_j$;
+	\item The \textbf{main diagonal} elements $n_{ii}$ represent the number of correctly classified examples for each class;
+	\item The \textbf{sum} of off-diagonal elements in a \textbf{column} $j$ ($\sum_{i \neq j} n_{ij}$) represents the number of \textbf{false positives} for class $y_j$;
+	\item The \textbf{sum} of off-diagonal elements in a \textbf{row} $i$ ($\sum_{j \neq i} n_{ij}$) represents the number of \textbf{false negatives} for class $y_i$;
+\end{itemize}
+From this confusion matrix, we can compute precision and recall for each class $y_i$ as follows:
+\begin{itemize}
+	\item \textbf{Precision} for class $y_i$:
+	\[\mathit{Prec}_i = \frac{n_{ii}}{\sum_{j} n_{ji}}\]
+	\item \textbf{Recall} for class $y_i$:
+	\[\mathit{Rec}_i = \frac{n_{ii}}{\sum_{j} n_{ij}}\]
+\end{itemize}
+In addition, we can extend the definition of accuracy to the multiclass setting.
+\defib{Multiclass accuracy}{\textit{Multiclass accuracy} is the fraction of correctly predicted examples among all examples.
+\begin{equation}
+	\mathit{MAcc} = \frac{\sum_{i} n_{ii}}{\sum_{i} \sum_{j} n_{ij}}
+\end{equation}}
+
+\subsection{Regression}
