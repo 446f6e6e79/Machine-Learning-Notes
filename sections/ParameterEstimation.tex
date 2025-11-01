@@ -84,6 +84,50 @@ Considering its logarithm, we have:
     \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2}
 \]
 \paragraph{Estimating $\mu$:}
+\[
+    \frac{\partial p(\boldsymbol{x}_j|\theta)}{\partial \mu} = \frac{\partial}{\partial \mu}  \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} 
+\]
+The derivative of the first term is zero, so we only need to compute the derivative of the second term, which is:
+\[
+    \sum_{j = 1}^{n} \frac{(\boldsymbol{x}_j - \mu)}{\sigma^2}
+\]
+Setting this quantity to zero, we have:
+\[
+    \sum_{j = 1}^{n} \frac{(\boldsymbol{x}_j - \mu)}{\sigma^2} = 0
+\]
+\[
+    \sum_{j = 1}^{n} (\boldsymbol{x}_j - \mu) = 0
+\]
+\[
+    \sum_{j = 1}^{n} \boldsymbol{x}_j - \sum_{j = 1}^{n}\mu = 0 \implies \sum_{j = 1}^{n} \boldsymbol{x}_j - n\mu = 0
+\]
+\[
+    \mu = \frac{1}{n} \sum_{j = 1}^{n} \boldsymbol{x}_j
+\]
+Which is the \textbf{sample mean} of the data.
+\paragraph{Estimating $\sigma$:}
+Repating the same process for $\sigma$, we have:
+\[
+    \frac{\partial p(\boldsymbol{x}_j|\theta)}{\partial \sigma} = \frac{\partial}{\partial \sigma}  \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} 
+\]
+\[
+    = \sum_{j = 1}^{n} \sqrt{2\pi} \sigma  \frac{1}{\sqrt{2 \pi}}(-\sigma^{-2}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2} (-2\sigma^{-3})
+\]
+\[
+    = \sum_{j = 1}^{n} -\frac{1}{\sigma} + \frac{(\boldsymbol{x}_j - \mu)^2}{\sigma^3}
+\]
+if we set the quantity to zero, we have:
+\[
+    \sum_{j = 1}^{n} -\frac{1}{\sigma} + \frac{(\boldsymbol{x}_j - \mu)^2}{\sigma^3} = 0
+\]
+Multiplying by $\sigma^3$, we have:
+\[
+    \sum_{j = 1}^{n} -\sigma^2 + (\bold{x}_j - \mu)^2 = 0
+\]
+\[
+    \sigma^2 = \frac{1}{n} \sum_{j = 1}^{n} (\bold{x}_j - \mu)^2
+\]
+\paragraph{Conclusion:}
 
-\paragraph{Estimating $\sigma^2$:}
-
+By this two derivations, we have found that the parameters that maximize the likelihood 
+of the data are the \textbf{sample mean} and the \textbf{sample variance} of the data.
