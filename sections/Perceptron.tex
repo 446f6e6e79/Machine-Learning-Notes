@@ -41,7 +41,7 @@ The single neuron perceptron can only represent \textbf{linearly separable} func
 Examples of this are the \textbf{primitive boolean functions} such as \textbf{AND}, \textbf{OR}, and \textbf{NOT}.
 This implies that any logic formula can be represented by a network of a 2 level perceptron in \textbf{disjunctive normal form} (DNF) or \textbf{conjunctive normal form} (CNF).
 
-\subsubsection{Parameter learning}
+\subsection{Parameter learning}
 Similar to what we saw for \textbf{maximum likelihood estimation}, we need to find a \textbf{function} of the parameters
 to be optimized.
 \\\\In this case, a reasonable choice is to minimize the \textbf{measure of error} on the training set $\mathcal{D}$. 
@@ -52,4 +52,71 @@ with the ground truth $y_i$.
     E(\boldsymbol{w}, D) = \sum_{(\boldsymbol{x},y) \in \mathcal{D}} \ell(f(\boldsymbol{x}), y)
 \end{equation}
 
-\subsubsection*{Gradient descent}
+\subsubsection{Gradient descent}
+This is an optimization problem where we want to find the weights $\boldsymbol{w}$ that minimize the error function $E$.
+There is no closed-form solution for this problem, so we need to use an iterative optimization algorithm.
+\\The common approach is to minimize the error function using a \textbf{gradient descent} approach:
+\begin{enumerate}
+    \item Initialize the weights $\boldsymbol{w}$ randomly or with zeros.
+    \item Iterate until gradient is approximately zero, updating the weights as:
+    \begin{equation}
+        \boldsymbol{w} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}, \mathcal{D})
+    \end{equation}
+    where $\eta$ is the learning rate and controls the amount of movement at each step.
+\end{enumerate}
+This approach is guaranteed to converge to a local optimum of the error function $E(\boldsymbol{w}; D)$ for small enough learning rates $\eta$.
+\begin{itemize}
+    \item too \textbf{low} learning rate: slow convergence;
+    \item too \textbf{high} learning rate: the algorithm may \textbf{diverge} (oscillate around the minimum).
+\end{itemize}
+
+\subsubsection*{Perceptron training rule}
+In order to apply a \textbf{gradient descent} approach, we need to define a \textbf{loss function} which is \textbf{differentiable} (smooth).
+As a consequence, we adopt a different training rule, called \textbf{perceptron training rule}. It's defined as follows:
+\begin{equation}\label{eq:perceptron_error}
+    E(\boldsymbol{w}; \mathcal{D}) = - \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})
+\end{equation}
+where $\mathcal{D}_E$ is the set of \textbf{misclassified} samples in the training set $\mathcal{D}$, for which:
+\[ yf(\boldsymbol{x}) \leq 0 \]
+The error is the \textbf{sum} of the \textbf{functional margins} of the misclassified samples.
+\\Applying gradient descent to the error function in \eqref{eq:perceptron_error}, we obtain:
+\[\nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})\]
+\[=\nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -y(\boldsymbol{w}^T \boldsymbol{x}) \]
+\[= \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -y \boldsymbol{x} \]
+Thus, the amount of change in the weights is:
+\[- \eta \nabla E(\boldsymbol{w}; \mathcal{D}) = \eta \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} y \boldsymbol{x} \]
+\subsubsection{Stochastic Gradient Descent}
+In practice, the \textbf{batch gradient descent} approach is rarely used, since it requires to compute the gradient over the entire training set $\mathcal{D}$ at each iteration.
+\\A more common approach is to use \textbf{stochastic gradient descent} (SGD). It works as follows:
+\begin{enumerate}
+    \item Initialize the weights $\boldsymbol{w}$ randomly;
+    \item Iterate until all examples are correctly classified:
+    \begin{enumerate}
+        \item For each incorrectly classified example $(\boldsymbol{x}, y)$ in the training set $\mathcal{D}$, update the weights as:
+        \begin{equation}
+            \boldsymbol{w} = \boldsymbol{w} + \eta y \boldsymbol{x}
+        \end{equation}
+    \end{enumerate}
+\end{enumerate} 
+With this approach, the weights are updated after each misclassified example, rather than after processing the entire training set.
+Each gradient step is \textbf{very fast} and can sometimes avoid local minima.
+\subsection{Perceptron Regression}
+Linear models can also be used for \textbf{regression} tasks, where the goal is to predict a continuous output variable $y$ given an input feature vector $\boldsymbol{x}$.
+The problem can be modeled as:
+\begin{itemize}
+    \item Let $X \in \mathbb{R}^{n \times d}$ be the input training matrix (i.e. $X = \left[ \boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_n \right]^T$), where each row is a $d$-dimensional feature vector and $n = |\mathcal{D}|$;
+    \item Let $\boldsymbol{y} \in \mathbb{R}^n$ be the output training Matrix (i.e. $\boldsymbol{y}_i$ is the target value for the i-th training example);
+    \item \textbf{Regression learning} can be stated as a set of \textbf{linear equations}:
+    \begin{equation*}
+        X\boldsymbol{w} = \boldsymbol{y}
+    \end{equation*}
+    Giving as a solution:
+    \begin{equation}
+        \boldsymbol{w} = X^{-1}\boldsymbol{y}
+    \end{equation}
+\end{itemize}
+However this approach has a few problems:
+\begin{itemize}
+    \item The matrix $X$ is usually not square, so the inverse $X^{-1}$ is not defined;
+    \item System of equations is overdetermined (more equations than unknowns) $\implies$ no exact solution exists.
+\end{itemize}
