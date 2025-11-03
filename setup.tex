@@ -3,6 +3,7 @@
 \usepackage{comment}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{comment}
@@ -16,6 +17,8 @@
 \usepackage{tcolorbox} 
 \usepackage{fancyhdr} % Aggiunto per intestazioni personalizzate
 \usepackage{mdframed} 
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, calc}
 
 % Configurazione di codeblocks con il pacchetto listings
 \lstset{
@@ -68,3 +71,8 @@
 % Defines a command for framed definitions with a blue background and a title
 \newcommand{\defi}[1]{\begin{mdframed} [nobreak=true,hidealllines=false,linecolor=blue!40,linewidth=2pt,backgroundcolor=blue!5,]{#1} \end{mdframed}}
 \newcommand{\defib}[2]{\begin{mdframed} [hidealllines=false,linecolor=blue!40,linewidth=2pt,backgroundcolor=blue!5,] \textbf{{#1}} \vspace{2mm} \\ {#2} \end{mdframed}}
+
+% Make proof keyword bold
+\makeatletter
+\def\proofname{\bfseries Proof}
+\makeatother

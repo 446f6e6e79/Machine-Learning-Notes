@@ -1,0 +1,55 @@
+\section{Perceptron}
+\subsection{Biological Motivation}
+
+\subsection{Single Neuron Architecture}
+A single neuron perceptron is a specific learning model that implements a linear binary classifier. It can be represented as:
+\begin{equation}   
+    \label{eq:perceptron}
+    f(\boldsymbol{x}) = sign(\boldsymbol{w}^T \boldsymbol{x} + w_0)
+\end{equation}
+The function is a \textbf{linear combination} of the input features $\boldsymbol{x}$, where:
+\begin{itemize}
+    \item $\boldsymbol{w}$ is the weight vector, can be seen as the \textbf{synapses} of the neuron;
+    \item $w_0$ is the bias term, which allows to shift the decision boundary;
+    \item The weighted signals are summed up and passed through an \textbf{activation function}.
+\end{itemize}
+
+\subsubsection{Augmented feature / weight vector}
+To simplify the notation, we can introduce an \textbf{augmented feature vector}. We can rewrite the 
+equation \eqref{eq:perceptron} as:
+\begin{equation}
+    f(\boldsymbol{x}) = sign(\hat{\boldsymbol{w}}^T \hat{\boldsymbol{x}})
+\end{equation}
+where the \textbf{bias term} is included in the weight vector and the feature vector as follows:
+\[
+    \hat{\boldsymbol{w}} = 
+    \begin{bmatrix}
+    w_0 \\
+    \boldsymbol{W}
+    \end{bmatrix}
+    , \quad
+    \hat{\boldsymbol{x}} = 
+    \begin{bmatrix}
+    1 \\
+    \boldsymbol{x}
+    \end{bmatrix}
+\]
+In the following sections, we will skip the hat notation for simplicity.
+
+\subsubsection{Representational power}
+The single neuron perceptron can only represent \textbf{linearly separable} functions. 
+Examples of this are the \textbf{primitive boolean functions} such as \textbf{AND}, \textbf{OR}, and \textbf{NOT}.
+This implies that any logic formula can be represented by a network of a 2 level perceptron in \textbf{disjunctive normal form} (DNF) or \textbf{conjunctive normal form} (CNF).
+
+\subsubsection{Parameter learning}
+Similar to what we saw for \textbf{maximum likelihood estimation}, we need to find a \textbf{function} of the parameters
+to be optimized.
+\\\\In this case, a reasonable choice is to minimize the \textbf{measure of error} on the training set $\mathcal{D}$. 
+This is called \textbf{loss function} $\ell$ and it compares the predicted output $f(\boldsymbol{x}_i)$ 
+with the ground truth $y_i$.
+\\We can define \textbf{training error} $E$ as:
+\begin{equation}
+    E(\boldsymbol{w}, D) = \sum_{(\boldsymbol{x},y) \in \mathcal{D}} \ell(f(\boldsymbol{x}), y)
+\end{equation}
+
+\subsubsection*{Gradient descent}

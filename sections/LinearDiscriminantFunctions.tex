@@ -1,0 +1,93 @@
+\section{Linear Discriminant Functions}
+We can distinguish \textbf{learning models} between \textbf{generative models} and \textbf{discriminative models}.
+\begin{itemize}
+    \item \textbf{Generative models} aim to model the \textbf{distribution} governing the data. They learn the joint probability distribution $P(x,y)$ and can generate new data points, according to the learned distribution.
+    \item \textbf{Discriminative models} aim to model the \textbf{decision boundary} between classes, rather than the underlying data distribution.
+\end{itemize}
+
+\subsection{Advantages and disadvantages of discriminative models}
+\paragraph{Pros:}
+\begin{itemize}
+    \item When data is complex, modelling the underlying distribution can be very challenging (E.g., high resolution images);
+    \item If \textbf{data discrimination} is the final goal, then there is no need to model the entire data distribution;
+    \item Discriminative models can focus on learning the parameters that are most relevant for learning the decision boundary, potentially leading to better performance.
+\end{itemize}
+\paragraph{Cons:}
+\begin{itemize}
+    \item The learned model is less flexible in its usage;
+    \item It doesn't allow to perform arbitrary inference tasks on the data. In example, it is not possible to generate new data points from the learned model.
+\end{itemize}
+\subsection{Linear Discriminant Functions}
+A \textbf{linear discriminant model} uses a \textbf{linear function} to make predictions. 
+The \textbf{decision boundary} (discriminant function) is a linear combination of the input features:
+\begin{equation} \label{eq:linear_discriminant}
+    f(\boldsymbol{x}) = \boldsymbol{w}^T \boldsymbol{x} + w_0
+\end{equation}
+where:
+\begin{itemize}
+    \item $\boldsymbol{x}$ is the input feature vector;
+    \item $\boldsymbol{w}$ is the weight vector, representing the importance of each feature;
+    \item $w_0$ is the bias term, which allows to shift the decision boundary.
+\end{itemize}
+\subsubsection{Linear Binary Classifier}
+In a \textbf{binary classification} problem, the linear discriminant function can be used to classify data points into two classes.
+This is usually done by taking the sign of the discriminant function:
+\begin{equation}
+    f(\boldsymbol{x}) = \text{sign}(\boldsymbol{w}^T \boldsymbol{x} + w_0) = 
+    \begin{cases}
+    +1 & \text{if } \boldsymbol{w}^T \boldsymbol{x} + w_0 \geq 0 \\
+    -1 & \text{if } \boldsymbol{w}^T \boldsymbol{x} + w_0 < 0
+    \end{cases}
+\end{equation}
+The \textbf{decision boundary}, which is a \textbf{hyperplane} $H$ in the feature space, is defined by the equation:
+\begin{equation}
+    f(\boldsymbol{x}) = 0
+\end{equation}
+The weight vector $\boldsymbol{w}$ is \textbf{orthogonal} to the decision boundary $H$.
+
+\begin{proof}
+    We take two points on the decision boundary, $\boldsymbol{x}_1$ and $\boldsymbol{x}_2$, such that:
+    \[ f(\boldsymbol{x}_1) = f(\boldsymbol{x}_2) = 0 \]
+    Based on equation \eqref{eq:linear_discriminant}, we can rewrite this as:
+    \[ \boldsymbol{w}^T \boldsymbol{x}_1 + w_0 = \boldsymbol{w}^T \boldsymbol{x}_2 + w_0 = 0 \]
+    \[ \boldsymbol{w}^T \boldsymbol{x}_1 - \boldsymbol{w}^T \boldsymbol{x}_2 = 0 \]
+    \[ \boldsymbol{w}^T (\boldsymbol{x}_1 - \boldsymbol{x}_2) = 0 \]
+    This shows that the vector $\boldsymbol{w}^T$ is orthogonal to the vector $(\boldsymbol{x}_1 - \boldsymbol{x}_2)$, which lies on the decision boundary. 
+\end{proof}
+\defib{Functional margin}{The value $f(\boldsymbol{x})$ of the discriminative function for a certain point $\boldsymbol{x}$ is called \textbf{functional margin}. It can be seen as the \textbf{confidence} of the model in the prediction for that point. A larger absolute value of the functional margin indicates a higher confidence in the prediction.}
+
+\defib{Geometric margin}{The distance from a point $\boldsymbol{x}$ to the decision boundary $H$ is called \textbf{geometric margin}.
+\begin{equation}\label{eq:geometric_margin}
+    r^x = \frac{f(\boldsymbol{x})}{||\boldsymbol{w}||}
+\end{equation}
+}
+
+The distance from the origin to the decision boundary is given by:
+\begin{equation}
+    r_0 = \frac{|w_0|}{||\boldsymbol{w}||}
+\end{equation}
+
+\begin{proof}
+A generic point $\boldsymbol{x}$ can be expressed by its \textbf{projection} on $H$ plus its \textbf{distance} from $H$ times the vector in that direction:
+\[
+    \boldsymbol{x} = \boldsymbol{x}^P + r^x \frac{\boldsymbol{w}}{||\boldsymbol{w}||}
+\]
+where:
+\begin{itemize}
+    \item $\boldsymbol{x}^P$ is the projection of $\boldsymbol{x}$ on $H$;
+    \item $r^x$ is the distance from $\boldsymbol{x}$ to $H$;
+    \item $\frac{\boldsymbol{w}}{||\boldsymbol{w}||}$ is the unit vector in the direction of $\boldsymbol{w}$.
+\end{itemize}
+Substituting this into the discriminant function:
+\[
+f(\boldsymbol{x}) = \boldsymbol{w}^T \left( \boldsymbol{x}^P + r^x \frac{\boldsymbol{w}}{||\boldsymbol{w}||} \right) + w_0
+\]
+\[
+= \boldsymbol{w}^T \boldsymbol{x}^P + w_0 + r^x w_t \frac{\boldsymbol{w}}{||\boldsymbol{w}||}
+\]
+We can notice that $\boldsymbol{w}^T \boldsymbol{x}^P + w_0 = 0$ since $\boldsymbol{x}^P$ lies on the decision boundary $H$. Therefore:
+\[
+f(\boldsymbol{x}) = r^x ||\boldsymbol{w}||
+\]
+Rearranging this gives us the formula for the geometric margin as in equation \eqref{eq:geometric_margin}.
+\end{proof}

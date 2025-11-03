@@ -229,3 +229,24 @@ without losing information.
 For example \textbf{sample mean} and \textbf{covariance} are sufficient statistics for the parameters of a Gaussian distribution.
 
 \subsection{Conjugate priors}
+\defib{Conjugate prior}{Given:
+\begin{itemize}
+    \item A likelihood function $p(x|\theta)$;
+    \item A prior distribution $p(\theta)$;
+\end{itemize}
+The prior distribution $p(\theta)$ is said to be a \textbf{conjugate prior} for the likelihood function $p(x|\theta)$ if the posterior distribution $p(\theta|x)$ is in the same family as the prior distribution $p(\theta)$.}
+\subsubsection{Example: Bernoulli distribution}
+Consider a \textbf{Bernoulli distribution} with events $x = 1$ for success and $x = 0$ for failure. Parameters 
+$\theta$ is the probability of success.
+The \textbf{probability mass function} is given by:
+\[ P(x|\theta) = \theta^x (1 - \theta)^{1-x} \]
+The the \textbf{conjugate prior} is a \textbf{Beta distribution} that depends on $\alpha_t$ (number of successes) and $\alpha_h$ (number of failures):
+\[ P(\theta|\alpha_t, \alpha_h) = \frac{\Gamma(\alpha)}{\Gamma(\alpha_h) \Gamma(\alpha_t)} \theta^{\alpha_t - 1} (1 - \theta)^{\alpha_h - 1} \]
+\paragraph{Maximum likelihood estimation:}
+Suppose that a dataset $\mathcal{D} =\{H, H, T, T, T, H,H\}$ of n realizations is given.
+\\The likelihood function is given by:
+\[ P(\mathcal{D}|\theta) = \theta \cdot \theta \cdot (1-\theta) \cdot (1-\theta) \cdot (1-\theta) \cdot \theta \cdot \theta = \theta^h(1-\theta)^{t})\]
+The maximum likelihood estimation of $\theta$ is given by:
+\[\frac{\partial}{\partial \theta} \ln p(\mathcal{D}|\theta) = 0 \implies \frac{\partial}{\partial \theta} \left( h \ln \theta + t \ln (1-\theta) \right) = 0\]
+\[ \implies \frac{h}{\theta} - \frac{t}{1-\theta} = 0 \implies h (1-\theta) = t \theta \implies \theta = \frac{h}{h + t} \]
+$t, h$ are sufficient statistics for the Bernoulli distribution.
