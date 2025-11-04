@@ -29,7 +29,7 @@ where:
     \item $\boldsymbol{w}$ is the weight vector, representing the importance of each feature;
     \item $w_0$ is the bias term, which allows to shift the decision boundary.
 \end{itemize}
-\subsubsection{Linear Binary Classifier}
+\subsection{Linear Binary Classifier}
 In a \textbf{binary classification} problem, the linear discriminant function can be used to classify data points into two classes.
 This is usually done by taking the sign of the discriminant function:
 \begin{equation}
@@ -91,3 +91,19 @@ f(\boldsymbol{x}) = r^x ||\boldsymbol{w}||
 \]
 Rearranging this gives us the formula for the geometric margin as in equation \eqref{eq:geometric_margin}.
 \end{proof}
+
+\subsection{Multiclass Classification}
+In a \textbf{multiclass classification} problem with $K$ classes, we can extend the linear binary classifier by using \textbf{one-vs-all} (OvA) or \textbf{one-vs-one} (OvO) strategies.
+\subsubsection{One-vs-All (OvA)}
+The idea is to train $K$ binary classifiers, one for each class. Each classifier $f_k(\boldsymbol{x})$ is trained to distinguish class $k$ from all other classes.
+This way, we have a model with $k$ \textbf{hyperplanes}, each separating one class from the rest.
+At prediction time, we evaluate all $K$ classifiers and assign the input $\boldsymbol{x}$ to the class with the maximum \textbf{functional margin}.
+\subsubsection{One-vs-One (OvO)}
+The idea is to train a binary classifier for every pair of classes. For $K$ classes, we need to train $\frac{K(K-1)}{2}$ classifiers.
+The model predicts a a new example $\boldsymbol{x}$ in the class winning the most pairwise comparisons, as in a tournament.
+\subsubsection{Onve-vs-One (OvO) vs One-vs-All (OvA)}
+\begin{itemize}
+    \item OvA requires to train $K$ classifiers, each on the entire dataset;
+    \item OvO requires to train $\frac{K(K-1)}{2}$ classifiers, each on a smaller subset of the data (only the samples belonging to the two classes being compared);
+\end{itemize}
+If the number of examples is high, OvO can be more efficient, since each classifier is trained on a smaller dataset.
