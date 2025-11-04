@@ -120,3 +120,37 @@ However this approach has a few problems:
     \item The matrix $X$ is usually not square, so the inverse $X^{-1}$ is not defined;
     \item System of equations is overdetermined (more equations than unknowns) $\implies$ no exact solution exists.
 \end{itemize}
+\subsubsection{Error function}
+Our goal is not to solve the system exactly, but to find the weights $\boldsymbol{w}$ that minimize the \textbf{mean squared error} (MSE) on the training set:
+\begin{equation}
+    E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2 = (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})
+\end{equation}
+This is a \textbf{convex} function, so it has a single global minimum with a closed-form solution. \textbf{Gradient descent} can still be faster than computing the closed-form solution, especially for large datasets.
+
+\subsubsection{Closed form solution}
+To find the weights $\boldsymbol{w}$ that minimize the mean squared error, we can set the gradient of the error function to zero and solve for $\boldsymbol{w}$:
+\[\nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})\]
+\[ 2(\boldsymbol{y} - X\boldsymbol{w})^T (-X) = 0\]
+\[-2\boldsymbol{y}^TX + 2\boldsymbol{w}^T X^T X = 0\]
+Rearranging the terms, we get:
+\[\boldsymbol{w}^T X^T X = \boldsymbol{y}^T X\]
+Taking the transpose of both sides:
+\[X^T X \boldsymbol{w} = X^T \boldsymbol{y}\]
+Assuming that $X^T X$ is invertible, we can solve for $\boldsymbol{w}$:
+\begin{equation}
+    \boldsymbol{w} = (X^T X)^{-1} X^T \boldsymbol{y}
+\end{equation}
+NOTE:
+\begin{itemize}
+    \item $(X^T X)^{-1} X^T$ is a pseudoinverse called the \textbf{left inverse} of $X$;
+    \item If $X$ is square, than the left inverse is equal to the regular inverse $X^{-1}$, and this correspomonds to the exact solution of the system of equations;
+    \item The left inverse exists only if the columns of $X$ are linearly independent. If this is not the case, we can use \textbf{regularization} techniques to make the matrix invertible.
+\end{itemize}
+
+\subsubsection{Gradient descent}
+In case of large datasets, computing the closed-form solution can be computationally expensive. 
+In such cases, we can use \textbf{gradient descent} to iteratively update the weights until convergence.
+\[\frac{\partial E}{\partial \boldsymbol{w}_i} = \frac{\partial}{\partial \boldsymbol{w}_i} \frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2\]
+\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} \frac{\partial}{\partial \boldsymbol{w}_i}(y-f(\boldsymbol{x}))^2\]
+\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} 2(y-f(\boldsymbol{x}))\frac{\partial}{\partial \boldsymbol{w}_i} (y - \boldsymbol{w}^T \boldsymbol{x})\]
+\[= \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x})) (-x_i)\]
