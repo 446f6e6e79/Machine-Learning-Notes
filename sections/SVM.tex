@@ -1,0 +1,69 @@
+\section{Support Vector Machines}
+Support Vector Machines (SVMs) are a very popular method for linear (and non-linear) classification and regression tasks.
+\begin{itemize}
+    \item \textbf{Large Margin Classifier:} SVMs aim to find the hyperplane that maximizes the margin between different classes in the feature space;
+    \item \textbf{Support Vectors:} The data points that are closest to the decision boundary and influence its position;
+    \item \textbf{Sound Theoretical Foundation:} the \textbf{large margins} help to improve generalization performance;
+    \item \textbf{Kernel machines:} SVMs can be extended to non-linear decision boundaries using kernel functions. 
+\end{itemize}
+\subsection{Maximum Margin Classifier}
+SVMs learns the \textbf{central hyperplane} that separates the classes with the \textbf{largest margin}. Intuitively,
+the margin is the distance between the hyperplane and the closest data points from each class (the \textbf{support vectors}).
+\defib{Classifier Margin}
+{
+    Given a training set $\mathcal{D}$, a classifier confidence margin is:
+    \begin{equation}
+        \rho = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} yf(\boldsymbol{x})
+    \end{equation}
+    This is the minimal confidence of the classifier ($yf(\boldsymbol{x})$) in a correct prediction. It has to be positive for all training points to be correctly classified.
+    \\The geometric margin is the same value rescaled by the norm of the weight vector:
+    \begin{equation}
+        \frac{\rho}{||\boldsymbol{w}||} = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} \frac{yf(\boldsymbol{x})}{\|\boldsymbol{w}\|}.
+    \end{equation}
+}
+
+\defib{Canonical Hyperplane}
+{
+    There are infinitely many equivalent formulation for the same hyperplane:
+    \[ \boldsymbol{w}^T \boldsymbol{x} + w_0 = 0 \]
+    \[ \alpha (\boldsymbol{w}^T \boldsymbol{x} + w_0) = 0 \; \forall \alpha \neq 0\]
+    To remove this ambiguity, we can define the \textbf{canonical hyperplane} by imposing the constraint that the closest points to the hyperplane satisfy:
+    \[ \rho = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} yf(\boldsymbol{x}) = 1 \]
+    Its geometric margin then becomes:
+    \[ \frac{\rho}{||\boldsymbol{w}||} = \frac{1}{||\boldsymbol{w}||} \]
+}
+
+\subsection{Hard Margin SVM}
+\subsubsection{Learning problem}
+The learning objective of SVMs is to find the canonical hyperplane that maximizes the margin, which is equivalent to minimizing $||\boldsymbol{w}||$ since the margin is inversely proportional to it.
+This leads to the following optimization problem:
+\begin{equation}
+    \min_{\boldsymbol{w}, w_0} \frac{1}{2} ||\boldsymbol{w}||^2
+\end{equation}
+subject to the constraints:
+\[
+    y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) \geq 1, \quad \forall (\boldsymbol{x}_i, y_i) \in \mathcal{D}
+\]
+The constraint guarantees that all points are correctly classified and guarantees the canonical form for the hyperplane.
+This is a convex \textbf{quadratic optimization}, with linear constraints. This can be solved efficiently using Lagrange multipliers.
+\subsubsection{Karush-Kuhn-Tucker (KKT) Approach}
+A constrained optimization problem can be addressed by converting it into an unconstrained one with the same solution.
+Let's take in example the following general optimization problem:
+\[
+    \min_{z} f(z)
+\]
+subject to the constraint:
+\[ g_i(z) \geq 0, \quad \forall i \]
+We can introduce a non-negative Lagrange multiplier $\alpha_i$ for each constraint $g_i(z)$, and define the \textbf{Lagrangian} function:
+\[ L(z, \boldsymbol{\alpha}) = f(z) - \sum_i \alpha_i g_i(z) \]
+The solution of the original constrained problem can be found by solving the following \textbf{saddle point} problem:
+\[ \max_{\boldsymbol{\alpha} \geq 0} \min_{z} L(z, \boldsymbol{\alpha}) \]
+The optimal solutions $z^*$ for this problem are the same as the one from the \textbf{original constrained problem}.
+\begin{itemize}
+    \item If, for a given $\hat{z}$, a constraint $g_i(\hat{z})$ is \textbf{not satisfied} (i.e., $g_i(\hat{z}) < 0$), maximizing over $\alpha_i$ will lead to an \textbf{infinite value};
+    \item If all constraints are satisfied, maximizing over $\boldsymbol{\alpha}$ will set all the elements of the sum to zero, so that $\hat{z}$ is a valid solution of the original problem.
+\end{itemize}
+
+Applying this to the SVM optimization problem, we can define the Lagrangian:
+\[ L(\boldsymbol{w}, w_0, \boldsymbol{\alpha}) = \frac{1}{2} ||\boldsymbol{w}||^2 - \sum_{i} \alpha_i (y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1) \]
+The lagrangian is minimized with respect to $\boldsymbol{w}$ and $w_0$, and maximized with respect to the non-negative multipliers $\alpha_i$.
