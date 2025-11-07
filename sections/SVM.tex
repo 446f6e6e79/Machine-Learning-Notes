@@ -124,6 +124,7 @@ but the constraints are now much simpler than in the primal formulation.
 \begin{equation}
     f(\boldsymbol{x}) = \boldsymbol{w}^T \boldsymbol{x} + w_0 = \sum_{i=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \mathbf{x} + w_0
 \end{equation}
+\subsubsection{Observations}
 At this point, we can make some important observations. At the \textbf{optimal point} each \textbf{constraint} should be equal to zero.
 This can happen in two cases:
 \begin{enumerate}
@@ -134,3 +135,100 @@ The points that satisfy the second condition are called \textbf{support vectors}
 All the other points have $\alpha_i = 0$ and do not affect the decision function.
 \\\\The bias term $w_0$ can be computed using any of the support vectors, using the condition that they lie on the margin boundary.
 This is usually done by averaging the values obtained from all support vectors to improve numerical stability.
+\subsection{Soft Margin SVM}
+In practice, there is one big problem with the assumption made by hard margin SVMs: \textbf{assuming that all data is correctly classified} is often unrealistic and can lead to overfitting.
+\\To address this issue, we introduce the concept of \textbf{soft margin SVMs}, which allow for some misclassifications in the training data.
+This is done by introducing \textbf{slack variables} to the optimization problem.
+\defib{Slack variables}{
+    Slack variables $\xi_i \geq 0$ are introduced for each training point to allow for some misclassification.
+    \\\\They represent the \textbf{penalty} for the example $i$ being on the wrong side of the margin.
+    \\\\The \textbf{sum of the slack variables} $\sum_{i=1}^{m} \xi_i$ has to be minimized along with the norm of the weight vector to find a balance 
+    between maximizing the margin and minimizing the misclassification error.
+}
+\subsubsection{Learning problem}
+In the soft margin SVM, we still want to maximize the margin (minimize the norm of $\boldsymbol{w}$), but we also want to penalize the misclassifications.
+This can be done by adding \textbf{slack variables} to the constraints, leading to the following optimization problem:
+\begin{equation} \label{eq:soft_svm_opt}
+    \begin{aligned}
+        & min_{\boldsymbol{w} \in X, w_0 \in \mathbb{R}, \boldsymbol{\xi} \in \mathbb{R}^m} \frac{||\boldsymbol{w}||^2}{2} + C \sum_{i=1}^{m} \xi_i \\
+        & \text{subject to} \begin{cases}
+            y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) \geq 1 - \xi_i, \quad \forall i \\
+            \xi_i \geq 0, \quad \forall i
+        \end{cases}
+    \end{aligned}
+\end{equation}
+where $C > 0$ is a regularization parameter that controls the \textbf{trade-off} between \textbf{maximizing the margin} and \textbf{minimizing the misclassification error}.
+
+\subsubsection{Regularization theory}
+The problem in (\ref{eq:soft_svm_opt}) can be interpreted from a regularization perspective.
+The objective function can be seen as a combination of two terms:
+\begin{itemize}
+    \item The first term, $\frac{||\boldsymbol{w}||^2}{2}$, encourages the model to have a small norm, which corresponds to a large margin;
+    \item The second term, $C \sum_{i=1}^{m} \xi_i$, penalizes the misclassifications, with $C$ controlling the strength of this penalty.
+\end{itemize}
+This can be seen a a \textbf{Regularized loss minimization}:
+\begin{equation}
+    \min_{\boldsymbol{w} \in X, w_0 \in \mathbb{R}, \boldsymbol{\xi} \in \mathbb{R}^m} \frac{||\boldsymbol{w}||^2}{2} + C \sum_{i=1}^{m} L(y_i, f(\boldsymbol{x}_i))
+\end{equation}
+We need to define a suitable loss function $L(y_i, f(\boldsymbol{x}_i))$ that captures the misclassification error.
+Considering the constraints in (\ref{eq:soft_svm_opt}), we can define the \textbf{hinge loss}.
+\defib{Hinge Loss}{
+    The hinge loss is defined as:
+    \begin{equation}
+        \begin{aligned}
+            L(y_i, f(\boldsymbol{x}_i)) & = |1 - y_i f(\boldsymbol{x}_i)|_+ \\
+             & = |1 - y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0)|_+ \\
+             & = \max(0, 1 - y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0))
+        \end{aligned}
+    \end{equation}
+}
+\subsubsection{Lagrangian of the Soft Margin SVM}
+We can now derive the Lagrangian for the soft margin SVM optimization problem (\ref{eq:soft_svm_opt}).
+The Lagrangian is defined as:
+\begin{equation}\label{eq:soft_svm_lagrangian}
+    L = \frac{1}{2} ||\boldsymbol{w}||^2 + C \sum_{i=1}^{m} \xi_i - \sum_{i=1}^{m} \alpha_i (y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 + \xi_i) - \sum_{i=1}^{m} \beta_i \xi_i
+\end{equation}
+In this case the primal variables are $\boldsymbol{w}$, $w_0$ and $\boldsymbol{\xi}$, while the dual variables are the Lagrange multipliers $\alpha_i \geq 0$ and $\beta_i \geq 0$.
+\\We can now compute the partial derivatives of $L$ with respect to the primal variables and set them to zero.
+\begin{itemize}
+    \item Starting with $\boldsymbol{w}$:
+    \[ \frac{\partial L}{\partial \boldsymbol{w}} = \boldsymbol{w} - \sum_{i=1}^{m} \alpha_i y_i \boldsymbol{x}_i \]
+    Setting this to zero, we get the same expression as in the hard margin case:
+    \[ \boldsymbol{w} = \sum_{i=1}^{m} \alpha_i y_i \boldsymbol{x}_i \]
+    \item For $w_0$:
+    \[ \frac{\partial L}{\partial w_0} = - \sum_{i=1}^{m} \alpha_i y_i \]
+    Setting this to zero, we again get:
+    \[ \sum_{i=1}^{m} \alpha_i y_i = 0 \]
+    \item Finally, for $\xi_i$:
+    \[ \frac{\partial L}{\partial \xi_i} = C - \alpha_i - \beta_i \]
+    Setting this to zero, we get:
+    \[ \alpha_i + \beta_i = C \]
+\end{itemize}
+Substituting these expressions back into the Lagrangian (\ref{eq:soft_svm_lagrangian}), we obtain the dual formulation of the soft margin SVM optimization problem:
+\begin{equation}
+    \begin{aligned}
+        & max_{\alpha \in \mathbb{R}^m } \sum_{i=1}^{m} \alpha_i - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j \\
+        & \text{subject to} \begin{cases}
+            \sum_{i=1}^{m} \alpha_i y_i = 0 \\
+            0 \leq \alpha_i \leq C, \quad \forall i
+        \end{cases}
+    \end{aligned}
+\end{equation}
+\subsubsection{Observations}
+At the saddle point, it must hold that:
+\begin{equation}
+    \begin{cases}
+        \alpha_i(y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 + \xi_i) = 0 \quad \forall i \\
+        \beta_i \xi_i = 0 \quad \forall  i
+    \end{cases}
+\end{equation}
+Thus, \textbf{support vectors} ($\alpha_i > 0$) are examples for which:
+\begin{equation}
+    y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) \leq 1
+\end{equation}
+We can distinguish some cases:
+\begin{itemize}
+    \item If $0 < \alpha_i < C$, then $C - \alpha_i - \beta_i = 0$ and $\beta_i \xi_i = 0$ imply that $\xi_i = 0$ and the point lies exactly on the margin boundary: $y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) = 1$;
+    \item If $\alpha_i = C$, then $\xi_i > 0$ and the point is either inside the margin or misclassified: $y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) < 1$;
+    \item If $\alpha_i = 0$, then $\xi_i = 0$ and the point is correctly classified and outside the margin. It doesn't count
+\end{itemize}
