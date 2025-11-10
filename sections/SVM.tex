@@ -232,3 +232,39 @@ We can distinguish some cases:
     \item If $\alpha_i = C$, then $\xi_i > 0$ and the point is either inside the margin or misclassified: $y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) < 1$;
     \item If $\alpha_i = 0$, then $\xi_i = 0$ and the point is correctly classified and outside the margin. It doesn't count
 \end{itemize}
+\subsection{Large Scale SVM}
+When considering large datasets, the standard SVM training algorithms can become computationally expensive due to the quadratic programming involved.
+To address this, several large-scale SVM training methods have been developed, such as \textbf{stochastic gradient descent (SGD)}.
+\\When using SGD, we can reformulate the SVM optimization problem as:
+\begin{equation}
+    \min_{\boldsymbol{w} \in X} \frac{1}{2} ||\boldsymbol{w}||^2  + \frac{1}{m} \sum_{i=1}^{m} |1 - y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle|_+
+\end{equation}
+Using SGD, we can iteratively update the weight vector $\boldsymbol{w}$ based on the gradient of the loss function computed on a single training example:
+\begin{equation}
+    E(\boldsymbol{w}; \boldsymbol{x}_i, y_i) = \frac{\lambda}{2} ||\boldsymbol{w}||^2 + |1 - y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle|_+
+\end{equation} 
+There is a problem with this approach: the hinge loss is not differentiable at the point where $1 - y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle = 0$.
+To handle this, we can use the concept of \textbf{subgradients}, which generalizes the notion of gradients to non-differentiable functions.
+The gradients then become:
+\begin{equation}
+    \nabla_{\boldsymbol{w}} E(\boldsymbol{w}; \bold{x}_i, y_i) = \lambda \boldsymbol{w} - \mathbb{I}[y_i \langle \boldsymbol{w}, \bold{x}_i \rangle \l 1] y_i \bold{x}_i
+\end{equation}
+where $\mathbb{I}[\cdot]$ is the indicator function which can be written as:
+\[
+\mathbb{I}[y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle \l 1] = \begin{cases}
+1 & \text{if } y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle \l 1 \\
+0 & \text{otherwise}\\
+\end{cases}
+\]
+\subsection{Margin Error Buond}
+The performance of SVMs can be theoretically analyzed using the concept of \textbf{margin error bounds}.
+The probability of misclassification on unseen data is bound from above by:
+\begin{equation}
+    v + \sqrt{\frac{c}{m} \left( \frac{R^2\bigwedge^2 }{\rho^2} \ln ^2 m + \ln(\frac{1}{\delta})\right)} 
+\end{equation}
+Analyzing the equetion, we can see that the \textbf{probability of error} depends on:
+\begin{itemize}
+    \item \textbf{number of margin errors} $v$ on the training set (example inside the margin or misclassified);
+    \item \textbf{number of training examples} $m$ (error depends on $\sqrt{\frac{\ln^2 m}{m}}$);
+    \item \textbf{size of the margin} $\rho$ (error depends on $\frac{1}{\rho^2}$);
+\end{itemize}
