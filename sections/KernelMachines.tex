@@ -33,10 +33,11 @@ An example of feature map is the following:
     \begin{equation} \label{eq:non_homogeneous_polynomial_feature_map}
         \phi\!\left(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}\right) =
         \begin{pmatrix}
+            x_1 \\
+            x_2 \\
             x_1^2 \\
             x_1 x_2 \\
-            x_2^2 \\
-            1
+            x_2^2
         \end{pmatrix}
     \end{equation}
     \end{itemize}
@@ -145,7 +146,71 @@ A sufficient and necessary condition for a kernel $K$ to be valid is that the co
 There are several ways to check if a kernel is valid, e.g.:
 \begin{itemize}
     \item Prove its positive definiteness;
-    \item Find out a corresponding feature map $\phi$.
+    \item Find out a corresponding feature map $\phi$ (as we did before);
     \item Use kernel combination properties (e.g. sum, product yield valid kernels).
 \end{itemize}
-
+\subsection{Basic Kernels}
+Basic kernels can be useful as building blocks for more complex kernels. Some common examples include:
+\begin{itemize}
+    \item \textbf{Linear Kernel}:
+    \begin{equation}
+        K(\boldsymbol{x}, \boldsymbol{x}') = \boldsymbol{x}^T \boldsymbol{x}'
+    \end{equation}
+    \item \textbf{Polynomial Kernel}:
+    \begin{equation}
+        K_{d,c}(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + c)^d
+    \end{equation}
+    \item \textbf{Gaussian Kernel}:
+    \begin{equation}
+        k_\sigma(\boldsymbol{x}, \boldsymbol{x}') = \exp\left(-\frac{\|\boldsymbol{x} - \boldsymbol{x}'\|^2}{2\sigma^2}\right)
+        = \exp\left(-\frac{\boldsymbol{x}^T \boldsymbol{x} + \boldsymbol{x}'^T \boldsymbol{x}' - 2 \boldsymbol{x}^T \boldsymbol{x}'}{2\sigma^2}\right) 
+    \end{equation}
+    The kernel depends on a parameter $\sigma$ that controls the width of the Gaussian function. The smaller the $\sigma$, the more localized the influence of each training example.
+\end{itemize}
+The Gaussian kernel is an example of \textbf{universal kernel}, which means that it can approximate any continuous function on a compact domain given enough data.
+\subsection{Kernel combinations}
+Basic kernels can be \textbf{combined} using various operations to create more complex kernels from simpler ones. 
+Correctly using combination operators guarantees that the resulting kernel is still positive definite.
+\\We will now analyze some common kernel combination methods.
+\subsubsection{Kernel Sum}
+The sum of two kernels of two kernels corresponds to the concatenation of their feature spaces:
+\begin{equation}
+    K(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') + K_2(\boldsymbol{x}, \boldsymbol{x}')
+\end{equation}
+Applying the definition of kernel:
+\[
+= \phi_1(\boldsymbol{x})^T \phi_1(\boldsymbol{x}') + \phi_2(\boldsymbol{x})^T \phi_2(\boldsymbol{x}')
+\]
+\[
+= (\phi_1(\boldsymbol{x}) + \phi_2(\boldsymbol{x}))^T (\phi_1(\boldsymbol{x}') + \phi_2(\boldsymbol{x}'))
+\]
+\subsubsection{Kernel Product}
+The product of two kernels corresponds to the \textbf{cartesian product} of their features:
+\begin{equation}
+    (k_1 \times k_2)(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') K_2(\boldsymbol{x}, \boldsymbol{x}')
+\end{equation}
+\[
+= \sum_{i = 1}^n \phi_{1i}(\boldsymbol{x})\phi_{1i}(\boldsymbol{x}') \sum_{j = 1}^m \phi_{2j}(\boldsymbol{x})\phi_{2j}(\boldsymbol{x}')
+\]
+\[
+= \sum_{i = 1}^n \sum_{j = 1}^m (\phi_{1i}(\boldsymbol{x}) \phi_{2j}(\boldsymbol{x})) (\phi_{1i}(\boldsymbol{x}') \phi_{2j}(\boldsymbol{x}'))
+\]
+\[
+= \sum_{k = 1}^{nm} \psi_{12k}(\boldsymbol{x}) \psi_{12k}(\boldsymbol{x}') = \psi_{12}(\boldsymbol{x})^T \psi_{12}(\boldsymbol{x}')
+\]
+where $\psi_{12}(\boldsymbol{x}) = \phi_{1}(\boldsymbol{x}) \times \phi_{2}(\boldsymbol{x})$ is the cartesian product of the two feature maps.
+The product can also be between kernel in different spaces.
+\subsubsection{Linear combination of kernels}
+A kernel can be rescaled by a positive constant:
+\[ k_{\beta}(\boldsymbol{x}, \boldsymbol{x}') = \beta k(\boldsymbol{x}, \boldsymbol{x}')\]
+We can define a linear combination of kernels as:
+\[k_{sum}(\boldsymbol{x}, \boldsymbol{x}') = \sum_{k=1}^K \beta_k k_k(\boldsymbol{x}, \boldsymbol{x}') \]
+Since understanding what kernel works best for a given problem can be challenging, combining multiple kernels allows us to leverage the strengths of each individual kernel.
+With \textbf{kernel learning} the weights $\beta_k$ of the combination can be learned from data, allowing the model to adaptively combine multiple kernels.
+\subsubsection{Kernel normalization}
+Kernel values can be influenced by the dimension of objects. I.E., in text classification, longer documents tend to have higher dot products simply because they contain more words.
+\\To mitigate this effect, we can normalize the kernel:
+\begin{equation}
+    \hat{K}(\boldsymbol{x}, \boldsymbol{x}') = \frac{K(\boldsymbol{x}, \boldsymbol{x}')}{\sqrt{K(\boldsymbol{x}, \boldsymbol{x}) K(\boldsymbol{x}', \boldsymbol{x}')}}
+\end{equation}
+This is a \textbf{cosine normalization}, which takes into account the angle between the feature vectors rather than their magnitudes.
