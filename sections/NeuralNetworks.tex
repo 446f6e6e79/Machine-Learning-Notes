@@ -164,3 +164,57 @@ This can be interpreted as a switch function between two log-likelihoods, depend
 we convert the maximization problem into a minimization one (from a likelihood to a loss).
 
 \paragraph{Multi-class Classification:}
+For multi-class classification tasks, the cross-entropy loss is used. It is defined as:
+\[ L(y, \boldsymbol{f}(\boldsymbol{x})) = - \log f_y(\boldsymbol{x}) \]
+Where $f_y(\boldsymbol{x})$ is the predicted probability for the true class $y$.
+
+\paragraph{Regression:}
+For regression tasks, the mean squared error (MSE) loss is commonly used. It is defined as:
+\[ L(y, f(\boldsymbol{x})) = (y - f(\boldsymbol{x}))^2 \]
+
+\subsubsection{Stochastic Gradient Descent}
+In order to train MLPs, we use Stochastic Gradient Descent (SGD) to minimize the chosen loss function. 
+As example, chossing mean squared error (MSE) as loss function, we would have:
+\[ E(W) = \frac{1}{2} (y - f(\boldsymbol{x}))^2 \]
+Where $W$ represents all the weights in the network.
+The relative gradient update is given by:
+\[ w_{lj} = w_{lj} - \eta \frac{\partial E(W)}{\partial w_{lj}} \]
+Where $\eta$ is the learning rate, $w_{lj}$ is the weight connecting neuron $j$ (source node) in the previous layer, to neuron $l$ (target node) in the current layer.
+To compute the partial derivative can be quite complex when the weights are really far from the output layer, where we actually compute the loss.
+\\To solve this problem, we use the Backpropagation algorithm, which efficiently computes the gradients using the chain rule of differentiation.
+\subsubsection{Backpropagation}
+The idea behind backpropagation is to compute the gradients layer by layer, starting from the output layer and moving backwards to the input layer.
+Since each neuron's output depends on the outputs of the previous layer, which in turn depend on their own weights, we can apply the chain rule to compute the gradients.
+We can define the derivative as follows:
+\[
+\frac{\partial E(W)}{\partial w_{lj}}
+= \underbrace{\frac{\partial E(W)}{\partial a_l}}_{\delta_l}
+   \frac{\partial a_l}{\partial w_{lj}}
+= \delta_l \, \phi_j
+\]
+where:
+\begin{itemize}
+    \item $a_l$ is the weighted sum of inputs to neuron $l$. It is passed to the activation function to produce the output;
+    \item $\phi_j$ is the output of neuron $j$ in the previous layer. It is one of the inputs of the node $l$;
+    \item $\frac{\partial a_l}{\partial w_{lj}}$ is the input $\phi_j$, since $a_l = \sum_{i} w_{li} \phi_i$.
+    \item $\delta_l$ represents the error term for neuron $l$. Its computation depends on whether neuron $l$ is in the output layer or in a hidden layer.
+\end{itemize}
+The gradient of a weight $w_{lj}$ is given by the product of the error term  
+\paragraph{Output layers:}
+Since neuron $l$ is in the output layer, we can directly compute the derivative of the loss function with respect to the output of the network.
+Considering the MSE loss function, we have:
+\[\delta_{o} = \frac{\partial E(W)}{\partial a_{o}} = \frac{\partial \frac{1}{2} (y - f(\boldsymbol{x}))^2}{\partial a_{o}} \]
+Since we do not apply a non-linear activation function in the output layer for regression tasks, we have that $f(\boldsymbol{x}) = a_{o}$, so:
+\[ = \frac{\partial \frac{1}{2} (y - a_0)^2}{\partial a_{o}} = -(y - a_{o}) \]
+\paragraph{Hidden layers:}
+Here the node $l$ is in a hidden layer. Since we compute $\delta_l$ using the chain rule, we need to consider the contributions from the neurons in the next layer.
+\[\delta_{l} = \frac{\partial E(W)}{\partial a_{l}} = \sum_{k \in \text{children}(l)} \frac{\partial E(W)}{\partial a_{k}} \frac{\partial a_{k}}{\partial a_{l}} \]
+Where $k$ are the neurons in the next layer connected to neuron $l$. Intuitively, we are computing the contribution of neuron $l$ to the final error, by considering all the paths from $l$ to the output layer.
+\\The term $\frac{\partial E(W)}{\partial a_{k}}$ is simply $\delta_k$, already computed in the next layer. We derive that:
+\[\delta_{l} = \sum_{k \in \text{children}(l)} \delta_k \frac{\partial a_{k}}{\partial a_{l}} \]
+Remembering that $a_k = \sum_{m} w_{km} \phi_m$, where $\phi_m$ is the output of neuron $m$ in the previous layer, we have that:
+\[\frac{\partial a_{k}}{\partial a_{l}} = \frac{\partial a_{k}}{\partial \phi_{l}} \frac{\partial \phi_{l}}{\partial a_{l}}\]
+The first term is simply the weight $w_{kl}$. The second term is the derivative of the activation function $\sigma(\cdot)$ used in neuron $l$.
+Putting everything together, we have:
+\[\delta_{l} = \sum_{k \in \text{children}(l)} \delta_k w_{kl} \sigma(a_{l})(1 - \sigma(a_{l})) \]
+Where we used the derivative of the sigmoid activation function $(\frac{\partial \sigma(x)}{\partial x} = \sigma(x)(1 - \sigma(x)))$.
