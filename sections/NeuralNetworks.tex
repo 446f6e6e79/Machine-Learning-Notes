@@ -218,3 +218,17 @@ The first term is simply the weight $w_{kl}$. The second term is the derivative 
 Putting everything together, we have:
 \[\delta_{l} = \sum_{k \in \text{children}(l)} \delta_k w_{kl} \sigma(a_{l})(1 - \sigma(a_{l})) \]
 Where we used the derivative of the sigmoid activation function $(\frac{\partial \sigma(x)}{\partial x} = \sigma(x)(1 - \sigma(x)))$.
+
+\subsection{Modular Structure of Neural Networks}
+Neural networks can be seen as a combination of different modules, each with a specific function. Each of these modules has an interface to communicate with other modules.
+Each layer $j$ takes as input  $\phi_{j-1}$ and it's weights $W_j$, and produces as output $\phi_{j} = F(\phi_{j-1}, W_j)$. Once we get to the output layer, we can compute the loss function and the gradients using backpropagation.
+\[\frac{\partial E(W)}{\partial W_j} = \frac{\partial E(W)}{\partial \partial \phi_j} \frac{\partial \phi_j}{\partial W_j}  = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial W_j}\]
+Each layer computes:
+\[ \frac{\partial E(W)}{\partial \phi_{j-1}} = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial \phi_j}{\partial \phi_{j-1}} = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial \phi_{j-1}} \]
+Each module must be able to compute:
+\begin{itemize}
+    \item the derivative of its output with respect to its weights:
+    \[ \frac{\partial \phi_j}{\partial W_j} = \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial W_j} \]
+    \item the derivative of its output with respect to its input:
+    \[ \frac{\partial \phi_j}{\partial \phi_{j-1}} = \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial \phi_{j-1}} \]
+\end{itemize}
