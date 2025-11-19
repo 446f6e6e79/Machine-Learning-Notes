@@ -232,3 +232,126 @@ Each module must be able to compute:
     \item the derivative of its output with respect to its input:
     \[ \frac{\partial \phi_j}{\partial \phi_{j-1}} = \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial \phi_{j-1}} \]
 \end{itemize}
+
+\subsection{Remarks on Training Neural Networks}
+The error surface of neural networks is non-convex. This implies that there can be multiple local minima and backpropagation is only guaranteed to find a local minimum.
+There are many techniques to improve the training of neural networks, that we will cover later in this section.
+\subsubsection{Stopping Criteria}
+Overtraining the network can increase the possibility of overfitting the training data. When the network is initiallized, the weights are set to small random values. In this phase, we have a very simple surface, which is easy to optimize.
+\\As the weights are updated, the surface becomes more complex, and the risk of overfitting increases.
+To avoid this, a separate validation set is used to monitor the performance of the network during training. When the performance on the validation set starts to degrade, training is stopped.
+\subsubsection{Vanishing gradients}
+A common problem when training deep neural networks is the vanishing gradient problem. During backpropagation, at each step the 
+gradient is multiplied by the derivative of the activation function (sigmoid in our case). 
+Since the saturated regions of the sigmoid have very small derivatives, the gradients can become very small as they are propagated back through the layers.
+A few simple suggestions to mitigate this problem are:
+\begin{itemize}
+    \item \textbf{Weight initialization:} initialize the weights to small random values;
+    \item \textbf{Normalization:} normalize the input data to have zero mean and unit variance ($X' = \frac{X - \mu_x}{\sigma_x}$)
+\end{itemize}
+Other tricks of the trade will be covered in the next paragraph.
+\paragraph{Activations functions:}
+Since the main problem generating vanishing gradients is the use of the sigmoid activation function, a new activation function has been proposed: the ReLU (Rectified Linear Unit).
+It is defined as:
+\[ f(x) = \max(0, \boldsymbol{w}^T \boldsymbol{x}) \]
+Where $\boldsymbol{w}^T \boldsymbol{x}$ represents the weighted sum of inputs to the neuron.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    axis lines = middle,
+    xlabel = {$z = \mathbf{w}^\top \mathbf{x}$},
+    ylabel = {$f(z)$},
+    ymin = -1, ymax = 6,
+    samples = 200,
+    domain = -4:4,
+    width=10cm,
+    height=6cm,
+    thick,
+]
+\addplot[blue] {(x > 0) * x};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+The ReLU activation function does not saturate for positive values, and its derivative is constant (1) in that region. This helps to mitigate the vanishing gradient problem.
+
+\paragraph{Regularization:}
+Two common regularization techniques used in training neural networks are:
+\begin{itemize}
+  \item \textbf{2-norm regularization:} adding a penalty term to the loss function proportional to the euclidean norm of the weights.
+  \[ J(W) = E(W) + \lambda ||W||_2 \]
+  In essence, this encourages less relevant weights to be small, reducing overfitting.
+  \item \textbf{1-norm regularization:} adding a penalty term to the loss function proportional to the absolute value of the weights.
+  This encourages less relevant weights to be exactly zero.
+  \[ J(W) = E(W) + \lambda |W| \]
+\end{itemize}
+
+\paragraph{Initialization:}
+Random initialization of weights is crucial for braking symmetry between neurons. If all weights are initialized to the same value, all neurons in a layer will learn the same features.
+A common approach is to initialize weights randomly, from a uniform distribution in the range:
+\[ W_{ij} \sim U\left(-\frac{\sqrt{6}}{\sqrt{n + m}}, \frac{\sqrt{6}}{\sqrt{n + m}}\right) \]
+Where $n$ is the number of input units and $m$ is the number of output units.
+
+\paragraph{Gradient descent:}
+\begin{itemize}
+  \item \textbf{Batch Gradient Descent:} updates weights after seeing the entire training set. This can be computationally expensive for large datasets;
+  \item \textbf{Stochastic Gradient Descent:} updates weights after seeing each training example. The final objective function is noisy and may be different from the true objective;
+  \item \textbf{Mini-batch Gradient Descent:} updates weights after seeing a small batch of training examples. The size of the batch is usually associated with the hardware capabilities (e.g., GPU memory). 
+\end{itemize}
+
+\paragraph{Momentum:}
+Momentum is a technique used to accelerate gradient descent and escape local minima. The idea is to update the weights using
+a combination of the current gradient and the previous updates, similar to a ball rolling down a hill.
+The update rule with momentum is given by:
+\[v_{ji}^\text{(new)} = \alpha v_{ji}^\text{(old)} - \eta \frac{\partial E(W)}{\partial w_{ji}}\]
+\[w_{ji}^\text{(new)} = w_{ji}^\text{(old)} + v_{ji}^\text{(new)}\]
+Where:
+\begin{itemize}
+    \item $\alpha$ is the momentum coefficient. $0 \le \alpha < 1$
+    \item $v_{ji}$ is the velocity term for weight $w_{ji}$;
+\end{itemize}
+
+\paragraph{Adaptive Learning Rates:}
+Adaptive learning rate methods adjust the learning rate for each weight individually. Some popular methods include:
+\begin{itemize}
+    \item \textbf{Decreasing learning rate:} gradually decrease the learning rate over time.
+    \[\eta_t = \begin{cases}
+    (1 - \frac{t}{\tau})\eta_0 + \frac{t}{\tau} \eta_t  & \text{if } t \le \tau \\
+    \eta_{\text{min}} & \text{if } t > \tau
+    \end{cases}
+    \]
+    The idea is to start with a high learning rate to explore the error surface, and then decrease to avoid oscillations around minima.
+    The learning rate is decreased linearly from $\eta_0$ to $\eta_{\text{min}}$ over $\tau$ iterations. After that, it remains constant at $\eta_{\text{min}}$;
+    \item \textbf{AdaGrad:} adapts the learning rate for each weight based on the historical gradients.
+    \[ r_{ji}^\text{(new)} = r_{ji}^\text{(old)} + \left(\frac{\partial E(W)}{\partial w_{ji}}\right)^2 \]
+    \[ w_{ji}^\text{(new)} = w_{ji}^\text{(old)} - \frac{\eta}{\sqrt{r_{ji}^\text{(new)}}} \frac{\partial E(W)}{\partial w_{ji}} \]
+    Where $r_{ji}$ accumulates the squared gradients for weight $w_{ji}$. This results in smaller updates for weights with large gradients (steep directions) and larger updates for weights with small gradients (flat directions);
+    This has a drawback: the accumulated squared gradients can grow indefinitely.
+    \item \textbf{RMSProp:} addresses the drawback of AdaGrad by using an exponentially decaying average of squared gradients.
+    \[ r_{ji}^\text{(new)} = \rho r_{ji}^\text{(old)} + (1 - \rho) \left(\frac{\partial E(W)}{\partial w_{ji}}\right)^2 \]
+    \[ w_{ji}^\text{(new)} = w_{ji}^\text{(old)} - \frac{\eta}{\sqrt{r_{ji}^\text{(new)} + \epsilon}} \frac{\partial E(W)}{\partial w_{ji}} \]
+    Where $\rho$ allows to exponentially decay the influence of past gradients.
+\end{itemize}
+\paragraph{Batch Normalization:}
+To mitigate the problem of internal covariate shift, batch normalization is used. It normalizes the input of each activation function on its mini-batch.
+\[ \hat{x_i} = \frac{x_i - \mu_B}{\sigma_B}\]
+Where $\mu_B$ and $\sigma_B$ are the mean and standard deviation of the mini-batch $B$, $x$ is the activation of an arbitrary layer.
+This normalization helps to stabilize the learning process and allows for higher learning rates.
+\subsection{Popular architectures}
+Different architectures of neural networks have been proposed to tackle specific problems. In this section we will briefly describe some of the most popular ones.
+\subsubsection*{Autoencoders}
+Autoencoders are a type of neural network used for unsupervised learning (learning with no labelled data). They consist of an
+encoder, that maps the input data to a lower-dimensional latent space, and a decoder, that reconstructs the input data from the latent representation.
+This is useful for dimensionality reduction, feature learning, and data compression.
+\subsubsection*{Convolutional Neural Networks (CNNs)}
+Convolutional Neural Networks (CNNs) are specialized neural networks designed for processing grid-like data, such as images. 
+They use convolutional filters to extract local features from the input data. Pooling layers are used to compose higher-level features from lower-level ones.
+After several convolutional and pooling layers, fully connected layers are used to perform the final classification.
+\subsubsection*{Generativr Adversarial Networks (GANs)}
+Generative Adversarial Networks (GANs) learns to generate items from random noise. 
+They consist of two neural networks: a generator, that generates new data, and a discriminator, that tries to distinguish between real and generated data.
+The two networks are trained simultaneously, with no supervision needed.
+\subsubsection*{Transformers}
+Use attention mechanisms to learn input words encodings, that depends on the context of the sentence.
+They can also learn output words encodings, that depends on the context of the already generated words and on the input sentence.
+\subsubsection*{Graph Neural Networks (GNNs)}
+Allow to learn from graph-structured data. Allow to propagate informations from a node to its neighbors, learning a representation that takes into account the graph structure.
