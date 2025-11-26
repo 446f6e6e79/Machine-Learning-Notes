@@ -31,7 +31,7 @@ To compute the distance between points and cluster means, we have to choose a di
     \item Cosine similarity:
     \[d(\boldsymbol{x}, \boldsymbol{x}') = 1 - \frac{\boldsymbol{x}^T  \boldsymbol{x}'}{||\boldsymbol{x}|| \, ||\boldsymbol{x}'||}\]
 \end{itemize}
-\subsubsection{Quality of Clustering}
+\subsection{Quality of Clustering}
 Since we are working in an unsupervised setting, we don't have labels to evaluate the quality of our clustering. However, we can define the following metrics:
 \defib{Sum-of-Squared error criterion}
 {
@@ -45,3 +45,102 @@ Since we are working in an unsupervised setting, we don't have labels to evaluat
     \end{itemize}
     It measures the squared error incurred in representing each point by its cluster centroid.
 }
+\subsection{Gaussian Mixture Models (GMM)}
+The idea behind Gaussian Mixture Models is to model the data as a mixture of several Gaussian distributions. 
+Each cluster is represented by a Gaussian distribution with its own parameters (mean and covariance).
+It assumes that the number of clusters $k$ is given and that each data point is generated from one of the $k$ Gaussian distributions.
+\subsubsection*{Parameter Estimation}
+Maximum Likelihood Estimation (MLE) cannot be used directly, since the cluster assignments are unknown. 
+Instead, we can apply an iterative approach called the \textbf{Expectation-Maximization (EM)}.
+
+\subsubsection*{Expectation-Maximization (EM) Algorithm}
+The EM algorithm consists of two main steps:
+\begin{enumerate}
+    \item \textbf{E-step (Expectation step)}: Compute the expected cluster assignments given the current parameters;
+    \item \textbf{M-step (Maximization step)}: Update the parameters of the Gaussians given the expected cluster assignments;
+    \item Repeat until convergence.
+\end{enumerate}
+\subsubsection*{Example: estimating the mean of k univariate Gaussians}
+Here, we assume to have a dataset of $x_1, x_2, \ldots, x_n$ examples. For each example $x_i$, the cluster assignment is modelled as
+$z_{i1}, z_{i2}, \ldots, z_{ik}$ binary variables, in a one-hot encoding fashion ($z_{ij} = 1$ if $x_i$ belongs to cluster $j$, and $0$ otherwise).
+\\Parameters to estimate are the means of each Gaussian: $\mu_1, \mu_2, \ldots, \mu_k$, assuming that the variances are known and fixed.
+\\The algorithm works as follows:
+\begin{enumerate}
+    \item \textbf{Initialization}: randomly initialize the means $h = \langle\mu_1, \mu_2, \ldots, \mu_k \rangle$;
+    \item \textbf{Iterate until convergence}: convergence is checked by measuring the change in Maximum Log-Likelihood:
+    \begin{itemize}
+        \item \textbf{E-step}: compute the expected value $E[z_{ij}]$ of each latent variable, given the current hypotesis $h$:
+        \[ E[z_{ij}] = \frac{p(x_i | \mu_j)}{\sum_{l=1}^{k} p(x_i | \mu_l)} \]
+        We are basically computing the probability that $x_i$ belongs to cluster $j$ and normalizing it over all clusters. This way, summing
+        over all clusters gives $1$.
+        \\Since we are working with Gaussians, we use the Gaussian probability density function to compute $p(x_i | \mu_j)$.
+        \[ = \frac{\exp - \frac{1}{2\sigma^2}(x_i - \mu_j)^2}{\sum_{l=1}^{k}\exp - \frac{1}{2\sigma^2}(x_i - \mu_l)^2} \]
+        \item \textbf{M-step}: calculate a new hypotesis $h'$ assuming values of latent variables are their expected values.
+        The maximum likelihood estimate of the mean $\mu_j$ is given by the weighted sample mean, where each istance is weighted by its probability of
+        belonging to cluster $j$:
+        \[ \mu_j' = \frac{\sum_{i=1}^{n} E[z_{ij}] x_i}{\sum_{i=1}^{n} E[z_{ij}]} \]
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Choose the number of clusters k}
+Choosing the right number of clusters $k$ is a crucial step in clustering. Increasing the number of clusters will always
+improve the fit to the data, but it may lead to overfitting. We will now introduce different methods to choose $k$.
+\subsubsection{Elbow Method}
+The Elbow Method tries to trade-off the quality of the clustering with quantity. The number of clusters $k$ should stop 
+increasing when the advantage of adding another cluster is limited.
+The approach is composed of the following steps:
+\begin{itemize}
+    \item Run the clustering algorithm for increasing values of $k$;
+    \item For each $k$, compute the sum-of-squared error criterion $E(k)$;
+    \item Plot $E(k)$ against $k$;
+    \item Choose $k$ at the "elbow" point, where the decrease in $E(k)$ starts to slow down.
+\end{itemize}
+This method is really intuitive, but can be ambiguous, since the elbow point is not always clear.
+\subsubsection{Silhouette Method}
+Increasing the number of clusters $k$ will always decrease the sum-of-squared error criterion, but it will also increase the 
+similarity between different clusters. The Silhouette Method tries to balance these two aspects.
+The silhouette score for a single point $x_i$ is defined as:
+\begin{itemize}
+    \item $a(i)$: average distance between $x_i$ and all other points in the same cluster $C$:
+    \[ a(i) = \frac{1}{|C|} \sum_{j \in C} d(i, j) \]
+    \item $b(i)$: minimum average distance between $x_i$ and all points in any other cluster $C'$:
+    \[ b(i) = \min_{C' \neq C} \frac{1}{|C'|} d(i, C') \]
+    \item The silhouette score $s(i)$ is then defined as:
+    \[ s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))} \]
+\end{itemize}
+To choose the number of clusters $k$, we compute the average silhouette score over all points for different values of $k$. As before,
+we plot the average silhouette score against $k$ and choose the value of $k$ that maximizes the score.
+\subsubsection{Hierarchical Clustering}
+Hierarchical Clustering is an alternative approach, that assumes that the data is organized in a hierarchy of clusters.
+This structure can be built from examples in two ways:
+\begin{itemize}
+    \item \textbf{Top-down approach}: start with all data points in a single cluster and recursively split clusters into smaller clusters;
+    \item \textbf{Bottom-up approach}: start with each data point in its own cluster and recursively merge clusters into larger clusters.
+\end{itemize}
+The algorithm for the Bottom-up approach is defined as follows:
+\begin{itemize}
+    \item Initialize:
+    \begin{itemize}
+        \item Set the target number of clusters $k$;
+        \item Set the initial number $\hat{k}$ of clusters to $n$;
+        \item Initialize clusters as individual data points: $D_i = \{x_i\}, \forall i \in [1, n]$
+    \end{itemize}
+    \item Repeat until the number of clusters $\hat{k}$ is equal to $k$:
+    \begin{itemize}
+        \item Find the two closest clusters $D_i$ and $D_j$;
+        \item Merge the clusters: $D_i \leftarrow D_i \cup D_j$;
+        \item Update the number of clusters: $\hat{k} \leftarrow \hat{k} - 1$;
+    \end{itemize}
+\end{itemize}
+The similarity between clusters can be computed in different ways:
+\begin{itemize}
+    \item \textbf{Nearest neighbor}: distance between the two closest points in the clusters:
+    \[ d_{min}(D_i, D_j) = \min_{\boldsymbol{x} \in D_i, \boldsymbol{x'} \in D_j} ||\boldsymbol{x} - \boldsymbol{x'}|| \]
+    \item \textbf{Farthest neighbor}: distance between the two farthest points in the clusters:
+    \[ d_{max}(D_i, D_j) = \max_{\boldsymbol{x} \in D_i, \boldsymbol{x'} \in D_j} ||\bold{x} - \boldsymbol{x'}|| \]
+    \item \textbf{Average linkage}: average distance between all points in the clusters:
+    \[ d_{avg}(D_i, D_j) = \frac{1}{|D_i| |D_j|} \sum_{\boldsymbol{x} \in D_i} \sum_{\boldsymbol{x'} \in D_j} ||\boldsymbol{x} - \boldsymbol{x'}|| \]
+\end{itemize}
+The first two methods are sensitive to outliers, while the average linkage is more robust. All result complex to compute. A more efficient method is the \textbf{centroid method}, which computes the distance between the centroids of the clusters:
+\[ d_{centroid}(D_i, D_j) = ||\mu_i - \mu_j|| \]
+where $\mu_i$ and $\mu_j$ are the centroids of clusters $D_i$ and $D_j$ respectively.
