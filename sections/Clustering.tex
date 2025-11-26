@@ -1,0 +1,47 @@
+\section{Unsupervised Learning - Clustering}
+What we have seen so far are all examples of \textbf{supervised learning}, which required a labeled dataset to learn from. This process
+is usually extremely expensive and it could happen that we don't have access to labeled data at all. 
+\\In such cases, we can resort to \textbf{unsupervised learning} techniques, which can be used to group data points into \textbf{clusters}. 
+
+\subsection{K-Means Clustering}
+One of the most popular clustering algorithms is \textbf{K-Means Clustering}. The setting is the following:
+\begin{itemize}
+    \item We have a dataset of $n$ points $\{x_1, x_2, \ldots, x_n\}$ in $\mathbb{R}^d$.
+    \item We assume that examples should be grouped into $k$ clusters, we will see later how to choose $k$;
+    \item Each cluster $i$ is represented by its \textbf{centroid} (mean) $\mu_i$;
+\end{itemize}
+\subsubsection*{Algorithm}
+The K-Means algorithm works as follows:
+\begin{enumerate}
+    \item Initialize $k$ cluster means $\mu_1, \mu_2, \ldots, \mu_k$ (randomly or using some heuristic);
+    \item Repeat until convergence:
+    \begin{itemize}
+        \item \textbf{Assignment step}: Assign each point $x_j$ to the nearest cluster mean;
+        \item \textbf{Update step}: Update cluster means according to the assigned points;
+    \end{itemize}
+\end{enumerate}
+The algorithm converges when the assignments no longer change or the cluster means stabilize. 
+\subsubsection*{Distance Metrics}
+To compute the distance between points and cluster means, we have to choose a distance metric, the most common choices are:
+\begin{itemize}
+    \item Euclidean distance in $\mathbb{R}^d$;
+    \[d(\boldsymbol{x}, \boldsymbol{x}') = \sqrt{\sum_{i=1}^d (x_i - x_i')^2}\]
+    \item Manhattan distance:
+    \[d(\boldsymbol{x}, \boldsymbol{x}') = \sum_{i=1}^d |x_i - x_i'|\]
+    \item Cosine similarity:
+    \[d(\boldsymbol{x}, \boldsymbol{x}') = 1 - \frac{\boldsymbol{x}^T  \boldsymbol{x}'}{||\boldsymbol{x}|| \, ||\boldsymbol{x}'||}\]
+\end{itemize}
+\subsubsection{Quality of Clustering}
+Since we are working in an unsupervised setting, we don't have labels to evaluate the quality of our clustering. However, we can define the following metrics:
+\defib{Sum-of-Squared error criterion}
+{
+    The sum-of-squared error criterion is defined as:
+    \begin{itemize}
+        \item let $n_i$ be the number of points assigned to cluster $i$ ($D_i$);
+        \item let $\mu_i$ be the centroid of cluster $i$. It can be computed as:
+        \[\mu_i = \frac{1}{n_i} \sum_{\boldsymbol{x} \in D_i} \boldsymbol{x}\]
+        \item the sum-of-squared error criterion is defined as:
+        \[ E = \sum_{i=1}^k \sum_{\boldsymbol{x} \in D_i} ||\boldsymbol{x} - \mu_i||^2 \]
+    \end{itemize}
+    It measures the squared error incurred in representing each point by its cluster centroid.
+}
