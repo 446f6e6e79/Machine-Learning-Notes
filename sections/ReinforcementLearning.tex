@@ -53,10 +53,15 @@ An optimal policy $\pi^*$ is a policy that maximizes the expected utility. In ot
     This is the expected utility of the environment history, starting from state $s$ and following policy $\pi$.
 }
 We can define the \textbf{true utility} of a state $s$, under the optimal policy $\pi^*$, as:
-\[ U^*(s) = U^{\pi^*}(s) \]
+\begin{equation}
+    \label{trueutility}
+    U^*(s) = U^{\pi^*}(s)
+\end{equation}
 Given the true utility of each state, we can easily derive the optimal policy by choosing the action that maximizes the expected utility:
 \label{optpolicy}
-\[\pi^*(s) = \arg\max_{a \in A} \sum_{s' \in S} P(s'|s,a) U(s') \]
+\begin{equation}
+    \pi^*(s) = \arg\max_{a \in A} \sum_{s' \in S} P(s'|s,a) U^*(s')
+\end{equation}
 This definition creates a circular dependency between the optimal policy and the true utility, which can be resolved using the Bellman equations.
 
 \subsubsection{Bellman Equations}
@@ -66,7 +71,7 @@ This equation states that the utility of a state $s$ is equal to the immediate r
 We can define a system of Bellman equations, one for each state in the MDP. Solving this system will yield the true utilities for all states, which can then be used to derive the optimal policy.
 Directly solving this system can be computationally expensive, since they are non-linear equations. Instead, we can use iterative methods such as value iteration or policy iteration to approximate the solution.
 
-\subsubsection{Value Iteration }
+\subsubsection{Value Iteration}
 Value iteration, also known as Utility Iteration, works by initializing the utility of all states to arbitrary values (for example zero) and then repeatedly updating the utilities using the Bellman equation until convergence.
 \begin{algorithm}[H]
     \caption{Value Iteration}
@@ -114,12 +119,18 @@ Value iteration and policy iteration both assume that the agent has complete kno
 In most real-world scenarios, the agent does not have access to the full transition model or reward function, but it aims to learn them through interaction with the environment.
 \\There are two main approaches to deal with this partial knowledge:
 \begin{itemize}
-    \item \textbf{Policy Evaluation}: the policy is given, environment is learned through experience;
-    \item \textbf{Policy Improvement}: both the policy and the environment are learned through experience.
+    \item \textbf{Policy Evaluation}: the policy is given, environment is learned through experience (passive agent). The environment simply learns the transition model while following a fixed policy.
+    \item \textbf{Policy Improvement}: both the policy and the environment are learned through experience (active agent). 
 \end{itemize}
-\subsubsection{Adaptive Dynamic Programming (ADP)}
-In ADP, the agent maintains counts of visited state and states, given action taken and previous state. These counts are used to do maximum likelihood estimation of the transition model.
-\begin{algorithm}
+\subsubsection{Policy Evaluation}
+\label{policyevaluation}
+\subsubsection*{Adaptive Dynamic Programming (ADP)}
+In ADP, the agent maintains counts of useful transitions to estimate the transition model:
+\begin{itemize}
+    \item $N(s,a)$: number of times action $a$ has been taken in state $s$;
+    \item $N(s'| s,a)$: number of times action $a$ has led to state $s'$ from state $s$.
+\end{itemize}
+\begin{algorithm}[H]
     \caption{Adaptive Dynamic Programming}
     \begin{algorithmic}
         \Repeat
@@ -132,31 +143,33 @@ In ADP, the agent maintains counts of visited state and states, given action tak
                 \[
                     N(s,a) \leftarrow N(s,a) + 1
                 \]
-                Where $N(s,a)$ is the number of times action $a$ has been taken in state $s$.
                 \[
                     N(s'| s,a) \leftarrow N(s'| s,a) + 1
                 \]
-                Where $N(s'| s,a)$ is the number of times action $a$ has led to state $s'$ from state $s$.
                 \State update transition model:
                 \[
                     P(s''|s,a) = \frac{N(s''| s,a)}{N(s,a)} \;\; \forall s'', s \in S, a \in A
                 \]
-                This is the maximum likelihood estimate of the transition probabilities.
                 \State update utilities using policy evaluation
                 \State $U \leftarrow \text{PolicyEvaluation}(\pi,U, p, R, \gamma)$
             \Until{$s$ is terminal}
         \Until{convergence}
     \end{algorithmic}
 \end{algorithm}
-The algoritm performs maximum likelihood estimation of the transition model based on observed transitions. It then updates the utilities using standard policy Evaluation.
+\defib{Remark:}{
+    the outer loop is needed to ensure any significant results. Each iteration of the outer loop is called an \textbf{Episode}.
+}
+The algorithm performs maximum likelihood estimation of the transition model based on observed counts. 
+It then updates the utilities of each state, based on the current learned transition model, using standard policy Evaluation.
 This approach is really expensive, since it requires computing the policy evaluation at every step.
-\subsubsection{Temporal-Difference Learning (TD Learning)}
-TD Learning tries to approximate the utility of states, without needing to run full policy evaluation at every step.
-\\This is done by assuming a deterministic transition model. If the agent is in state $s$ and takes action $a$, arriving in state $s'$, we assume that $s'$ is the only possible successor of $s$.
+
+\subsubsection*{Temporal-Difference Learning (TD Learning)}
+TD Learning tries to approximate the utility of states, without needing to run full policy evaluation at every step. This is done by assuming a deterministic transition model (no real transition model is learned).
+If the agent is in state $s$ and takes action $a$, arriving in state $s'$, we assume that $s'$ is the only possible successor of $s$:
 \begin{itemize}
     \item If $s'$ was always the successor of $s$, then we can update the utility of $s$ as:
     \[ U(s) = R(s) + \gamma U(s') \]
-    \item The temporal-difference update rule updates the utility of $s$ towards the target value:
+    \item The temporal-difference updates the utility of $s$ incrementally towards this target at each step:
     \[ U(s) \leftarrow U(s) + \alpha \left( R(s) + \gamma U(s') - U(s)\right) \]
 \end{itemize}
 Where $\alpha$ is the learning rate, controlling how much new information overrides old information.
@@ -178,3 +191,131 @@ Where $\alpha$ is the learning rate, controlling how much new information overri
         \Until{convergence}
     \end{algorithmic}
 \end{algorithm}
+\subsubsection*{Differences}
+\begin{itemize}
+    \item TD Learning does not learn a transition model, while ADP does;
+    \item Each step of TD Learning is computationally cheaper than ADP;
+    \item TD Learning takes longer to converge than ADP.
+\end{itemize}
+We can say that TD Learning is a rough approximation of ADP.
+\subsubsection{Policy Improvement}
+As we have said before, in policy learning both the optimal policy and the environment are learned through experience.
+
+\subsubsection*{A simple solution}
+\label{simplepolicyimprovement}
+A simple solution to this problem consists in using a variation of ADP, where the policy evaluation is replaced with the computation of the 
+optimal policy (both value and policy iteration can be used).
+\[ U(s) = R(s) + \gamma \max_{a \in A} \sum_{s' \in S} P(s'|s,a) U(s') \]
+This approach theoretically works, but it has two main issues:
+\begin{itemize}
+    \item It is computationally expensive, since it requires computing the optimal policy at every step;
+    \item This is a greedy approach, which may lead to suboptimal policies. The space is not explored enough, and the agent tend to overfit to the current knowledge of the environment.
+\end{itemize}
+To resolve the exploration vs exploitation trade-off, non entirely greedy algorithms should be defined, to encourage exploration of the state space.
+
+\subsubsection*{Trade off strategies}
+There are two main strategies to deal with the exploration vs exploitation trade-off:
+\begin{itemize}
+    \item \textbf{$\epsilon$-greedy}: with probability $1 - \epsilon$, the agent chooses the action that maximizes the expected utility (the greedy action). With probability $\epsilon$, the agent chooses a random action (exploration).
+    \item \textbf{Define a new Bellman equation}: assign \textbf{higher utilities estimates} to less explored states, to encourage the agent to visit them.
+    \[ U^+(s) = R(s) + \gamma \max_{a \in A} f(\sum_{s' \in S} P(s'|s,a) U^+(s'), N_{sa}) \]
+    Where the function $f(u,n)$ returns a lower number for higher $n$ (the state has been explored more often).
+\end{itemize}
+Both these strategies help with the suboptimal policies issue, but still require computing the optimal policy at every step, which is computationally expensive.
+
+\subsubsection*{Utilities of An action:}
+To resolve the computational issue we could follow the idea used in section \ref{policyevaluation} and use TD Learning to approximate the utilities of states.
+However, TD Learning cannot be directly applied in this context. Here, we are learning both the policy and the environment.
+\\\\As we have seen in equation \ref{optpolicy}, the optimal policy depends on the transition model, which is not computed in TD Learning.
+\begin{equation}
+    \pi^*(s)
+    = \arg\max_{a\in A}
+    \underbrace{
+        \sum_{s' \in S}
+        \overbrace{P(s' \mid s,a)}^{\text{Not computed}}
+        \, U^*(s')
+    }_{Q(s,a)}
+\end{equation}
+Where $Q(s,a)$ represents the utilities of taking action $a$ in state $s$. Given the utilities of actions $Q(s,a)$, we can derive the optimal policy as:
+\[ \pi^*(s) = \arg\max_{a \in A} Q(s,a) \]
+There are 2 algorithms that use this idea to compute the optimal policy: SARSA (On-policy) and Q-Learning (Off-policy).
+\subsubsection*{SARSA (On-policy)}
+SARSA (State-Action-Reward-State-Action) is an on-policy TD learning algorithm. It chooses the next action based on a $\epsilon$-greedy policy derived from the current utility Q.
+It then takes that action, to reach state $s'$. It uses again the $\epsilon$-greedy policy to choose the next action $a'$ in state $s'$.
+\begin{algorithm}
+    \caption{SARSA}
+    \begin{algorithmic}
+        \Repeat
+            \State Initialize $s$
+            \Repeat
+                \State Receive reward $r$
+                \State Choose action $a \leftarrow \pi^{\epsilon}(s)$
+                \State Execute action $a$, observe reward $r$ and next state $s'$
+                \State Choose next action $a' \leftarrow \pi^{\epsilon}(s')$
+                \State Update utility estimates:
+                \[
+                    Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma Q(s',a') - Q(s,a)\right)
+                \]
+                \State $s \leftarrow s'$
+                \State $a \leftarrow a'$
+            \Until{$s$ is terminal}
+        \Until{convergence}
+    \end{algorithmic}
+\end{algorithm}
+Since it is an on-policy algorithm, SARSA updates the utility action $Q(s,a)$ using the current policy $\pi^{\epsilon}$. This means that the action $a'$ taken in state $s'$ is also influenced by the exploration strategy, which can lead to more conservative updates.
+\subsubsection*{Q-Learning (Off-policy)}
+Q-Learning is an off-policy TD learning algorithm. It uses different policies for exploration and for learning the utilities of actions (the greedy policy).
+\begin{algorithm}
+    \caption{Q-Learning}
+    \begin{algorithmic}
+        \Repeat
+            \State Initialize $s$
+            \Repeat
+                \State Receive reward $r$
+                \State Choose action $a \leftarrow \pi^{\epsilon}(s)$
+                \State Execute action $a$, observe reward $r$ and next state $s'$
+                \State Update utility estimates:
+                \[
+                    Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a'} Q(s',a') - Q(s,a)\right)
+                \]
+                \State $s \leftarrow s'$
+            \Until{$s$ is terminal}
+        \Until{convergence}
+    \end{algorithmic}
+\end{algorithm}
+\subsection{Scaling to Large Problems}
+All the techniques we have seen so far assume a tabular representation of the utility functions. This is not feasible
+for large state or action spaces, since the tables would become too large to store and update efficiently.
+\\The solution is to use function approximation techniques: we can approximate the utility functions, using parametric functions (such as neural networks).
+The problem now shifts to learning the parameters of these functions, instead of maintaining large tables. This can be done using gradient descent methods.
+\subsubsection{TD learning: State Utilities}
+First, to do gradient descent, we need to define an error function we need to minimize.
+\begin{equation}
+    E(s, s') = \frac{1}{2} \left( R(s) + \gamma U_\theta(s') - U_\theta(s) \right)^2
+\end{equation}
+Where $U_\theta(s)$ is the approximated utility function, parameterized by $\theta$. 
+This error function measures the distance between the current value function $U_\theta(s)$ and the target value $R(s) + \gamma U_\theta(s')$.
+\\We can then compute the gradient of this error function with respect to the parameters $\theta$:
+\begin{equation}
+    \nabla_\theta E(s, s') = - \left( R(s) + \gamma U_\theta(s') - U_\theta(s) \right) \nabla_\theta U_\theta(s)
+\end{equation}
+The stochastic gradient descent update rule for the parameters $\theta$ is then given by:
+\begin{equation}
+    \theta \leftarrow \theta + \alpha \nabla_\theta E(s, s')
+\end{equation}
+Where $\alpha$ is the learning rate.
+\subsubsection{TD learning: Action Utilities}
+Similarly, we can define an error function for the action utilities:
+\begin{equation}
+    E(s, a, s', a') = \frac{1}{2} \left( R(s) + \gamma Q_\theta(s', a') - Q_\theta(s, a) \right)^2
+\end{equation}
+This error function measures the distance between the current action-value function $Q_\theta(s, a)$ and the target value $R(s) + \gamma Q_\theta(s', a')$.
+\\The gradient of this error function with respect to the parameters $\theta$ is:
+\begin{equation}
+    \nabla_\theta E(s, a, s', a') = - \left( R(s) + \gamma Q_\theta(s', a') - Q_\theta(s, a) \right) \nabla_\theta Q_\theta(s, a)
+\end{equation}
+The stochastic gradient descent update rule for the parameters $\theta$ is then given by:
+\begin{equation}
+    \theta \leftarrow \theta + \alpha \nabla_\theta E(s, a, s', a')
+\end{equation}
+Where $\alpha$ is the learning rate.
