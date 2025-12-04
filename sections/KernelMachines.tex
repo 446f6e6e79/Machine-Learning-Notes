@@ -257,5 +257,13 @@ Where:
     \item $M_i(v)$: the multiset of labels of the neighbors of node $v$ at iteration $i$;
     \item $l_i(v)$: the new label assigned to node $v$ at iteration $i$. It is computed by assigning a unique label 
     to the concatenation of the previous label $l_{i-1}(v)$ and the sorted labels of its neighbors $s_i(v)$.
-
 \end{itemize}
+\subsubsection{Weisfeiler-Lehman Kernel}
+\begin{itemize}
+    \item Let ${G_1, G_2, \ldots, G_h} = {(V, E, l_0), (V, E, l_1), \ldots, (V, E, l_h)}$ be a set of resulting graphs after applying $h$ iterations of the WL algorithm on graph $G$.
+    \item Let $k: G \times G \to \mathbb{R}$ be any kernel on graphs;
+\end{itemize}
+The \textbf{Weisfeiler-Lehman kernel} between two graphs $G$ and $G'$ is defined as:
+\begin{equation}
+    K_{WL}^{h}(G, G') = \sum_{i=0}^h k(G_i, G_i')
+\end{equation}
