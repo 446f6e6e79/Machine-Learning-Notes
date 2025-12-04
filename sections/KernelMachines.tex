@@ -214,3 +214,48 @@ Kernel values can be influenced by the dimension of objects. I.E., in text class
     \hat{K}(\boldsymbol{x}, \boldsymbol{x}') = \frac{K(\boldsymbol{x}, \boldsymbol{x}')}{\sqrt{K(\boldsymbol{x}, \boldsymbol{x}) K(\boldsymbol{x}', \boldsymbol{x}')}}
 \end{equation}
 This is a \textbf{cosine normalization}, which takes into account the angle between the feature vectors rather than their magnitudes.
+\subsection{Kernel on Graphs}
+Kernels on graphs heavily rely on the Weistfeiler-Lehman (WL) test for graph isomorphism.
+\subsubsection{Graph Isomorphism}
+To understand this algorithm, we need to define the concept of \textbf{graph isomorphism}.
+\defib{Graph Isomorphism}{
+    Two graphs $G = (V, E)$ and $G' = (V', E')$ are isomorphic if there exists a bijection $f: V \to V'$ such that:
+    \begin{equation}
+        (u, v) \in E \iff (f(u), f(v)) \in E'
+    \end{equation}
+}
+In a nutshell, two graphs are isomorphic if they have the same structure, but possibly different node labels.
+\subsubsection{Weisfeiler-Lehman Test}
+If isomorphism is easy to check on vectorial data, it is much more challenging on graph data. This is in fact an NP-hard problem.
+\\The WL test is an approximate algorithm that can efficiently determine if two graphs are non-isomorphic, but it may fail to distinguish some non-isomorphic graphs (false positives).
+\paragraph{Algorithm:}
+We are now going to present the WL algorithm on two graphs with same node labels:
+\begin{itemize}
+    \item Given two graphs $G = (V, E)$ and $G' = (V', E')$ with $|V| = |V'| = n$;
+    \item Let $L(G) = {l(v)| v \in V} $ be the set of node labels in $G$. $l(v)$ is a function returning the label of node $v$; 
+    \item Let $L(G') = L(G)$;
+    \item Let $label(s)$ be a function assigning a unique label to a string.
+\end{itemize}
+The algorithm is defined as follows:
+\begin{algorithm}[H]
+    \caption{Weisfeiler-Lehman Test}
+    \begin{algorithmic}
+        \State Set $l_0(v) \leftarrow l(v), \forall v \in V$
+        \For{$i = 1$ to $n-1$}
+            \For{each node $v \in G$}
+                \State Let $M_i(v) = \{l_{i-1}(u) | u \in \text{neigh}(v)\}$
+                \State Concatenate the sorted labels of $M_i(v)$ into $s_i(v)$
+                \State Let $l_i(v) = label(l_{i-1}(v) \oplus s_i(v))$
+            \EndFor
+            \State If $L_i(G) \neq L_i(G')$, return \textbf{not isomorphic}
+        \EndFor
+        \State Return \textbf{possibly isomorphic}
+    \end{algorithmic}
+\end{algorithm}
+Where:
+\begin{itemize}
+    \item $M_i(v)$: the multiset of labels of the neighbors of node $v$ at iteration $i$;
+    \item $l_i(v)$: the new label assigned to node $v$ at iteration $i$. It is computed by assigning a unique label 
+    to the concatenation of the previous label $l_{i-1}(v)$ and the sorted labels of its neighbors $s_i(v)$.
+
+\end{itemize}
