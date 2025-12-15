@@ -1,0 +1,116 @@
+\section{Ensemble methods}
+Ensemble methods are techniques that combine multiple ML models to improve the overall performance compared to individual models.
+The idea is based on the principle that group of individuals can make better decisions than a single individual, if they have diverse perspectives.
+Ensemble strategies can be categorized into three main types: 
+\begin{enumerate}
+    \item Bagging: diversifies the training sets;
+    \item Stacking: diversifies the model architectures being trained;
+    \item Boosting: diversifies the weights of the single training example, focusing on the "hard" ones.
+\end{enumerate}
+\subsection{Bagging}
+In a nutshell, Bagging is based on this simple tasks:
+\begin{itemize}
+    \item Take a learning algorithm $A$;
+    \item Extract from it $m$ different dataset $D^{(i)}$ from the original training set $D$, using \textbf{bootstrap resampling};
+    \item Train one base model on each dataset:
+    \[ f^{(i)} = A(D^{(i)}) \]
+    \item Combine predictions of different base models:
+    \[ \hat{y} = \text{COMBINE}(f^{(1)}(x), \dots, f^{(m)}(x)) \]
+\end{itemize}
+Where $\hat{y}$ is the final prediction. The various methods to combine will be discussed later.
+\subsubsection{Bootstrap resampling}
+The easiest way to create different datasets from the original would be to split it into $m$ disjoint subsets. This would however reduce
+the amount of data available for training each model, which is not ideal.
+\\\textbf{Bootstrap resampling} instead extracts $N = |D|$ samples from $D$ \textbf{with replacement}, meaning that the same sample can be extracted multiple times.
+This procedure is then repeated $m$ times to create $m$ different datasets, of the same size as $D$.
+\\We can show that each bootstrap sample contains on average $63\%$ of the unique samples from the original dataset.
+\begin{proof}
+    Consider a single sample from the original dataset. The probability that it is selected in one draw is:
+    \[ P(\text{selected}) = \frac{1}{N} \]
+    We derive that the probability that it is not selected in one draw is:
+    \[ P(\text{not selected}) = 1 - \frac{1}{N} \]
+    Since we draw $N$ times (with replacement), the probability that it is never selected in the bootstrap sample is:
+    \[ P(\text{never selected}) = \left(1 - \frac{1}{N}\right)^N \]
+    As $N$ approaches infinity, this expression converges to $e^{-1} \approx 0.3679$.
+\end{proof}
+The instances that are not selected in a bootstrap sample are called \textbf{out-of-bag} (OOB) instances, and can be used to estimate
+the test performance of the base model.
+\subsubsection{Combining methods}
+There are 3 main methods to combine the predictions of the base models:
+\begin{itemize}
+    \item \textbf{Majority voting}: for classification tasks, the final prediction is the class with the most votes:
+    \[ \hat{y} = \arg\max_{y} \sum_{i=1}^m \delta(y, \hat{y}^{(i)}) \]
+    where $\delta(a,b)$ is $1$ if $a=b$, $0$ otherwise, and $\hat{y}^{(i)}$ is the prediction of the $i$-th base model;
+    \item \textbf{Soft voting}: for multiclass classification tasks, the final prediction is the class with the highest average predicted probability.
+    This assumes that the base models can output class probabilities.
+    \[ \hat{y} = \arg\max_{y} \frac{1}{m} \sum_{i=1}^m f_y^{(i)}(x) \]
+    where $f_y^{(i)}(x)$ is the predicted probability of class $y$ for the $i$-th base model;
+    \item \textbf{Mean}: for regression tasks, predict the mean of the based models' predictions:
+    \[ \hat{y} = \frac{1}{m} \sum_{i=1}^m \hat{y}^{(i)} \]
+\end{itemize}
+Given this, we can now formally define \textbf{Random Forests}. A Random Forest is an ensemble of decision trees trained using bagging,
+which introduce stochasticity not only by bootstrap resampling the data, but also by randomly selecting a subset of features at each split in the tree.
+
+\subsection{Stacking}
+Stacking is an ensemble method that combines multiple different base models by training a meta-model to make final predictions based on the outputs of the base models. The process can be summarized in the following steps:
+\begin{itemize}
+    \item Train multiple base models $f^{(i)}$ on the original training set $D$, using $m$ different algorithms $A^{(i)}$:
+    \[ f^{(i)} = A^{(i)}(D) \]
+    \item Use a \textbf{meta-learner} to learn a combination of the base models' predictions (e.g., a linear combination):
+    \[ g = A_{\text{META}}([f^{(1)}, \dots, f^{(m)}], D') \]
+    \item Use the meta-model to make final predictions:
+    \[ \hat{y} = g([f^{(1)}(x), \dots, f^{(m)}(x)]) \]
+\end{itemize}
+The \textbf{meta-model} should be trained on a separate dataset $D'$ or it will simply focus on learning the best performing model on $D$.
+
+\subsection{Boosting}
+Boosting is an ensemble method that combines multiple weak learners to create a strong learner. The key idea is to train models sequentially, with each new model focusing on the errors made by the previous ones. The process can be summarized in the following steps:
+\begin{itemize}
+    \item Take a learner $A$ and train it on $D$;
+    \item Reweight examples in $D$ based on their accuracy according to the trained model (incorrectly classified examples get higher weights);
+    \item Train $A$ again on the reweighted dataset;
+    \item Repeat the procedure for $m$ times;
+    \item Combine the learned models into the final model.
+\end{itemize}
+This procedure is particullarly effective with weak learners.
+\defib{Weak learner}{
+    A weak learner is a model that performs slightly better than random guessing. A weak learner is easy
+    to implement and train.
+    \\Applying boosting with weak learners as the base models, allows to turn them into a strong learner.
+    This may come out easyer than training a single complex model.
+}
+One of the most popular boosting algorithms is \textbf{AdaBoost} (Adaptive Boosting).
+\subsubsection{AdaBoost}
+\begin{algorithm}[H]
+    \caption{AdaBoost}
+    \begin{algorithmic}[1]
+    
+    \State $d^{(0)} = \left(\frac{1}{N}, \ldots, \frac{1}{N}\right)$
+    \Comment{initialize uniform important weights}
+    
+    \For{$i = 1, \ldots, m$}
+        \State $f^{(i)} \leftarrow \mathcal{A}(D, d^{(i-1)})$
+        \Comment{train $i^{\text{th}}$ model on weighted data}
+
+        \State $\hat{y}_n \leftarrow f^{(i)}(x_n), \ \forall n$
+        \Comment{collect model predictions}
+        
+        \State $\hat{\varepsilon}^{(i)} \leftarrow \sum_n d_n^{(i-1)} \mathbb{I}[y_n \neq \hat{y}_n]$
+        \Comment{compute weighted training error}
+        
+        \State $\alpha^{(i)} \leftarrow \frac{1}{2}\log\left(\frac{1-\hat{\varepsilon}^{(i)}}{\hat{\varepsilon}^{(i)}}\right)$
+        \Comment{compute adaptive parameter}
+        
+        \State $d_n^{(i)} \leftarrow \frac{1}{Z} d_n^{(i-1)} \exp\left(-\alpha^{(i)} y_n \hat{y}_n\right), \ \forall n$
+        \Comment{re-weight examples}
+    \EndFor
+    \State \textbf{return} $f(x) = \operatorname{sgn}\left(\sum_i \alpha^{(i)} f^{(i)}(x)\right)$
+    \end{algorithmic}
+\end{algorithm}
+Where $d^{(i)}$ are the importance weights of the training examples at iteration $i$:
+    \[ d_n^{(i)} = \frac{1}{Z} d_n^{(i-1)} \exp\left(-\alpha^{(i)} y_n \hat{y}_n\right) \]
+    \begin{itemize}
+        \item Correctly classified examples ($y_n * \hat{y}_n = 1$) will have their weight decreased;
+        \item Incorrectly classified examples ($y_n * \hat{y}_n = -1$) will have their weight increased;
+        \item $Z$ is a normalization factor to ensure that the weights sum to $1$.
+    \end{itemize} 

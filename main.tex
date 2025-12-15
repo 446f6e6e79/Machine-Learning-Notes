@@ -6,11 +6,17 @@
 \date{September 2025}
 
 \begin{document}
-%Title and table of contents
+% Set the page numbering to roman numerals
+\pagenumbering{roman}
+
+% Title and table of contents
 \maketitle
 \newpage
 \tableofcontents
 \newpage
+
+% Change the page numbering to arabic
+\pagenumbering{arabic}
 \input{sections/Introduction}
 \input{sections/DecisionTree}
 \input{sections/K-Nearest-Neighbours}
@@ -25,4 +31,5 @@
 \input{sections/NeuralNetworks.tex}
 \input{sections/Clustering.tex}
 \input{sections/ReinforcementLearning.tex}
+\input{sections/Ensemble-methods.tex}
 \end{document}
