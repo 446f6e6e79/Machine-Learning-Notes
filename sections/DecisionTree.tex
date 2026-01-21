@@ -1,42 +1,51 @@
 \section{Decision Tree Learning}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{img/decision-tree.png}
+    \includegraphics[width=0.8\linewidth]{img/decision_tree/GoToLesson.png}
     \caption{An example of a \textbf{learned decision tree}, \textit{Go to lesson}}
-    \label{fig:decision tree}
+    \label{fig:decision_tree}
 \end{figure}
-A \textbf{decision Tree} represent a \textit{disjunction} ($\lor$: represent the different path to reach the same outcome) of \textit{conjunction} ($\land$: represent the \textbf{and} between the conditions to reach the leafs) of constraints over attribute value.
-As just described, it's used to encode logical formulas:
+A \textbf{decision Tree} represent a \textit{disjunction} ($\lor$: represent the different path to reach the same outcome) of 
+\textit{conjunction} ($\land$: represent the \textbf{and} between the conditions on the path to reach the leafs) of constraints over attribute values.
+As just described, it's used to encode $DNF$ logical formulas:
 \begin{itemize}
-    \item Each path from the root to a leaf is a \textbf{conjunction} of the \textbf{constraints} specified on the node along it;
+    \item Each path from the root to a leaf is a \textbf{conjunction} of the \textbf{constraints} specified on the node along it.
+    For example, in \textbf{fig}\ref{fig:decision_tree}, the leftmost path can be read as:
+    \[\text{OUTLOOK = RAIN} \land \text{TRANSPORTATION = Uncovered} \]
     \item The leaf contains the \textbf{label} to be assigned to istances reaching it;
     \item The \textbf{disjunction} of all paths is the logical formula represented by the tree.
 \end{itemize}
+
 \subsection{Appropriate problems}
-There are several tasks where decision trees. In particular, the task must have these features:
+There are several tasks where decision trees can be effectively applied. In particular, the task must have these features:
 \begin{itemize}
     \item Binary or multi-class \textbf{classification};
     \item Instancies are represented as \textbf{attribute value pair} (tabular data);
+    \item Different explanation for the same class are possible (disjunction of different paths);
     \item Some instancies have missing attributes;
     \item There is a \textbf{need} for an \textbf{interpretable explanation} for the output.
+    In fact, decision trees can be easily visualized and understood by humans.
 \end{itemize}
+
 \subsection{Learning decision tree}
 To learn \textbf{decision trees}, there is a simple \textbf{greedy top-down} strategy. 
 \\Starting from the \textbf{root node} with the full training set, the algorithm follow these steps:
 \begin{enumerate}
-    \item Choose best attribute to be evaluated (\textbf{fig}\ref{fig:decision tree}: \textbf{outlook} is the first chosen attribute);
-    \item Add a child node for each attribute value (\textbf{fig}\ref{fig:decision tree}: rain, overcast and sunny are \textbf{all possible values} for outlook);
-    \item Split node training set into children nodes, according to the value of chosen attribute
+    \item Choose best attribute to be evaluated (\textbf{fig}\ref{fig:decision_tree}: \textbf{outlook} is the first chosen attribute);
+    \item Add a child node for each attribute value (\textbf{fig}\ref{fig:decision_tree}: rain, overcast and sunny are \textbf{all possible values} for outlook);
+    \item Split the node training set into children nodes, according to the attribute values;
     \item \textbf{Stop splitting} a node if all it's training set belongs to a single class (\textbf{homogeneous leaf}), or there are no more attributes to test
 \end{enumerate}
 
 \subsubsection{Choosing the best attribute}
 To understand how we can choose the best attribute to be evaluated, we first have to define \textbf{entropy}.
 
-\paragraph{Entropy:} a measure of the \textbf{amount of information} contained in a \textbf{collection of instances} $S$ which can take a number of $c$ possible values. In easier words, entropy quantifies the amount of uncertainty (or impurity) in a dataset:
+\paragraph{Entropy:} a measure of the \textbf{amount of information} contained in a \textbf{collection of instances} $S$ 
+which can take a number of $c$ possible values (labels in our case). 
+In simpler words, entropy quantifies the amount of uncertainty (or impurity) in a dataset:
 \begin{itemize}
     \item If all examples belong to the same class (homogeneous group), then entropy = 0
-    \item If examples are evenly split among classes, then entropy is maximal.
+    \item If examples are evenly split among classes (uncertainty is maximal), then entropy is maximal.
 \end{itemize}
 It's defined as follows:
 \begin{equation}
@@ -46,21 +55,26 @@ It's defined as follows:
 Where:
 \begin{itemize}
     \item $S$ is the collection of training examples, the dataset or a subset of it;
-    \item $i$ is the $i$-th possible class labels (yes or no in our example);
-    \item $p_i$ is the fraction of $S$, with value $i$. In other words, it represents the probability of finding the label $i$, inside $S$.
+    \item $p_i$ is the fraction of $S$, with label $i$. 
+    It represents the probability of finding the label $i$, inside $S$.
 \end{itemize}
-\paragraph{Information Gain:} represents the \textbf{expected reduction of entropy}, obtained by partitioning $S$ according to the values of attribute $A$
+
+\paragraph{Information Gain:} represents the \textbf{expected reduction of entropy}, obtained by partitioning $S$ over an attribute $A$.
+It's defined as follows:
 \begin{equation}
 \label{eq:information-gain}
     IG(S,A) = H(S) - \sum_{v \in Values(A)}\frac{|S_v|}{|S|}H(S_v)
 \end{equation}
 Where:
 \begin{itemize}
+    \item $H(S)$: entropy of the original set $S$ (before the split);
     \item $Values(A)$: set of possible values, taken by the attribute $A$;
     \item $S_v$: the subset of $S$, taking value $v$ at attribute $A$;
-    \item The second term represents the \textbf{sum of entropies} of all the subsets $S_v$, obtained by partitioning over the attribute $A$, weighted by their respective sizes.
+    \item The second term represents the \textbf{sum of entropies} of all the subsets $S_v$, 
+    obtained by partitioning over the attribute $A$, weighted by their respective sizes.
 \end{itemize}
-We can derive that an attribute with \textbf{high information game} IG tends to produce homogeneous groups in terms of labels, thus favoring their classification.
+We can derive that an attribute with \textbf{high Information Gain} IG tends to produce homogeneous groups in terms of labels, 
+thus favoring their classification.
 
 \subsection{Issues in decision tree learning}
 
@@ -94,12 +108,18 @@ Continuous valued attributes must be discretized in order to be used as internal
     \item For \textbf{each candidate treshold}, the \textbf{IG} obtained by splitting the examples, at the given treshold, is computed;
     \item The treshold with the \textbf{highest IG} is used to discretize the attribute;
 \end{enumerate}
+\begin{comment}
+    #TODO: ADD SIMPLE EXAMPLE HERE of procedure
+\end{comment}
 
 \subsubsection{Alternative attributes test measure}
-The previously defined \textbf{Information Gain} criterion tends to \textbf{prefer attributes} with a \textbf{larger number of possible values}, since it will cause data to be split into very small subsets.
-\\As an extreme case, if we consider a unique attribute in our data, such as an ID, it will cause the data to be \textbf{perfectly split into singletons}. This may look like a perfect split, but offers no generalization on new examples.
+The previously defined \textbf{Information Gain} criterion tends to \textbf{prefer attributes} with a 
+\textbf{larger number of possible values}, since it will cause data to be split into very small subsets.
+\\As an extreme case, if we consider a unique attribute in our data, such as an ID, it will cause the data to be 
+\textbf{perfectly split into singletons}. This may look like a perfect split, but offers no generalization on new examples.
 
-\paragraph{Attribute Value Entropy:} To resolve this issue, a measure of the entropy of the attribute distribution itself is defined:
+\paragraph{Attribute Value Entropy:} 
+To resolve this issue, a measure of the entropy of the dataset $S$, with respect to the values of an attribute $A$ is defined:
 \begin{equation}
     H_A(S) = - \sum_{v\in Values(A)} \frac{|S_v|}{S} \log_2 \frac{|S_v|}{S}
 \end{equation}
@@ -107,23 +127,43 @@ The previously defined \textbf{Information Gain} criterion tends to \textbf{pref
     \item If, for a certain attribute (ex: ID), every value is unique, then $H_A(S)$ is very high;
     \item If a certain attribute has only a few values (ex: binary attribute), then $H_A(S)$ is very low;
 \end{itemize}
-\paragraph{Information gain Ratio:}We can then define an \textbf{Information Gain Ratio} measure, that \textbf{down weights} the \textbf{IG} by the \textbf{Attribute Value Entropy}
+\paragraph{Information gain Ratio:}
+We can then define an \textbf{Information Gain Ratio} measure, that \textbf{down weights} the \textbf{IG} by the \textbf{Attribute Value Entropy}
 \begin{equation}
     IGR(S, A) = \frac{IG(S,A)}{H_A(S)}
 \end{equation}
+Obviously, we have that:
 \begin{itemize}
-    \item If the attribute A has many unique values, then $H_A(S)$ is high, resulting in a lower \textbf{IGR}, for the attribute $A$;
-    \item If the attribute A has few unique values, then $H_A(S)$ is low, resulting in a higher \textbf{IGR}.
+    \item If the attribute $A$ has many unique values, then $H_A(S)$ is high, resulting in a lower \textbf{IGR}, for the attribute $A$;
+    \item If the attribute $A$ has few unique values, then $H_A(S)$ is low, resulting in a higher \textbf{IGR}.
 \end{itemize}
 
 \subsubsection{Handling Attributes with missing values}
 Assuming an \textbf{example} $x$, belonging to \textbf{class} $c(x)$ has a missing value for the attribute $A$.
-When the attribute A is to be tested at node n, we can apply two solutions:
+When the attribute $A$ is to be tested at node $n$, we can apply two solutions:
 \begin{itemize}
-    \item \textbf{SIMPLE SOLUTION}: Assign, to the example x, the most common attribute $A$ values among examples in n;
-    \item \textbf{COMPLEX SOLUTION}: propagate x to each children of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
-    \\At test times, when a leaf is reached, for each candidate class, all fraction belonging to the same class are summed. The example is assigned the class with the highest overall value.
+    \item \textbf{SIMPLE SOLUTION}: Assign, to the example $x$, the most common attribute $A$ values among the training examples at node $n$;
+    \item \textbf{COMPLEX SOLUTION}: propagate $x$ to each children of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
+    \\At test times for each candidate class (since more leaf nodes are reached), all fraction belonging to the same class are summed. The example is assigned the class with the highest overall value.
 \end{itemize}
 \begin{comment}
-    ADD IMAGE FOR COMPLEX SOLUTION
+    #TODO: ADD IMAGE FOR COMPLEX SOLUTION
 \end{comment}
+
+\subsection{Random Forests}
+Random Forests are an \textit{ensemble learning method}, that combines multiple decision trees to improve classification or regression performance.
+\paragraph{Training}
+To train a Random Forest, the following steps are performed:
+\begin{enumerate}
+    \item Given a training set of $N$ examples, sample $N$ examples with replacement (each example can be selected multiple times);
+    \item Train a decision tree on the sampled data, but at each split, choose the best split among a random subset of features, rather than all features.
+    This approach allows to introduce more diversity among the trees;
+    \item Repeat steps 1 and 2 to create a forest of $M$ trees.
+\end{enumerate}
+\paragraph{Prediction}
+To make predictions with a Random Forest, the following steps are performed:
+\begin{itemize}
+    \item For classification tasks, each tree in the forest makes a prediction for the input example;
+    \item The final prediction is made by majority voting among all trees.
+\end{itemize}
+A more in depth explanation of ensemble methods can be found in \textbf{section \ref{sec:ensemble-methods}}.
