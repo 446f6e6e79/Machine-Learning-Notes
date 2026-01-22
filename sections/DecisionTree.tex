@@ -108,9 +108,29 @@ Continuous valued attributes must be discretized in order to be used as internal
     \item For \textbf{each candidate treshold}, the \textbf{IG} obtained by splitting the examples, at the given treshold, is computed;
     \item The treshold with the \textbf{highest IG} is used to discretize the attribute;
 \end{enumerate}
-\begin{comment}
-    #TODO: ADD SIMPLE EXAMPLE HERE of procedure
-\end{comment}
+\paragraph{Example:} consider the dataset in \textbf{table \ref{tab:continuous-attribute}}:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Example & Attribute A & Class \\
+        \hline
+        1 & 2.5 & + \\
+        2 & 3.0 & + \\
+        3 & 4.5 & - \\
+        4 & 5.0 & - \\
+        5 & 6.0 & + \\
+        \hline
+    \end{tabular}
+    \caption{Example dataset with continuous attribute A}
+    \label{tab:continuous-attribute}
+\end{table}
+The dataset is already sorted according to attribute A. The candidate tresholds are:
+\begin{itemize}
+    \item Between example 2 and 3: (3.0 + 4.5) / 2 = 3.75;
+    \item Between example 4 and 5: (5.0 + 6.0) / 2 = 5.5;
+\end{itemize}
+We can then compute the IG for both tresholds, choosing the one with the highest value.
 
 \subsubsection{Alternative attributes test measure}
 The previously defined \textbf{Information Gain} criterion tends to \textbf{prefer attributes} with a 
@@ -146,9 +166,26 @@ When the attribute $A$ is to be tested at node $n$, we can apply two solutions:
     \item \textbf{COMPLEX SOLUTION}: propagate $x$ to each children of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
     \\At test times for each candidate class (since more leaf nodes are reached), all fraction belonging to the same class are summed. The example is assigned the class with the highest overall value.
 \end{itemize}
-\begin{comment}
-    #TODO: ADD IMAGE FOR COMPLEX SOLUTION
-\end{comment}
+\paragraph{Example of complex solution:}
+Consider the decision tree in \textbf{fig \ref{fig:decision_tree}} and an example $x$ with missing value for attribute \textbf{outlook}.
+\\Suppose that, at node \textbf{outlook}, $x$ is propagated to all three children:
+\begin{itemize}
+    \item To the left child (\textbf{rain}): with fraction $\frac{5}{10}$ (in the dataset, 5 examples out of 10 have outlook = rain);
+    \item To the middle child (\textbf{overcast}): with fraction $\frac{4}{10}$;
+    \item To the right child (\textbf{sunny}): with fraction $\frac{1}{10}$;
+\end{itemize}
+Continuing the propagation, we reach the leafs:
+\begin{itemize}
+    \item Leftmost leaf (\textbf{yes}): receives fraction $\frac{5}{10}$;
+    \item Middle leaf (\textbf{yes}): receives fraction $\frac{4}{10}$;
+    \item Rightmost leaf (\textbf{no}): receives fraction $\frac{1}{10}$;
+\end{itemize}
+Then, summing the fractions for each class:
+\begin{itemize}
+    \item Class \textbf{yes}: total fraction = $\frac{5}{10} + \frac{4}{10} = \frac{9}{10}$;
+    \item Class \textbf{no}: total fraction = $\frac{1}{10}$;
+\end{itemize}
+The example $x$ is then assigned to class \textbf{yes}, since it has the highest total fraction.
 
 \subsection{Random Forests}
 Random Forests are an \textit{ensemble learning method}, that combines multiple decision trees to improve classification or regression performance.
