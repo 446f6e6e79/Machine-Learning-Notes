@@ -1,13 +1,19 @@
 \section{Evaluation}
-Evaluation requires to define a \textbf{performance measures} to be optimized.
-Performance of learning algorithms cannot be evaluated on the entire domain. We have to
-introduce some approximations.
-Performance evaluation is needed for
+In this section we will discuss about \textit{Evaluation}, the process of assessing a model's performance, 
+reliability, and generalizability using specific quantitative metrics and qualitative techniques.
 \begin{itemize}
-    \item \textbf{Tune} the hyper-parameters of learning methods;
-    \item \textbf{Evaluating} the performance of the learned model;
-    \item \textbf{Computing statistical significance} of results.
+	\item Requires to define a \textbf{performance measures} to be optimized. 
+	These vary based on the task we are addressing;
+	\item Performance of learning algorithms cannot be evaluated on the entire domain. We have to
+	introduce some approximations;
+	\item Performance evaluation is needed for
+	\begin{itemize}
+		\item \textbf{Tune} the hyper-parameters of learning methods;
+		\item \textbf{Evaluating} the performance of the learned model;
+		\item \textbf{Computing statistical significance} of results.
+	\end{itemize}
 \end{itemize}
+
 \subsection{Binary classification}
 The typical way to evaluate a binary classifier is by means of a \textbf{confusion matrix}:
 \begin{table}[ht]
@@ -25,32 +31,45 @@ The typical way to evaluate a binary classifier is by means of a \textbf{confusi
 \end{table}
 Where:
 \begin{itemize}
-	\item \textbf{TP} (True Positive): number of positive examples correctly classified as positive;
-	\item \textbf{TN} (True Negative): number of negative examples correctly classified
-	\item \textbf{FN} (False Negative): number of positive examples incorrectly classified as negative;
-	\item \textbf{FP} (False Positive): number of negative examples incorrectly classified as positive;
+	\item The rows represent the \textbf{actual} classes (ground truth);
+	\item The columns represent the \textbf{predicted} classes;
+	\item Each entry in the matrix represents the number of examples that fall into that category:
+	\begin{itemize}
+		\item \textbf{TP} (True Positive): number of positive examples correctly classified as positive;
+		\item \textbf{TN} (True Negative): number of negative examples correctly classified as negative;
+		\item \textbf{FN} (False Negative): number of positive examples incorrectly classified as negative;
+		\item \textbf{FP} (False Positive): number of negative examples incorrectly classified as positive;
+	\end{itemize}
 \end{itemize}
 From the confusion matrix we can derive several performance measures.
+
 \subsubsection{Accuracy}
-\defib{Accuracy}{\textit{Accuracy} is the fraction of correctly labelled example among all predictions.
-\begin{equation}
-\mathit{Acc}= \frac{\mathit{TP}+\mathit{TN}}{\mathit{TP}+\mathit{TN}+\mathit{FP}+\mathit{FN}}
-\end{equation}
+\defib{Accuracy}{
+	\textit{Accuracy} is the fraction of correctly labelled example among all predictions.
+	\begin{equation}
+	\mathit{Acc}= \frac{\mathit{TP}+\mathit{TN}}{\mathit{TP}+\mathit{TN}+\mathit{FP}+\mathit{FN}}
+	\end{equation}
 }
 Accuracy metric is not very reliable when the classes are imbalanced. For example, if in a dataset the
 positive class represents a small fraction of the examples, a classifier that always predicts negative will achieve 
 a high accuracy, but it wouldn't be able to predict any positive example.
-\\ A possible solution consists in \textbf{rebalancing costs}, making each positive example worth more than a negative one.
+\\ A possible solution consists in \textbf{rebalancing costs}, making each positive example worth more than a negative one 
+(e.g., each positive counts $\frac{N}{P}$, where $N$ = number of negative examples, and $P$ = number of positive examples).
+
 \subsubsection{Precision and Recall}
-\defib{Precision}{\textit{Precision} is the fraction of correctly predicted positive examples among all predicted positive examples.
-\begin{equation}
-\mathit{Prec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FP}}
-\end{equation}
+\begin{figure}[H]
+\defib{Precision}{
+	\textit{Precision} is the fraction of correctly predicted positive examples among all predicted positive examples.
+	\begin{equation}
+	\mathit{Prec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FP}}
+	\end{equation}
 }
+\end{figure}
 This metric measures the precision of the learner in predicting positive examples. A problem with precision is that
 the learner can achieve a high precision by predicting only a few positive examples, only when 100\% sure.
 
-\defib{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all actual positive examples.
+\defib{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all
+actual positive examples.
 \begin{equation}
 \mathit{Rec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FN}}
 \end{equation}
@@ -64,8 +83,22 @@ It measures the ability of the learner to find all positive examples.
 }
 $F_1$ is usually a good performance measure in the case of unbalanced datasets.
 
+\subsubsection{Precision-Recall curve}
+The \textbf{Precision-Recall curve} is a graphical representation that illustrates the trade-off between precision and recall for different threshold values.
+\\\\Many classifiers output a confidence (probability score) for each prediction. All the evaluation metrics seen so far
+measure the performance of the classifier at a specific threshold.
+We can vary this threshold from min to max to obtain different pairs of precision and recall values, which can be plotted to create the Precision-Recall curve.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{img/evaluation/precision-recall.png}
+	\caption{Precision-Recall curve example}
+	\label{fig:precision-recall-curve}
+\end{figure}
+Also, a single value can be computed by computing the \textbf{area under the curve}. It combines the performance of
+the classifier across all thresholds into a single metric.
+
 \subsection{Multi-class classification}
-In the case of multi-class classification, we can extend the concepts of precision, recall, and F-measure to multiple classes.
+In the case of multi-class classification, we can simply extend the concepts of precision, recall, and F-measure to multiple classes.
 We first redefine the \textbf{confusion matrix} as a generalization of the binary case:
 
 \begin{table}[H]

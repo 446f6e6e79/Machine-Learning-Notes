@@ -91,8 +91,8 @@ The just presented algorithm can be enhanced with its \textbf{Distance-Weighted 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\linewidth]{img/image.png}
-    \caption{Issue with K-Nearest Neighbors}
-    \label{fig:placeholder}
+    \caption{Example of issue with K-Nearest Neighbors}
+    \label{fig:issue-with-k-nearest-neighbors}
 \end{figure}
 Even though the \textbf{blue dot}, representing the testing instance, is closer to the \textbf{- label}, the algorithm will still assign the \textbf{+ label}, since it represents the majority label among its neighbors. \\
 \\We can weight the \textbf{influence} that each neighbor has on the label, based on its distance from the testing instance, giving closer neighbors a higher impact on the final classification.
