@@ -1,44 +1,56 @@
 \section{Parameter Estimation}
-\paragraph{Setting:}
+\paragraph{Setting}
 In order to understand what we will be doing in this section, we need to first introduce the setting of 
 the environment we are working in. We have:
 \begin{itemize}
     \item A \textbf{collection of data} sampled from a \textbf{probability distribution} $p(x,y)$;
-    \item The \textbf{probability distribution} $p(x,y)$ is \textbf{known}, but the parameters $\theta$ of the distribution are \textbf{unknown};
-    \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}$ of $N$ examples, sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
+    \item The \textbf{probability distribution} $p(x,y)$ is \textbf{known}, but the parameters $\theta$ 
+    of the distribution are \textbf{unknown};
+    \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}$ of $N$ examples,
+    sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
 \end{itemize}
-\defib{I.I.D.}{\textit{Independent and Identically Distributed} (i.i.d.) refers to a set of random variables that are all drawn from the same probability distribution and are mutually independent.}
+\defib{I.I.D.}{
+    \textit{Independent and Identically Distributed} (i.i.d.) refers to a set of random variables
+    that are all drawn from the same probability distribution and are mutually independent.
+}
+The \textbf{task} is to estimate the parameters $\theta$ of the distribution $p(x,y)$ using the training set $\mathcal{D}$,
+in order to make predictions on new examples.
 
 \paragraph{Multiclass classification setting:}
 \begin{itemize}
-    \item The training set $\mathcal{D}$ can be divided into $\mathcal{D}_1,\dots,\mathcal{D}_c$, where each $\mathcal{D}_i = \{\boldsymbol{x}_1,\dots,\boldsymbol{x}_{n}\}$ contains examples of class $y_i$;
-    \item For any new example $\boldsymbol{x}$, we can compute the posterior probability for each class $y_i$ (what's the probability of $y_i$ given $\boldsymbol{x}$) using Bayes' theorem:
+    \item The training set $\mathcal{D}$ can be divided into $c$ subsets $\mathcal{D}_1,\dots,\mathcal{D}_c$,
+    where each $\mathcal{D}_i = \{\boldsymbol{x}_1,\dots,\boldsymbol{x}_{n}\}$ contains examples of class $y_i$;
+    \item For any new example $\boldsymbol{x}$, we can compute the posterior probability for each class $y_i$
+    (what's the probability of $y_i$ given $\boldsymbol{x}$) using Bayes' theorem:
     \begin{equation}\label{eq:multiclass-bayes}
         p(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}
     \end{equation}
 \end{itemize}
 \defib{A posteriori probability}{The probability of a class $y_i$ given the features $\boldsymbol{x}$ and the training set $\mathcal{D}$, denoted as $p(y_i|\boldsymbol{x}, \mathcal{D})$, is called the posterior probability. 
-It represents the probability of $x$ belonging to class $y_i$ after observing the features $\boldsymbol{x}$.}
+It represents the probability of $x$ belonging to class $y_i$ after observing the data $\mathcal{D}$.}
 
 \paragraph{Simplification:}
 Starting from the equation \ref{eq:multiclass-bayes}, we can simplify it by making some assumptions:
 \begin{itemize}
     \item We assume $\boldsymbol{x}$ is independent of $\mathcal{D}_j (j \neq i)$, so:
-    \[P(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}\]
-    \item Without additional knowledge, $P(y_i|\mathcal{D})$ can be computed as the \textbf{relative frequency} of class $y_i$ in the training set:
+    \begin{equation}
+        \label{eq:independence-assumption}
+        P(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D}_i)p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}
+    \end{equation}
+    \item Without additional knowledge, $P(y_i|\mathcal{D})$ can be computed as the fraction of examples in class $y_i$ in the training set:
     \[P(y_i|\mathcal{D}) = \frac{|\mathcal{D}_i|}{|\mathcal{D}|}\]
     \item The denominator $p(\boldsymbol{x}|\mathcal{D})$ can be computed using the \textbf{law of total probability}:
     \[p(\boldsymbol{x}|\mathcal{D}) = \sum_{i=1}^{c} p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})\]
 \end{itemize}
-At this point the only factor of equation \ref{eq:multiclass-bayes} that remains unknown is $p(\boldsymbol{x}|y_i, \mathcal{D})$.
+At this point the only factor of equation \ref{eq:independence-assumption} that remains unknown is $p(\boldsymbol{x}|y_i, \mathcal{D})$.
 In order to estimate it, we need to estimate the parameter $\theta$ of the distribution.
 \\This can be done in two ways:
 \begin{enumerate}
-    \item \textbf{Maximum Likelihood Estimation} (MLE): we assume that the parameter $\theta_i$ is a fixed but unknown value,
-     and we estimate it by maximizing the likelihood of the observed data $\mathcal{D}_i$. Obtained values are used to compute probabilities of new examples:
+    \item \textbf{Maximum Likelihood Estimation} (MLE): we assume that the parameter $\theta_i$ is a fixed but unknown values.
+     We estimate it by maximizing the likelihood of the observed data $\mathcal{D}_i$. Obtained values are used to compute probabilities of new examples:
      \[p(\boldsymbol{x}|y_i, \mathcal{D}_i) \approx p(\boldsymbol{x}|{\theta}_i)\]
     \item \textbf{Bayesian estimation}: we assume that the parameter $\theta_i$ is a random variable with a prior distribution $p(\theta_i)$.
-    Observed data turns the prior into a posterior distribution. 
+    Observed data turns the prior into a posterior distribution.
     The prediction for new examples is obtained by integrating over all possible values of $\theta_i$:
     \[p(\boldsymbol{x}|y_i, \mathcal{D}_i) = \int_{\theta_i} p(\boldsymbol{x},\theta_i|y_i, \mathcal{D}_i) d\theta_i\]
 \end{enumerate}
@@ -47,30 +59,35 @@ In order to estimate it, we need to estimate the parameter $\theta$ of the distr
 Maximum Likelihood Estimation (\textbf{MLE}) is a method used to estimate the parameters of a statistical model.
 Given a set of training data $\mathcal{D} = \{\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n\}$, the estimation of 
 the parameter $\theta$ is done by finding the combination of parameters that fits at best the distribution 
-of the observed data, without any prior knowledge about the parameters.
+of the observed data.
 \begin{equation}
     \theta_i^* = \text{argmax}_{\theta} p(\theta_i|\mathcal{D}_i, y_i) = \text{argmax}_{\theta_i} p(\mathcal{D}_i,y_i | \theta_i) p(\theta_i)
 \end{equation}
-From this, assuming that $p(\theta_i)$ (prior probability) is given, we can derive the most common form of MLE, which doesn't take into account the prior:
+This equation assumes that a prior distribution $p(\theta_i)$ is given.
+\\\\The most common form of MLE, which doesn't take into account the prior, but only the training samples, is given by:
 \begin{equation}
     \theta^* = \text{argmax}_{\theta} p(\mathcal{D}, y|\theta)
 \end{equation}
-Since the examples are \textbf{i.i.d.}, we can rewrite the equation as:
+Since the examples are \textbf{i.i.d.}, the joint probability over $D$ can be expressed as the product of the individual probabilities:
 \begin{equation}\label{eq:mle-likelihood}
     \theta^* = \text{argmax}_{\theta} \prod_{j=1}^{n} p(\boldsymbol{x}_j|\theta)
 \end{equation}
-To find the value of $\theta$ we would have to compute the derivative of the likelihood function and set it to zero. 
-This is often difficult, so instead we work with the \textbf{log-likelihood}.
+To find the value of $\theta$ that maximizes the likelihood, we would have to compute the derivative of the likelihood function and set it to zero.
+This is often difficult to compute, so instead we work with the \textbf{log-likelihood}.
 
 \subsubsection{Maximizing the log-likelihood}
 The \textbf{log-likelihood} is defined as the logarithm of the likelihood function (equation \ref{eq:mle-likelihood}):
 \begin{equation}
     \theta^* = \text{argmax}_{\theta} \sum_{j = 1}^{n} \ln p(\boldsymbol{x}_j|\theta)
 \end{equation}
-In order to \textbf{find the maximum}, we compute the derivative of the log-likelihood and set it to zero:
+The logarithm is a \textbf{monotonically increasing function}, so maximizing the log-likelihood is equivalent to maximizing the likelihood itself.
+The logarithm transforms the product of probabilities into a sum, making it easier to compute the derivative.
+\\
+In order to \textbf{find the maximum}, we compute the derivative of the log-likelihood wrt $\theta$ and set it to zero:
 \begin{equation}
     \nabla_{\theta} \sum_{j = 1}^{n} \ln p(\boldsymbol{x}_j|\theta) = 0
 \end{equation}
+Solving this equation will give us a local or global maximum of the log-likelihood function, depending on the shape of the function.
 
 \subsubsection{Example: MLE for Gaussian distribution}
 Assuming that the data is generated from a Gaussian distribution, we can estimate the parameters $\mu$ and $\sigma^2$ using MLE.
@@ -89,6 +106,7 @@ Considering its logarithm, we have:
 \]
 The derivative of the first term is zero, so we only need to compute the derivative of the second term, which is:
 \[
+    = \sum_{j = 1}^{n} -\frac{1}{2\sigma^2} \cdot 2(\boldsymbol{x}_j - \mu)(-1) = 
     \sum_{j = 1}^{n} \frac{(\boldsymbol{x}_j - \mu)}{\sigma^2}
 \]
 Setting this quantity to zero, we have:
@@ -154,7 +172,7 @@ Thus, we have:
     p(\boldsymbol{x}|\mathcal{D}) = \int_{\theta} p(\boldsymbol{x}|\theta) p(\theta|\mathcal{D}) d\theta
 \]
 \begin{itemize}
-    \item The term $p(\boldsymbol{x}|\theta)$ can be easily computed since $\theta$ is known;
+    \item The term $p(\boldsymbol{x}|\theta)$ can be easily computed since both the distribution and the initial parameters $\theta$ are known;
     \item The term $p(\theta|\mathcal{D})$ is the \textbf{posterior distribution} of the parameter $\theta$ given the data $\mathcal{D}$.
 \end{itemize}
 Using Bayes' theorem, we can express the posterior distribution as:
@@ -163,7 +181,7 @@ Using Bayes' theorem, we can express the posterior distribution as:
 \end{equation}
 Where $p(\mathcal{D})$ is a constant independent of $\theta$, so we can ignore it for the purpose of estimation.
 
-\paragraph{Example: Bayesian estimation for Gaussian distribution}
+\subsubsection{Example: Bayesian estimation for Gaussian distribution}
 \paragraph{Unknown $\mu$, known $\sigma$:}
 Assuming that the data is drawn from a Gaussian distribution $p(\boldsymbol{x}|\mu) \sim \mathcal{N}(\mu, \sigma^2)$.
 \\The prior distribution for $\mu$ is also a Gaussian distribution: $p(\mu) \sim \mathcal{N}(\mu_0, \sigma_0^2)$.
@@ -217,6 +235,15 @@ The Interpretation of the results are the following:
     \item the \textbf{more training examples} $(n)$ are seen, the more the sample mean $\hat{\mu}_n$ influences the posterior mean $\mu_n$;
     \item the more training examples are seen, the \textbf{smaller} the variance $\sigma_n^2$ of the posterior distribution becomes, making the distribution sharper around the mean.
 \end{itemize}
+\paragraph{Computing the conditional density}
+Finally, we can compute the conditional density $p(\boldsymbol{x}|\mathcal{D})$ using the posterior distribution:
+\[    p(\boldsymbol{x}|\mathcal{D}) = \int p()\boldsymbol{x}|\mu) p(\mu|\mathcal{D}) d\mu \]
+\[ \sim \mathcal{N} \left( \mu_n, \sigma^2 + \sigma_n^2 \right) \]
+Where:
+\begin{itemize}
+    \item $\mu_n$ is the posterior mean computed before (the estimation of the mean after seeing the data);
+    \item $\sigma^2 + \sigma_n^2$ is the sum of the variance of the original distribution and the variance of the posterior distribution.
+\end{itemize} 
 
 \subsection{Sufficient statistics}
 \defib{Statistic}{Any function on a set of examples $\mathcal{D}$ is called a statistic.}
@@ -229,12 +256,16 @@ without losing information.
 For example \textbf{sample mean} and \textbf{covariance} are sufficient statistics for the parameters of a Gaussian distribution.
 
 \subsection{Conjugate priors}
-\defib{Conjugate prior}{Given:
-\begin{itemize}
-    \item A likelihood function $p(x|\theta)$;
-    \item A prior distribution $p(\theta)$;
-\end{itemize}
-The prior distribution $p(\theta)$ is said to be a \textbf{conjugate prior} for the likelihood function $p(x|\theta)$ if the posterior distribution $p(\theta|x)$ is in the same family as the prior distribution $p(\theta)$.}
+\begin{figure}[H]
+    \defib{Conjugate prior}{Given:
+    \begin{itemize}
+        \item A likelihood function $p(x|\theta)$;
+        \item A prior distribution $p(\theta)$;
+    \end{itemize}
+    The prior distribution $p(\theta)$ is said to be a \textbf{conjugate prior} for the likelihood function $p(x|\theta)$ 
+    if the posterior distribution $p(\theta|x)$ is in the same family as the prior distribution $p(\theta)$.}
+\end{figure}
+
 \subsubsection{Example: Bernoulli distribution}
 Consider a \textbf{Bernoulli distribution} with events $x = 1$ for success and $x = 0$ for failure. Parameters 
 $\theta$ is the probability of success.
@@ -250,3 +281,9 @@ The maximum likelihood estimation of $\theta$ is given by:
 \[\frac{\partial}{\partial \theta} \ln p(\mathcal{D}|\theta) = 0 \implies \frac{\partial}{\partial \theta} \left( h \ln \theta + t \ln (1-\theta) \right) = 0\]
 \[ \implies \frac{h}{\theta} - \frac{t}{1-\theta} = 0 \implies h (1-\theta) = t \theta \implies \theta = \frac{h}{h + t} \]
 $t, h$ are sufficient statistics for the Bernoulli distribution.
+
+\begin{comment}
+    #TODO:
+    - Add example for Baesian estimation 
+    - Add example of conjugate prior for Multinomial distribution
+\end{comment}

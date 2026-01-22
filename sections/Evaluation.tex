@@ -112,13 +112,13 @@ We first redefine the \textbf{confusion matrix} as a generalization of the binar
         \cline{2-5} \multicolumn{1}{|c|}{} & $y_3$ & \multicolumn{1}{c|}{$n_{31}$} & \multicolumn{1}{c|}{$n_{32}$} & \multicolumn{1}{c|}{$n_{33}$} \\
         \hline
     \end{tabular}
-    \caption{Confusion matrix for multi-class classification}
+    \caption{Confusion matrix for multi-class classification (3 classes example)}
     \label{fig:multiClassConfusionMatrix}
 \end{table}
 Where:
 \begin{itemize}
 	\item $n_{ij}$ is the number of examples of class $y_i$ predicted as class $y_j$;
-	\item The \textbf{main diagonal} elements $n_{ii}$ represent the number of correctly classified examples for each class;
+	\item The \textbf{main diagonal} elements $n_{ii}$ represent the number of correctly classified examples for each class, the \textbf{true positives};
 	\item The \textbf{sum} of off-diagonal elements in a \textbf{column} $j$ ($\sum_{i \neq j} n_{ij}$) represents the number of \textbf{false positives} for class $y_j$;
 	\item The \textbf{sum} of off-diagonal elements in a \textbf{row} $i$ ($\sum_{j \neq i} n_{ij}$) represents the number of \textbf{false negatives} for class $y_i$;
 \end{itemize}
@@ -144,9 +144,12 @@ It represents the \textbf{distance} between the predicted values $f(x_i)$ and th
 \end{equation}
 For a dataset $\mathcal{D}$ with $|\mathcal{D}| = N$ examples.
 }
+
 \subsection{Performance estimation}
-To estimate the performance of a learning algorithm, we need to evaluate it on data that has not been used for training.
+Estimating the performance of a learning algorithm on training data is optimistically biased because, as the model has already seen those examples.
+To correctly estimate the performance, we need to evaluate the model on unseen data.
 To ensure this, we can use two main strategies.
+
 \subsubsection{Hold-out procedure}
 Given a dataset $\mathcal{D}$, we split it into three disjoint subsets:
 \begin{itemize}
@@ -161,8 +164,12 @@ The \textbf{k-fold} cross validation approach \textbf{splits} the dataset $\math
 Then, for each $i \in [1, k]$:
 \begin{itemize}
 	\item \textbf{Train} a predictor $\mathcal{L}$ using dataset $T_i = \mathcal{D} \setminus \mathcal{D}_i$ (all folds except the $i$-th one);
-	\item \textbf{Compute score} $S$ of the \textbf{predictor} $\mathcal{L}(T_i)$:
+	\item \textbf{Compute score} $S_i$ of the \textbf{predictor} $\mathcal{L}(T_i)$:
 	\[S_i = S_{\mathcal{D}_i}[\mathcal{L}(T_i)]\]
 \end{itemize}
 After this iterative procedure, we can compute the \textbf{average score} over all folds:
 \[\bar{S} = \frac{1}{k} \sum_{i=1}^{k} S_i\]
+
+\begin{comment}
+	#TODO: Add variance of k-fold and hypotesis testing
+\end{comment}
