@@ -20,6 +20,7 @@
 \usepackage{fancyhdr} % Aggiunto per intestazioni personalizzate
 \usepackage{mdframed} 
 \usepackage{tikz}
+\usetikzlibrary{arrows.meta, calc, positioning, backgrounds}
 \usepackage{pgfplots}
 \usetikzlibrary{arrows.meta, calc}
 
@@ -85,3 +86,17 @@
 \makeatother
 % PGFPlots settings
 \pgfplotsset{compat=1.18}
+
+%tikz styles for Bayesian Networks graphs
+\tikzset{
+  bn-node/.style={circle, draw=red, thick, minimum size=18pt},
+  bn-arrow/.style={->, red, thick},
+  % D-separation styles
+  dse-node-empty/.style={circle, draw=red, fill=orange!10, minimum size=6mm, inner sep=0pt},
+  dse-node-filled/.style={circle, draw=red, fill=blue!60, minimum size=6mm, inner sep=0pt},
+  dse-indep-bg/.style={ellipse, fill=yellow!25, draw=black, thick, minimum width=7.5cm, minimum height=2.8cm},
+  dse-dep-bg/.style={ellipse, fill=green!30, draw=black, thick, minimum width=7.5cm, minimum height=2.8cm},
+  dse-small-indep/.style={ellipse, fill=yellow!25, draw=black, thick, minimum width=2.8cm, minimum height=2.2cm},
+  dse-small-dep/.style={ellipse, fill=green!30, draw=black, thick, minimum width=2.8cm, minimum height=2.2cm},
+  dse-boundary/.style={ellipse, draw=black, dashed, minimum width=3cm, minimum height=6.5cm}
+}

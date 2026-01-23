@@ -25,27 +25,24 @@ Each variable $\boldsymbol{x}_i$ is independent of its non-descendants given its
 
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[
-        node/.style={circle, draw=red, thick, minimum size=18pt},
-        arrow/.style={->, red, thick}
-    ]
+    \begin{tikzpicture}
     % Nodes
-    \node[node] (x1) at (0, 3.5) {$x_1$};
-    \node[node] (x2) at (-1.4, 2.8) {$x_2$};
-    \node[node] (x3) at (1.4, 2.8) {$x_3$};
-    \node[node] (x4) at (-0.8, 1.5) {$x_4$};
-    \node[node] (x5) at (0.8, 1.5) {$x_5$};
-    \node[node] (x6) at (-1.2, 0) {$x_6$};
-    \node[node] (x7) at (0.8, 0) {$x_7$};
+    \node[bn-node] (x1) at (0, 3.5) {$x_1$};
+    \node[bn-node] (x2) at (-1.4, 2.8) {$x_2$};
+    \node[bn-node] (x3) at (1.4, 2.8) {$x_3$};
+    \node[bn-node] (x4) at (-0.8, 1.5) {$x_4$};
+    \node[bn-node] (x5) at (0.8, 1.5) {$x_5$};
+    \node[bn-node] (x6) at (-1.2, 0) {$x_6$};
+    \node[bn-node] (x7) at (0.8, 0) {$x_7$};
     % Edges
-    \draw[arrow] (x1) -- (x4);
-    \draw[arrow] (x1) -- (x5);
-    \draw[arrow] (x2) -- (x4);
-    \draw[arrow] (x3) -- (x4);
-    \draw[arrow] (x3) -- (x5);
-    \draw[arrow] (x4) -- (x6);
-    \draw[arrow] (x4) -- (x7);
-    \draw[arrow] (x5) -- (x7);
+    \draw[bn-arrow] (x1) -- (x4);
+    \draw[bn-arrow] (x1) -- (x5);
+    \draw[bn-arrow] (x2) -- (x4);
+    \draw[bn-arrow] (x3) -- (x4);
+    \draw[bn-arrow] (x3) -- (x5);
+    \draw[bn-arrow] (x4) -- (x6);
+    \draw[bn-arrow] (x4) -- (x7);
+    \draw[bn-arrow] (x5) -- (x7);
     \end{tikzpicture}
     \caption{Example of Bayesian Network}
 \end{figure}
@@ -85,17 +82,14 @@ $P$ must factorize according to $\mathcal{G}$:
 Consider the following BN structure:
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[
-        node/.style={circle, draw=red, thick, minimum size=18pt},
-        arrow/.style={->, red, thick}
-    ]
+    \begin{tikzpicture}
     % Nodes
-    \node[node] (A) at (-2, 1) {A};
-    \node[node] (B) at (2, 1) {B};
-    \node[node] (C) at (0, -1) {C};
+    \node[bn-node] (A) at (-2, 1) {A};
+    \node[bn-node] (B) at (2, 1) {B};
+    \node[bn-node] (C) at (0, -1) {C};
     % Edges
-    \draw[arrow] (A) -- (C);
-    \draw[arrow] (B) -- (C);
+    \draw[bn-arrow] (A) -- (C);
+    \draw[bn-arrow] (B) -- (C);
     \end{tikzpicture}
     \caption{Example of Bayesian Network structure}
 \end{figure}
@@ -167,17 +161,14 @@ In a tail-to-tail connection, two variables $a$ and $b$ are connected through a 
 It is called tail-to-tail because the node $c$ has two outgoing edges (tails) pointing to $a$ and $b$.
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[
-        node/.style={circle, draw=red, thick, minimum size=18pt},
-        arrow/.style={->, red, thick}
-    ]
+    \begin{tikzpicture}
     % Nodes
-    \node[node] (C) at (0, 1) {c};
-    \node[node] (A) at (-2, -1) {a};
-    \node[node] (B) at (2, -1) {b};
+    \node[bn-node] (C) at (0, 1) {c};
+    \node[bn-node] (A) at (-2, -1) {a};
+    \node[bn-node] (B) at (2, -1) {b};
     % Edges
-    \draw[arrow] (C) -- (A);
-    \draw[arrow] (C) -- (B);
+    \draw[bn-arrow] (C) -- (A);
+    \draw[bn-arrow] (C) -- (B);
     \end{tikzpicture}
     \caption{Tail-to-tail connection}
 \end{figure}
@@ -214,17 +205,14 @@ In a head-to-tail connection, variables $a$ is a parent of variable $c$, which i
 It is called head-to-tail because $c$ has one incoming edge (head) from $a$ and one outgoing edge (tail) to $b$.
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[
-        node/.style={circle, draw=red, thick, minimum size=18pt},
-        arrow/.style={->, red, thick}
-    ]
+    \begin{tikzpicture}
     % Nodes
-    \node[node] (A) at (-2, 0) {a};
-    \node[node] (C) at (0, 0) {c};
-    \node[node] (B) at (2, 0) {b};
+    \node[bn-node] (A) at (-2, 0) {a};
+    \node[bn-node] (C) at (0, 0) {c};
+    \node[bn-node] (B) at (2, 0) {b};
     % Edges
-    \draw[arrow] (A) -- (C);
-    \draw[arrow] (C) -- (B);
+    \draw[bn-arrow] (A) -- (C);
+    \draw[bn-arrow] (C) -- (B);
     \end{tikzpicture}
     \caption{Head-to-tail connection}
 \end{figure}
@@ -255,17 +243,14 @@ In a head-to-head connection, variables $a$ and $b$ are both parents of variable
 It is called head-to-head because $c$ has two incoming edges (heads) from $a$ and $b$.
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[
-        node/.style={circle, draw=red, thick, minimum size=18pt},
-        arrow/.style={->, red, thick}
-    ]
+    \begin{tikzpicture}
     % Nodes
-    \node[node] (A) at (-2, 0) {a};
-    \node[node] (B) at (2, 0) {b};
-    \node[node] (C) at (0, 2) {c};
+    \node[bn-node] (A) at (-2, 0) {a};
+    \node[bn-node] (B) at (2, 0) {b};
+    \node[bn-node] (C) at (0, 2) {c};
     % Edges
-    \draw[arrow] (A) -- (C);
-    \draw[arrow] (B) -- (C);
+    \draw[bn-arrow] (A) -- (C);
+    \draw[bn-arrow] (B) -- (C);
     \end{tikzpicture}
     \caption{Head-to-head connection}
 \end{figure}
@@ -289,47 +274,60 @@ observing one of the causes makes the other cause less likely.
 A classic example of head-to-head connection is the relationship between burglary $a$, earthquake $b$, and alarm ringing $c$.
 Burglary and earthquake are independent events and are both causes of the alarm ringing.
 However, if we know that the alarm has rung, observing a burglary makes an earthquake less likely.
+\paragraph{General head-to-head case}
+Let a \textit{descendant} of a node $x$ be any node that can be reached by following directed edges starting from $x$.
+A head-to-head node $c$ unblocks the dependency path between it's parents $a$ and $b$ if either $c$ or any of its descendants are observed.
+\\This can be better understood with an example:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Nodes
+        \node[bn-node] (A) at (-1.5, 1) {a};
+        \node[bn-node] (B) at (1.5, 1) {b};
+        \node[bn-node] (C) at (0, 0) {c};
+        \node[bn-node] (D) at (0, -1.2) {d};
+        % Edges
+        \draw[bn-arrow] (A) -- (C);
+        \draw[bn-arrow] (B) -- (C);
+        \draw[bn-arrow] (C) -- (D);
+    \end{tikzpicture}
+    \caption{General head-to-head case}
+\end{figure}
+In this case, if either $c$ or $d$ are observed, the dependency path between $a$ and $b$ is unblocked, making them dependent.
+For instance, if we take the previous example of burglary, earthquake, and alarm ringing, and 
+add a new variable $d$ representing a call from alarm company.
+If we know either that the alarm has rung or that we received a call from the alarm company,
+observing a burglary makes an earthquake less likely and vice versa.
 
 \subsubsection{D-separation rules summary}
 \begin{figure}[H]
     \usetikzlibrary{shapes.geometric,arrows.meta,positioning,backgrounds}
     \begin{tikzpicture}[
         node distance=1cm,
-        % Node Styles
-        node_empty/.style={circle, draw=red, fill=orange!10, minimum size=6mm, inner sep=0pt},
-        node_filled/.style={circle, draw=red, fill=blue!60, minimum size=6mm, inner sep=0pt},
-        % Background Shapes
-        indep_bg/.style={ellipse, fill=yellow!25, draw=black, thick, minimum width=7.5cm, minimum height=2.8cm},
-        dep_bg/.style={ellipse, fill=green!30, draw=black, thick, minimum width=7.5cm, minimum height=2.8cm},
-        small_indep/.style={ellipse, fill=yellow!25, draw=black, thick, minimum width=2.8cm, minimum height=2.2cm},
-        small_dep/.style={ellipse, fill=green!30, draw=black, thick, minimum width=2.8cm, minimum height=2.2cm},
-        % Dashed vertical containers
-        boundary/.style={ellipse, draw=black, dashed, minimum width=3cm, minimum height=6.5cm},
         % Arrow Style
         arrow/.style={-{Stealth[scale=0.5]}, red, thick}
     ]
-
         % --- SECTION: NO EVIDENCE (TOP) ---
         \node (label_no_ev) at (-7.5, 2) {\textbf{no evidence}};
 
         % Tail to Tail (Top)
-        \node[node_empty] (c1) at (-4.5, 2.8) {\small $c$};
-        \node[node_empty] (a1) at (-5.5, 2) {\small $a$};
-        \node[node_empty] (b1) at (-3.5, 2) {\small $b$};
+        \node[dse-node-empty] (c1) at (-4.5, 2.8) {\small $c$};
+        \node[dse-node-empty] (a1) at (-5.5, 2) {\small $a$};
+        \node[dse-node-empty] (b1) at (-3.5, 2) {\small $b$};
         \draw[arrow] (c1) -- (a1);
         \draw[arrow] (c1) -- (b1);
 
         % Head to Tail (Top)
-        \node[node_empty] (a2) at (-1.7, 2) {\small $a$};
-        \node[node_empty] (c2) at (-0.5, 2) {\small $c$};
-        \node[node_empty] (b2) at (0.7, 2) {\small $b$};
+        \node[dse-node-empty] (a2) at (-1.7, 2) {\small $a$};
+        \node[dse-node-empty] (c2) at (-0.5, 2) {\small $c$};
+        \node[dse-node-empty] (b2) at (0.7, 2) {\small $b$};
         \draw[arrow] (a2) -- (c2);
         \draw[arrow] (c2) -- (b2);
 
         % Head to Head (Top)
-        \node[node_empty] (a3) at (2.8, 2.8) {\small $a$};
-        \node[node_empty] (b3) at (4.2, 2.8) {\small $b$};
-        \node[node_empty] (c3) at (3.5, 2) {\small $c$};
+        \node[dse-node-empty] (a3) at (2.8, 2.8) {\small $a$};
+        \node[dse-node-empty] (b3) at (4.2, 2.8) {\small $b$};
+        \node[dse-node-empty] (c3) at (3.5, 2) {\small $c$};
         \draw[arrow] (a3) -- (c3);
         \draw[arrow] (b3) -- (c3);
 
@@ -337,46 +335,47 @@ However, if we know that the alarm has rung, observing a burglary makes an earth
         \node (label_ev) at (-7.5, -2) {\textbf{evidence}};
 
         % Tail to Tail (Bottom)
-        \node[node_filled] (c4) at (-4.5, -1.2) {\small $c$};
-        \node[node_empty] (a4) at (-5.5, -2) {\small $a$};
-        \node[node_empty] (b4) at (-3.5, -2) {\small $b$};
+        \node[dse-node-filled] (c4) at (-4.5, -1.2) {\small $c$};
+        \node[dse-node-empty] (a4) at (-5.5, -2) {\small $a$};
+        \node[dse-node-empty] (b4) at (-3.5, -2) {\small $b$};
         \draw[arrow] (c4) -- (a4);
         \draw[arrow] (c4) -- (b4);
 
         % Head to Tail (Bottom)
-        \node[node_empty] (a5) at (-1.7, -2) {\small $a$};
-        \node[node_filled] (c5) at (-0.5, -2) {\small $c$};
-        \node[node_empty] (b5) at (0.7, -2) {\small $b$};
+        \node[dse-node-empty] (a5) at (-1.7, -2) {\small $a$};
+        \node[dse-node-filled] (c5) at (-0.5, -2) {\small $c$};
+        \node[dse-node-empty] (b5) at (0.7, -2) {\small $b$};
         \draw[arrow] (a5) -- (c5);
         \draw[arrow] (c5) -- (b5);
 
         % Head to Head (Bottom)
-        \node[node_empty] (a6) at (2.8, -1.2) {\small $a$};
-        \node[node_empty] (b6) at (4.2, -1.2) {\small $b$};
-        \node[node_filled] (c6) at (3.5, -2) {\small $c$};
+        \node[dse-node-empty] (a6) at (2.8, -1.2) {\small $a$};
+        \node[dse-node-empty] (b6) at (4.2, -1.2) {\small $b$};
+        \node[dse-node-filled] (c6) at (3.5, -2) {\small $c$};
         \draw[arrow] (a6) -- (c6);
         \draw[arrow] (b6) -- (c6);
 
         % --- BACKGROUND LAYERS ---
         \begin{scope}[on background layer]
             % Large Horizontal Ellipses
-            \node[dep_bg] at (-2.4, 2.2) {};
-            \node[indep_bg] at (-2.4, -1.9) {};
-            
+            \node[dse-dep-bg] at (-2.4, 2.2) {};
+            \node[dse-indep-bg] at (-2.4, -1.9) {};
             % Small Individual Ellipses (Right Side)
-            \node[small_indep] at (3.5, 2.4) {};
-            \node[small_dep] at (3.5, -1.6) {};
-
+            \node[dse-small-indep] at (3.5, 2.4) {};
+            \node[dse-small-dep] at (3.5, -1.6) {};
             % Vertical Dashed Outlines
-            \node[boundary, label={[label distance=10pt]above:tail to tail}] at (-4.5, 0.1) {};
-            \node[boundary, label={[label distance=10pt]above:head to tail}] at (-0.5, 0.1) {};
-            \node[boundary, label={[label distance=10pt]above:head to head}] at (3.5, 0.4) {};
+            \node[dse-boundary, label={[label distance=10pt]above:tail to tail}] at (-4.5, 0.1) {};
+            \node[dse-boundary, label={[label distance=10pt]above:head to tail}] at (-0.5, 0.1) {};
+            \node[dse-boundary, label={[label distance=10pt]above:head to head}] at (3.5, 0.4) {};
         \end{scope}
-
         % --- LEGEND ---
         \node[draw, fill=yellow!25, minimum size=4mm, label=right:independent] at (-3, -4.5) {};
         \node[draw, fill=green!30, minimum size=4mm, label=right:dependent] at (1, -4.5) {};
-
     \end{tikzpicture}
     \caption{D-separation rules summary}
 \end{figure}
+
+\begin{comment}
+    #TODO: maybe add example exercises here
+\end{comment}
+\subsubsection{General D-separation criterion}

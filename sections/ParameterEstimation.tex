@@ -9,10 +9,12 @@ the environment we are working in. We have:
     \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}$ of $N$ examples,
     sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
 \end{itemize}
+\begin{figure}[H]
 \defib{I.I.D.}{
     \textit{Independent and Identically Distributed} (i.i.d.) refers to a set of random variables
     that are all drawn from the same probability distribution and are mutually independent.
 }
+\end{figure}
 The \textbf{task} is to estimate the parameters $\theta$ of the distribution $p(x,y)$ using the training set $\mathcal{D}$,
 in order to make predictions on new examples.
 
@@ -26,9 +28,14 @@ in order to make predictions on new examples.
         p(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}
     \end{equation}
 \end{itemize}
-\defib{A posteriori probability}{The probability of a class $y_i$ given the features $\boldsymbol{x}$ and the training set $\mathcal{D}$, denoted as $p(y_i|\boldsymbol{x}, \mathcal{D})$, is called the posterior probability. 
-It represents the probability of $x$ belonging to class $y_i$ after observing the data $\mathcal{D}$.}
+\begin{figure}[H]
 
+\defib{A posteriori probability}{
+    The probability of a class $y_i$ given the features $\boldsymbol{x}$ and the training set $\mathcal{D}$, 
+    denoted as $p(y_i|\boldsymbol{x}, \mathcal{D})$, is called the posterior probability. 
+    It represents the probability of $x$ belonging to class $y_i$ after observing the data $\mathcal{D}$.
+}
+\end{figure}
 \paragraph{Simplification:}
 Starting from the equation \ref{eq:multiclass-bayes}, we can simplify it by making some assumptions:
 \begin{itemize}
@@ -246,11 +253,20 @@ Where:
 \end{itemize} 
 
 \subsection{Sufficient statistics}
-\defib{Statistic}{Any function on a set of examples $\mathcal{D}$ is called a statistic.}
-\defib{Sufficient statistic}{A statistic $\boldsymbol{s} = \phi(\mathcal{D})$ is said to be sufficient for a parameter $\theta$ if:
-\[ P(\mathcal{D}|\boldsymbol{s}, \theta) = P(\mathcal{D}|\boldsymbol{s}) \]
-If $\theta$ is a random variable, then a \textbf{sufficient statistic} contains all the information about $\theta$ that is present in the data $\mathcal{D}$.
-}
+\begin{figure}[H]
+    \defib{Statistic}{
+        Any function on a set of examples $\mathcal{D}$ is called a statistic.
+    }
+\end{figure}
+
+\begin{figure}[H]
+    \defib{Sufficient statistic}{
+        A statistic $\boldsymbol{s} = \phi(\mathcal{D})$ is said to be sufficient for a parameter $\theta$ if:
+        \[ P(\mathcal{D}|\boldsymbol{s}, \theta) = P(\mathcal{D}|\boldsymbol{s}) \]
+        If $\theta$ is a random variable, then a \textbf{sufficient statistic} contains all the information 
+        about $\theta$ that is present in the data $\mathcal{D}$.
+    }
+\end{figure}
 A sufficient statistic allows to summarize a sample $\mathcal{D}$ into a smaller set of values $\boldsymbol{s}$, 
 without losing information.
 For example \textbf{sample mean} and \textbf{covariance} are sufficient statistics for the parameters of a Gaussian distribution.
