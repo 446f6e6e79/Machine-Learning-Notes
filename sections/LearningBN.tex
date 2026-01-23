@@ -1,1 +1,73 @@
 \section{Learning Bayesian Networks}
+Learning Bayesian Networks (BNs) from data involves two main tasks: parameter learning and structure learning. 
+In this section, we will discuss both tasks in detail.
+
+\subsection{Parameter Learning}
+For parameter learning, we assume that the structure $G$ of the Bayesian Network is given.
+We are given a dataset $D = \{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_n\}$, 
+where each $\boldsymbol{x}_i$ is a configuration of all (\textbf{complete data}) or 
+some (\textbf{incomplete data}) of the variables in the network.
+\\The goal is to estimate the parameters $\theta$ of the model (one parameter per variable) from the data.
+Again, the simplest approach consists in finding the parameters that maximize the likelihood of the data (MLE):
+\[ \theta^* = \arg\max_{\theta} P(D | \theta) = \arg\max_{\theta} \mathcal{L}(D, \theta) \]
+
+\subsubsection{Complete Data}
+Given the complete data $D$, since every datapoint is \textit{i.i.d.} (independent and identically distributed), 
+we can express the likelihood of the data as:
+\begin{equation}
+    P(D|\theta) = \prod_{i=1}^{n} P(\boldsymbol{x}(i) | \theta)
+\end{equation}
+Instead of working with the entire structure $G$ for each data point, we can exploit the factorization property of Bayesian Networks:
+\begin{equation}
+    P(D|\theta) = \prod_{i=1}^{n} \prod_{j=1}^{m} P(\boldsymbol{x}_{j}(i) | \text{Pa}_{j}(i),\theta)
+\end{equation}
+Where:
+\begin{itemize}
+    \item $\boldsymbol{x}_{j}(i)$ is the value of variable $X_j$ in the $i$-th data point;
+    \item $\text{Pa}_{j}(i)$ is the set of values of the parent variables of $X_j$ in the $i$-th data point.
+\end{itemize}
+Graphically, we can represent the likelihood as follows:
+\begin{figure}[H]
+\centering
+    \begin{tikzpicture}
+    % Theta nodes
+    \node[bn-theta] (TC) at (0, 2.8) {$\theta_1$};
+    \node[bn-theta] (TA) at (-2, -1.4) {$\theta_{2}$};
+    \node[bn-theta] (TB) at (2, -1.4) {$\theta_{3}$};
+    % Nodes
+    \node[bn-node] (C1) at (-4, 1.4) {$X_1(1)$};
+    \node[bn-node] (A1) at (-5, 0) {$X_2(1)$};
+    \node[bn-node] (B1) at (-3, 0) {$X_3(1)$};
+
+    \node[bn-node] (C2) at (0, 1.4) {$X_1(2)$};
+    \node[bn-node] (A2) at (-1, 0) {$X_2(2)$};
+    \node[bn-node] (B2) at (1, 0) {$X_3(2)$};
+
+    \node[bn-node] (CN) at (4, 1.4) {$X_1(N)$};
+    \node[bn-node] (AN) at (5, 0) {$X_2(N)$};
+    \node[bn-node] (BN) at (3, 0) {$X_3(N)$};
+
+    % Edges
+    \draw[bn-arrow] (C1) -- (A1);
+    \draw[bn-arrow] (C1) -- (B1);
+    \draw[bn-arrow] (C2) -- (A2);
+    \draw[bn-arrow] (C2) -- (B2);
+    \draw[bn-arrow] (CN) -- (AN);
+    \draw[bn-arrow] (CN) -- (BN);
+    
+    % Theta edges
+    \draw[bn-arrow] (TC) -- (C1);
+    \draw[bn-arrow] (TC) -- (C2);
+    \draw[bn-arrow] (TC) -- (CN);
+    \draw[bn-arrow] (TA) -- (A1);
+    \draw[bn-arrow] (TA) -- (A2);
+    \draw[bn-arrow] (TA) -- (AN);
+    \draw[bn-arrow] (TB) -- (B1);
+    \draw[bn-arrow] (TB) -- (B2);
+    \draw[bn-arrow] (TB) -- (BN);
+    \end{tikzpicture}
+    \caption{Complete data representation}
+\end{figure}
+\begin{comment}
+    #TODO: try to write the single nodes smaller
+\end{comment}
