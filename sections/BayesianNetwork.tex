@@ -20,7 +20,10 @@ A Bayesian Network (BN) structure $\mathcal{G}$ is a directed acyclic graph (DAG
 \end{itemize}
 It's important to note that the absence of an edge between two nodes doesn't imply independence.
 \\\\The given structure $\mathcal{G}$ of a BN encodes these independence assumptions:
-\[ \mathcal{I}_l(\mathcal{G}) = \{ \forall i\; \boldsymbol{x}_i \perp \text{NonDescendants}_{\boldsymbol{x}_i} | \text{Parents}_{\boldsymbol{x}_i} \} \]
+\begin{equation}
+    \label{eq:localIndependencies}
+    \mathcal{I}_l(\mathcal{G}) = \{ \forall i\; \boldsymbol{x}_i \perp \text{NonDescendants}_{\boldsymbol{x}_i} | \text{Parents}_{\boldsymbol{x}_i} \}
+\end{equation}
 Each variable $\boldsymbol{x}_i$ is independent of its non-descendants given its parents. 
 
 \begin{figure}[H]
@@ -149,10 +152,12 @@ We will then present the basic structures that can appear in a BN.
 We usually say that, two variables $a, b$ are independent (written $a \perp b|\empty$) if:
     \[ P(a, b) = P(a) P(b) \]
 }
+\begin{figure}[H]
 \defib{Conditional independence}{
     We say that two variables $a, b$ are conditionally independent given a third variable $c$ (written $a \perp b | c$) if:
     \[ P(a, b | c) = P(a | c) P(b | c) \]
 }
+\end{figure}
 Both independence and conditional independence can be verified by applying basic rules of probability.
 Instead, BN allow to verify this properties through the concept of D-separation.
 
@@ -298,6 +303,8 @@ For instance, if we take the previous example of burglary, earthquake, and alarm
 add a new variable $d$ representing a call from alarm company.
 If we know either that the alarm has rung or that we received a call from the alarm company,
 observing a burglary makes an earthquake less likely and vice versa.
+\\This rule is valid for any descendant of a head-to-head node, but the further down the descendant is in the graph,
+the weaker the dependency between the parents becomes.
 
 \subsubsection{D-separation rules summary}
 \begin{figure}[H]
@@ -376,6 +383,109 @@ observing a burglary makes an earthquake less likely and vice versa.
 \end{figure}
 
 \begin{comment}
-    #TODO: maybe add example exercises here
+    #TODO: maybe add example exercises here??
 \end{comment}
+
 \subsubsection{General D-separation criterion}
+\defib{D-separation}{
+    \begin{itemize}
+        \item Let $\mathcal{G}$ be a BN structure over a set of random variables $\boldsymbol{X}$;
+        \item Given three disjoint subsets of variables $\boldsymbol{A}, \boldsymbol{B}, \boldsymbol{C} \subseteq \boldsymbol{X}$;
+        \item We say that $\boldsymbol{A}$ and $\boldsymbol{B}$ are \textbf{D-separated} given $\boldsymbol{C}$ in $\mathcal{G}$ if
+        all paths from any node in $\boldsymbol{A}$ to any node in $\boldsymbol{B}$ are blocked (no information flow possible).
+        \item This can also be written as:
+        \[ \text{D-sep}(\boldsymbol{A}, \boldsymbol{B} | \boldsymbol{C}) \]
+        \end{itemize}
+}
+A path is considered blocked if it contains at least one node that meets one of the following conditions:
+\begin{itemize}
+    \item The arrows on the path meet either in a tail-to-tail or head-to-tail configuration, and the node is in $\boldsymbol{C}$ (observed);
+    \item The arrows on the path meet in a head-to-head configuration, and neither the node nor any of its descendants are in $\boldsymbol{C}$ (not observed).
+\end{itemize}
+If $\boldsymbol{A}$ and $\boldsymbol{B}$ are D-separated given $\boldsymbol{C}$, then they are conditionally independent given $\boldsymbol{C}$.
+
+\paragraph{Examples:}
+Consider the following BN structure:
+\begin{figure}[H]
+\centering
+    \begin{tikzpicture}
+    % Nodes
+    \node[bn-node] (A) at (-1.5, 1) {A};
+    \node[bn-node] (F) at (1.5, 1) {F};
+    \node[bn-node] (E) at (0, 0) {E};
+    \node[bn-node] (B) at (3, 0) {B};
+    \node[bn-node] (C) at (0, -1) {C};
+    % Edges
+    \draw[bn-arrow] (A) -- (E);
+    \draw[bn-arrow] (F) -- (E);
+    \draw[bn-arrow] (E) -- (C);
+    \draw[bn-arrow] (F) -- (B);
+    \end{tikzpicture}
+    \caption{Example of Bayesian Network structure for D-separation}
+\end{figure}
+Consider the two following examples:\
+\begin{enumerate}
+    \item Are $A$ and $B$ D-separated given $C$?
+    \begin{itemize}
+        \item Node $F$ is in a tail to tail connection and is not observed. This implies that the path is not blocked;
+        \item Node $E$ is in a head to tail connection and is not observed. One of is child ($C$) is observed, meaning
+        that they are dependent (the path is not blocked);
+        \item Therefore, there exists an unblocked path from $A$ to $B$, so they are \textbf{not D-separated} given $C$.
+    \end{itemize}
+    \item Are $A$ and $B$ D-separated given $F$?
+    \begin{itemize}
+        \item Node $F$ is in a tail to tail connection and is observed. This implies that the path is blocked;
+        \item Therefore, all paths from $A$ to $B$ are blocked, so they are \textbf{D-separated} given $F$.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Bayesian Network Independencies}
+A Bayesian Network structure $\mathcal{G}$ encodes both a set of local independencies $\mathcal{I}_l(\mathcal{G})$ (see eq \ref{eq:localIndependencies})
+and a set of global independencies $\mathcal{I}(\mathcal{G})$.
+Global independencies are all the independencies that can be derived using the D-separation criterion.
+We can formally define them as:
+\begin{figure}[H]
+\defib{Global independencies}{
+    \[ \mathcal{I}(\mathcal{G}) = \{ (A \perp B| C): \text{D-sep}(A, B| C) \} \]
+}
+\end{figure}
+
+\subsection{Equivalence Classes}
+Different BN structures can represent the same set of independencies assumptions.
+\defib{I-Equivalence}{
+    We say that two BN structures $\mathcal{G}, \mathcal{G'}$ are \textbf{I-equivalent} if they encode the same set of independencies:
+    \[ \mathcal{I}(\mathcal{G}) = \mathcal{I}(\mathcal{G'}) \]
+}
+As we have previously seen, for a structure $\mathcal{G}$ to be an I-map for a distribution $p$ it's not
+necessary that $\mathcal{I}(\mathcal{G}) = \mathcal{I}(p)$ (doesn't need to encode all independencies in $p$).
+\\\\As a consequence, also a fully connected graph (no independencies) is an I-map for any distribution $p$ over the same set of variables.
+Such graph is obviously not very useful, as it doesn't provide any information about independencies in $p$.
+\\To overcome this, we can define a \textbf{minimal I-map}.
+\defib{Minimal I-Map}{
+    A BN structure $\mathcal{G}$ is a \textbf{minimal I-map} for a distribution $p$ if:
+    \begin{itemize}
+        \item $\mathcal{G}$ is an I-map for $p$;
+        \item Removing any edge from $\mathcal{G}$ would result in a graph that is not an I-map for $p$.
+    \end{itemize}
+}
+This means it's impossible to remove any edge from $\mathcal{G}$ without introducing independencies that don't hold in $p$.
+Note that a minimal I-map doesn't necessarily encode all independencies in $p$. 
+For this, we need a stronger definition, namely the \textbf{perfect I-map}.
+
+\defib{Perfect I-Map}{
+    We say that a BN structure $\mathcal{G}$ is a \textbf{perfect I-map} for a distribution $p$ iff it captures
+    all and only the independencies that hold in $p$:
+    \[ \mathcal{I}(\mathcal{G}) = \mathcal{I}(p) \]
+}
+Unfortunately, not all distributions $p$ admit a perfect I-map, some cannot be perfectly represented by any BN structure.
+\subsection{Building Bayesian Networks}
+Here are a list of practical guidelines to build a BN structure:
+\begin{itemize}
+    \item Get together with domain experts. This allow to gather prior knowledge about the relationships between variables;
+    \item Define variables for both entities that are directly observable and that you are interested in predicting. 
+    Also, including latent variables can help to better represent the dependencies in the data;
+    \item For adding edges, follow causal relationships when possible. 
+    For example, if variable $A$ causes variable $B$, add a directed edge from $A$ to $B$;
+    \item Avoid assigning zero probabilities in the variables distributions.
+    \item If data is available, we can use structure learning algorithms to learn the BN structure from data.
+\end{itemize}
