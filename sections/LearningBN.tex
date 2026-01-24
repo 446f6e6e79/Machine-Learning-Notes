@@ -17,7 +17,8 @@ we can express the likelihood of the data as:
 \begin{equation}
     P(D|\theta) = \prod_{i=1}^{n} P(\boldsymbol{x}(i) | \theta)
 \end{equation}
-Instead of working with the entire structure $G$ for each data point, we can exploit the factorization property of Bayesian Networks:
+Instead of working with the entire structure $G$ for each data point, we can exploit the 
+factorization property of Bayesian Networks. This allows us to express $p(\boldsymbol{x}(i) | \theta)$ as:
 \begin{equation}
     P(D|\theta) = \prod_{i=1}^{n} \prod_{j=1}^{m} P(\boldsymbol{x}_{j}(i) | \text{Pa}_{j}(i),\theta)
 \end{equation}
@@ -29,11 +30,13 @@ Where:
 Graphically, we can represent the likelihood as follows:
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}
+    \begin{tikzpicture}[
+      bn-node/.style={circle, draw=red, thick, minimum size=10pt, inner sep=1pt, font=\scriptsize}
+    ]
     % Theta nodes
     \node[bn-theta] (TC) at (0, 2.8) {$\theta_1$};
-    \node[bn-theta] (TA) at (-2, -1.4) {$\theta_{2}$};
-    \node[bn-theta] (TB) at (2, -1.4) {$\theta_{3}$};
+    \node[bn-theta] (TA) at (-2, -1.4) {$\theta_{2}|1$};
+    \node[bn-theta] (TB) at (2, -1.4) {$\theta_{3}|1$};
     % Nodes
     \node[bn-node] (C1) at (-4, 1.4) {$X_1(1)$};
     \node[bn-node] (A1) at (-5, 0) {$X_2(1)$};
@@ -68,6 +71,75 @@ Graphically, we can represent the likelihood as follows:
     \end{tikzpicture}
     \caption{Complete data representation}
 \end{figure}
-\begin{comment}
-    #TODO: try to write the single nodes smaller
-\end{comment}
+The probability $p(\boldsymbol{x}_j(i) | pa_j(i), \theta)$ only depends on the parameters $\theta_{X_j|Pa_j}$,
+not on the parameters of other variables.
+Because the Conditional Probability Distributions (CPDs) are independent, we can rearrange the likelihood as:
+\begin{equation}
+    P(D|\theta) = \prod_{j=1}^{m} \prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})
+\end{equation}
+This allows us to decompose the MLE problem into $m$ independent subproblems, one for each variable $X_j$:
+\begin{equation}
+    \label{eq:mle-subproblem}
+    \theta_{X_j|Pa_j}^{\max} = \arg\max_{\theta_{X_j|Pa_j}}\underbrace{\prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})}_{\mathcal{L}(\theta_{X_j|Pa_j, \mathcal{D}})}
+\end{equation}
+When working with discrete variables, we can estimate the parameters using frequency counts from the data.
+A discrete CDP can be represented as a table:
+\begin{itemize}
+    \item Each row corresponds to a specific configuration of $x_j$;
+    \item Each column corresponds to a specific configuration of the parent variables $Pa_j$;
+    \item Each table entry $\theta_{x_j|u}$ represents the probability of the configuration $X = x_j$ and $Pa_j = u$.
+\end{itemize}
+From equation \ref{eq:mle-subproblem}, we can replace $P(x_j(i) | pa_j(i))$ with the corresponding parameter $\theta_{x_j|u}$.
+The likelihood for a single CDP $X_j$ becomes:
+\begin{equation}*
+    \mathcal{L}(\theta_{X_j|Pa_j}, D) = \prod_{i=1}^{N} \theta_{x(i)|u(i)}
+\end{equation}
+\begin{equation*}
+    = \prod_{u \in Val(U)} \left[\prod_{x \in Val(X)} \theta_{x|u}^{N_{x,u}}\right]
+\end{equation*}
+Where $N_{x,u}$ is the count of occurrences in the data where $X_j = x$ and $Pa_j = u$.
+Now, each column in the CPD contains a multinomial distribution over the values of $X_j$, 
+given a specific configuration of its parents $Pa_j = u$.
+This implies that each column must sum to 1:
+\[\sum_{x \in Val(X_j)} \theta_{x|u} = 1\]
+Parameters of different columns are independent, allowing us to estimate them independently.
+Thus, we can decompose the MLE problem for each column $u$ as follows:
+\begin{equation}*
+    \theta_{x|u}^{\max} = \frac{N_{x,u}}{\sum_{x} N_{x,u}}
+\end{equation}
+This means that the MLE estimate for each parameter $\theta_{x|u}$ is simply the relative frequency of $X_j = x$
+given $Pa_j = u$ in the data.
+
+\subsubsection{Adding priors}
+The maximum likelihood estimation can lead to overfitting on the training data, especially when the dataset is small.
+Also, configuration of variables that do not appear in the training data will have zero probability.
+A common solution to these problems is to introduce a prior distribution over the parameters $\theta$,
+based on prior knowledge or assumptions.
+This way, we now want to maximize the posterior distribution of the parameters given the data:
+\begin{equation}*
+    \theta^* = \arg\max_{\theta} P(\theta | D)
+\end{equation}
+Applying Bayes' theorem, we can rewrite this as:
+\begin{equation}*
+    P(\theta | D) =\frac{P(D | \theta) P(\theta)}{P(D)}
+\end{equation}
+Since $P(D)$ is constant with respect to $\theta$, we can simplify the optimization problem to:
+\begin{equation}
+    \theta^* = \arg\max_{\theta} P(D | \theta) P(\theta)
+\end{equation}
+This approach is known as Maximum A Posteriori (MAP) estimation.
+\\The conjugate prior for the multinomial distribution is the Dirichlet distribution, 
+with parameters $\alpha_{x|u}$, for each possible value of $x$.
+The resulting MAP estimate for each parameter $\theta_{x|u}$ becomes:
+\begin{equation}*
+    \theta_{x|u}^{\max} = \frac{N_{x,u} + \alpha_{x|u} - 1}{\sum_{x} (N_{x,u} + \alpha_{x|u} - 1)}
+\end{equation}
+Where $\alpha_{x|u}$ can be interpreted as imaginary samples with configuration $X_j = x$ and $Pa_j = u$.
+
+\subsubsection{Incomplete Data}
+With incomplete data, some examples may have missing values for certain variables.
+In such cases, counts $N_{x,u}$ cannot be directly computed from the data.
+To address this, we can use an approximate method called the Expectation-Maximization (EM) algorithm.
+\paragraph{EM algorithm}
+
+\subsection{Structure Learning}

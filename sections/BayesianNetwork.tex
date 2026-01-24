@@ -308,7 +308,8 @@ the weaker the dependency between the parents becomes.
 
 \subsubsection{D-separation rules summary}
 \begin{figure}[H]
-    \usetikzlibrary{shapes.geometric,arrows.meta,positioning,backgrounds}
+    \centering
+    \resizebox{0.8\textwidth}{!}{
     \begin{tikzpicture}[
         node distance=1cm,
         % Arrow Style
@@ -379,6 +380,7 @@ the weaker the dependency between the parents becomes.
         \node[draw, fill=yellow!25, minimum size=4mm, label=right:independent] at (-3, -4.5) {};
         \node[draw, fill=green!30, minimum size=4mm, label=right:dependent] at (1, -4.5) {};
     \end{tikzpicture}
+    }
     \caption{D-separation rules summary}
 \end{figure}
 
@@ -402,6 +404,7 @@ A path is considered blocked if it contains at least one node that meets one of 
     \item The arrows on the path meet either in a tail-to-tail or head-to-tail configuration, and the node is in $\boldsymbol{C}$ (observed);
     \item The arrows on the path meet in a head-to-head configuration, and neither the node nor any of its descendants are in $\boldsymbol{C}$ (not observed).
 \end{itemize}
+In other words, a path is blocked if the nodes $A$ and $B$ cannot influence each other given the observed variables in $\boldsymbol{C}$ ($A$ and $B$ are independent given $\boldsymbol{C}$).
 If $\boldsymbol{A}$ and $\boldsymbol{B}$ are D-separated given $\boldsymbol{C}$, then they are conditionally independent given $\boldsymbol{C}$.
 
 \paragraph{Examples:}
