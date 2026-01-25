@@ -1,11 +1,15 @@
 \section{Support Vector Machines}
 Support Vector Machines (SVMs) are a very popular method for linear (and non-linear) classification and regression tasks.
+They are based on the following key concepts:
 \begin{itemize}
-    \item \textbf{Large Margin Classifier:} SVMs aim to find the hyperplane that maximizes the margin between different classes in the feature space;
-    \item \textbf{Support Vectors:} the subset of data points that influence the position of the decision boundary. We will see how they are determined during the training process;
+    \item \textbf{Large Margin Classifier:} SVMs aim to find the hyperplane that maximizes 
+    the margin between different classes in the feature space. This way each prediction is made with high confidence;
+    \item \textbf{Support Vectors:} the subset of data points that influence the position of the decision boundary. 
+    We will see how they are determined during the training process;
     \item \textbf{Sound Theoretical Foundation:} the \textbf{large margins} help to improve generalization performance;
     \item \textbf{Kernel machines:} SVMs can be extended to non-linear decision boundaries using kernel functions. 
 \end{itemize}
+
 \subsection{Maximum Margin Classifier}
 SVMs learns the \textbf{central hyperplane} that separates the classes with the \textbf{largest margin}. Intuitively,
 the margin is the distance between the hyperplane and the closest data points from each class (the \textbf{support vectors}).
@@ -16,30 +20,88 @@ To formally define this concept, we first need to introduce the notion of \textb
     \begin{equation}
         \rho = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} yf(\boldsymbol{x})
     \end{equation}
-    This is the minimal confidence of the classifier ($yf(\boldsymbol{x})$) in a correct prediction. It has to be positive for all training points to be correctly classified.
-    \\The geometric margin is the same value rescaled by the norm of the weight vector:
+    This is the minimal confidence of the classifier ($yf(\boldsymbol{x})$) in a correct prediction. 
+    It has to be positive for all training points to be correctly classified.
+    \\As previously seen with the perceptron, the geometric margin is the same value normalized by the norm of the weight vector:
     \begin{equation}
         \frac{\rho}{||\boldsymbol{w}||} = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} \frac{yf(\boldsymbol{x})}{\|\boldsymbol{w}\|}.
     \end{equation}
 }
 Intuitively, we want to learn a classifier that learns correct predictions with high confidence (large margin).
-To do this we need to remove the ambiguity in the definition of the hyperplane.
-\defib{Canonical Hyperplane}
-{
-    There are infinitely many equivalent formulation for the same hyperplane:
-    \[ \boldsymbol{w}^T \boldsymbol{x} + w_0 = 0 \]
-    \[ \alpha (\boldsymbol{w}^T \boldsymbol{x} + w_0) = 0 \; \forall \alpha \neq 0\]
-    To remove this ambiguity, we can define the \textbf{canonical hyperplane} by imposing the constraint that the closest points to the hyperplane satisfy:
+To do this we first need to remove the ambiguity in the definition of the hyperplane.
+In fact, there are infinitely many equivalent formulations for the same hyperplane:
+\[ \boldsymbol{w}^T \boldsymbol{x} + w_0 = 0 \]
+\[ \alpha (\boldsymbol{w}^T \boldsymbol{x} + w_0) = 0 \; \forall \alpha \neq 0\]
+To remove this ambiguity, we can define the \textbf{canonical hyperplane} by imposing the constraint that the closest points 
+to the hyperplane satisfy:
+\defib{Canonical Hyperplane}{
+    The canonical hyperplane is defined such that the functional margin of the closest points to the hyperplane is equal to 1:
     \[ \rho = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} yf(\boldsymbol{x}) = 1 \]
     Its geometric margin then becomes:
     \[ \frac{\rho}{||\boldsymbol{w}||} = \frac{1}{||\boldsymbol{w}||} \]
 }
+This way, the points closest to the hyperplane (support vectors) will always distance $\frac{1}{||\boldsymbol{w}||}$ from the hyperplane.
+\begin{figure}[H]
+    \label{fig:svm_margin}
+    \resizebox{0.8\textwidth}{!}{
+        \centering
+        \begin{tikzpicture}
+            % Draw Axes
+            \draw[-Stealth, gray!60, thick] (-3,0) -- (5,0) node[below left, black] {$x_1$};
+            \draw[-Stealth, gray!60, thick] (0,-3) -- (0,5) node[below left, black] {$x_2$};
+
+            % Line parameters: x2 = -x1 + c
+            \def\xshift{1.5}
+            \def\xmargin{1}
+            \def\ymargin{0.5}
+            % Margins
+            \draw[thick, dashed] (-3.5 + \xmargin + \xshift, 3.5 + \ymargin) -- (3.5 + \xmargin + \xshift, -3.5 + \ymargin) node[pos=0, left, xshift=-2pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 1$};
+            \draw[thick, dashed] (-3.5 - \xmargin + \xshift, 3.5 - \ymargin) -- (3.5 - \xmargin + \xshift, -3.5 - \ymargin) node[pos=0, left, xshift=-15pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = -1$};
+            \draw[ultra thick] (-3.5 + \xshift, 3.5) -- (3.5 + \xshift, -3.5) node[pos=0, left, xshift=-8pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 0$};
+            
+            % Blue Class
+            \node[svm-blue_sq] at (2.8, 0.2) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (-0.5, 3.5) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (3.5, -0.2) {};
+            \node[svm-blue_sq] at (1.3, 3.5) {};
+            \node[svm-blue_sq] at (0.8, 2.5) {};
+            \node[svm-blue_sq] at (1.8, 2.5) {};
+            \node[svm-blue_sq] at (3.4, 2.2) {};
+            \node[svm-blue_sq] at (2, 1.5) {};
+            \node[svm-blue_sq] at (4, 1) {};
+            % Red Class
+            \node[svm-red_circ] at (1, -1) {}; %SUPPORT VECTOR
+            \node[svm-red_circ] at (-3, 2.4) {};
+            \node[svm-red_circ] at (-2.5, 1.4) {};
+            \node[svm-red_circ] at (-1, 0.6) {};
+            \node[svm-red_circ] at (-3.3, 0.6) {};
+            \node[svm-red_circ] at (-1, -0.3) {};
+            \node[svm-red_circ] at (-2, -0.4) {};
+            \node[svm-red_circ] at (-0.5, -2) {};
+            \node[svm-red_circ] at (0.2, -2.5) {};
+            \node[svm-red_circ] at (-1.2, -2.5) {};
+            \node[svm-red_circ] at (1.7, -2.6) {};
+            \node[svm-red_circ] at (-2.6, -2.4) {};
+
+            % --- Vectors and Labels ---
+            % Vector w (orthogonal to the solid line)
+            \draw[-Stealth, ultra thick] (0, 0) -- (1.2, 1.2) node[right] {$\mathbf{w}$};
+
+            % Margin width arrow (2/||w||)
+            \draw[Stealth-Stealth, thick] (1, -1) -- (2.5, 0.5) 
+                node[midway, below right, yshift=-2pt] {$\frac{2}{\|\mathbf{w}\|}$};
+        \end{tikzpicture}
+    }
+    \caption{Example of a Maximum Margin Classifier}
+\end{figure}
 
 \subsection{Hard Margin SVM}
 Hard Margin SVMs assume that the training data is linearly separable and that we can find a hyperplane that classifies 
 \textbf{all training points correctly}. Let's see how we can formulate this as a learning problem.
+
 \subsubsection{Learning problem}
-The learning objective of SVMs is to find the canonical hyperplane that maximizes the margin, which is equivalent to minimizing $||\boldsymbol{w}||$ since the margin is inversely proportional to it.
+The learning objective of SVMs is to find the canonical hyperplane that maximizes the margin, 
+which is equivalent to minimizing $||\boldsymbol{w}||$ since the margin is inversely proportional to it.
 This leads to the following optimization problem:
 \begin{equation}\label{eq:svm_opt}
     \min_{\boldsymbol{w}, w_0} \frac{1}{2} ||\boldsymbol{w}||^2
@@ -48,8 +110,15 @@ subject to the constraints:
 \[
     y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) \geq 1, \quad \forall (\boldsymbol{x}_i, y_i) \in \mathcal{D}
 \]
-The constraint guarantees that all points are correctly classified with a margin of at least 1.
-This is a convex \textbf{quadratic optimization}, with linear constraints and can be solved efficiently using Lagrange multipliers.
+Note that:
+\begin{itemize}
+    \item The objective function $\frac{1}{2} ||\boldsymbol{w}||^2$ is used 
+    instead of $||\boldsymbol{w}||$ simply for mathematical convenience;
+    \item The constraint guarantees that all points are correctly classified with a margin of at least 1.
+    \item This is a convex \textbf{quadratic optimization}, with linear constraints and can be solved 
+    efficiently using Lagrange multipliers.
+\end{itemize}
+
 Let's first see how to handle this kind of constrained optimization problems in general.
 \subsubsection{Karush-Kuhn-Tucker (KKT) Approach}
 A constrained optimization problem can be addressed by converting it into an unconstrained one with the same solution.
@@ -62,12 +131,15 @@ subject to the constraint:
 We can introduce a non-negative Lagrange multiplier $\alpha_i$ for each constraint $g_i(z)$, and define the \textbf{Lagrangian} function:
 \[ L(z, \boldsymbol{\alpha}) = f(z) - \sum_i \alpha_i g_i(z) \]
 The solution of the original constrained problem can be found by solving the following \textbf{saddle point} problem:
-\[ min_{z} max_{\boldsymbol{\alpha} \geq 0} L(z, \boldsymbol{\alpha}) \]
+\[ \min_{z} \max_{\boldsymbol{\alpha} \geq 0} L(z, \boldsymbol{\alpha}) \]
 The optimal solutions $z^*$ for this problem are the same as the one from the \textbf{original constrained problem}.
+This formulation works because:
 \begin{itemize}
     \item If, for a given $\hat{z}$, a constraint $g_i(\hat{z})$ is \textbf{not satisfied} (i.e., $g_i(\hat{z}) < 0$), maximizing over $\alpha_i$ will lead to an \textbf{infinite value}. In fact, we are subtracting a negative value multiplied by an unbounded positive value, which can grow indefinitely;
-    \item If all constraints are satisfied, maximizing over $\boldsymbol{\alpha}$ will set all the elements of the sum to zero, so that $\hat{z}$ is a valid solution of the original problem.
+    \item If all constraints are satisfied, maximizing over $\boldsymbol{\alpha}$ will set all $\alpha_i$ to zero.
+    The sum will be zero, and we will simply minimize $f(z)$.
 \end{itemize}
+
 \subsubsection{Lagrangian of the SVM problem}
 Applying this to the SVM optimization problem (\ref{eq:svm_opt}), we can define the relative Lagrangian:
 \begin{equation} \label{eq:svm_lagrangian}
@@ -82,7 +154,7 @@ The lagrangian is minimized with respect to $\boldsymbol{w}$ and $w_0$, and maxi
 \\We now try to solve the \textbf{Lagrangian equivalent form}. To do this, we first compute the partial derivatives of $L$ 
 with respect to $\boldsymbol{w}$ and $w_0$, and set them to zero.
 \\Starting with $\boldsymbol{w}$:
-\[ \frac{\partial L}{\partial \boldsymbol{w}} = \frac{\partial}{\partial \boldsymbol{w}} \left( \frac{\boldsymbol{W}^T \boldsymbol{w}}{2} \right)-   \frac{\partial}{\partial \boldsymbol{w}} \sum_{i = 1}^m \alpha_i y_i \boldsymbol{w}^T \boldsymbol{x}_i \]
+\[ \frac{\partial L}{\partial \boldsymbol{w}} = \frac{\partial}{\partial \boldsymbol{w}} \left( \frac{\boldsymbol{w}^T \boldsymbol{w}}{2} \right)-   \frac{\partial}{\partial \boldsymbol{w}} \sum_{i = 1}^m \alpha_i y_i \boldsymbol{w}^T \boldsymbol{x}_i \]
 \[ = \boldsymbol{w} - \sum_{i = 1}^m \alpha_i y_i \boldsymbol{x}_i \]
 Setting this to zero gives:
 \begin{equation}
@@ -120,21 +192,79 @@ We did get rid of the primal parameters $\boldsymbol{w}$ and $w_0$, and now we h
 This is a \textbf{dual formulation} of the original SVM optimization problem, since it is expressed in terms of the Lagrange 
 multipliers $\alpha_i$ instead of the primal parameters $\boldsymbol{w}$ and $w_0$. It is also a convex quadratic optimization problem, 
 but the constraints are now much simpler than in the primal formulation.
+It's important to note that this formulation has $m$ variables (the $\alpha_i$), equal to the number of training examples,
+while the primal formulation has $d + 1$ variables (the number of features plus the bias term). One could
+choose to solve either the primal or the dual formulation depending on which one is more efficient for the given problem.
 \\\\We can now rewrite the \textbf{decision function} of the SVM in terms of the Lagrange multipliers:
 \begin{equation}
     f(\boldsymbol{x}) = \boldsymbol{w}^T \boldsymbol{x} + w_0 = \sum_{i=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \mathbf{x} + w_0
 \end{equation}
 \subsubsection{Observations}
-At this point, we can make some important observations. At the \textbf{optimal point} each \textbf{constraint} should be equal to zero.
+At this point, we can make some important observations. At the \textbf{saddle point} each \textbf{constraint}
+must be equal to zero:
 This can happen in two cases:
 \begin{enumerate}
     \item If $\alpha_i = 0$, then the corresponding data point does not contribute to the decision function;
     \item If $\alpha_i > 0 \implies y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 = 0 \implies y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) = 1$, meaning that the data point lies exactly on the margin boundary.
 \end{enumerate}
+\begin{figure}[H]
+    \label{fig:svm_margin_support_vectors}
+    \resizebox{0.8\textwidth}{!}{
+        \centering
+        \begin{tikzpicture}
+            % Draw Axes
+            \draw[-Stealth, gray!60, thick] (-3,0) -- (5,0) node[below left, black] {$x_1$};
+            \draw[-Stealth, gray!60, thick] (0,-3) -- (0,5) node[below left, black] {$x_2$};
+
+            % Line parameters: x2 = -x1 + c
+            \def\xshift{1.5}
+            \def\xmargin{1}
+            \def\ymargin{0.5}
+            % Margins
+            \draw[thick, dashed] (-3.5 + \xmargin + \xshift, 3.5 + \ymargin) -- (3.5 + \xmargin + \xshift, -3.5 + \ymargin) node[pos=0, left, xshift=-2pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 1$};
+            \draw[thick, dashed] (-3.5 - \xmargin + \xshift, 3.5 - \ymargin) -- (3.5 - \xmargin + \xshift, -3.5 - \ymargin) node[pos=0, left, xshift=-15pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = -1$};
+            \draw[ultra thick] (-3.5 + \xshift, 3.5) -- (3.5 + \xshift, -3.5) node[pos=0, left, xshift=-8pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 0$};
+            
+            % Blue Class
+            \node[svm-blue_sq] at (2.8, 0.2) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (-0.5, 3.5) {}; %SUPPORT VECTOR
+            \node[svm-blue-hidden_sq] at (3.5, -0.2) {};
+            \node[svm-blue-hidden_sq] at (1.3, 3.5) {};
+            \node[svm-blue-hidden_sq] at (0.8, 2.5) {};
+            \node[svm-blue-hidden_sq] at (1.8, 2.5) {};
+            \node[svm-blue-hidden_sq] at (3.4, 2.2) {};
+            \node[svm-blue-hidden_sq] at (2, 1.5) {};
+            \node[svm-blue-hidden_sq] at (4, 1) {};
+            % Red Class
+            \node[svm-red_circ] at (1, -1) {}; %SUPPORT VECTOR
+            \node[svm-red-hidden_circ] at (-3, 2.4) {};
+            \node[svm-red-hidden_circ] at (-2.5, 1.4) {};
+            \node[svm-red-hidden_circ] at (-1, 0.6) {};
+            \node[svm-red-hidden_circ] at (-3.3, 0.6) {};
+            \node[svm-red-hidden_circ] at (-1, -0.3) {};
+            \node[svm-red-hidden_circ] at (-2, -0.4) {};
+            \node[svm-red-hidden_circ] at (-0.5, -2) {};
+            \node[svm-red-hidden_circ] at (0.2, -2.5) {};
+            \node[svm-red-hidden_circ] at (-1.2, -2.5) {};
+            \node[svm-red-hidden_circ] at (1.7, -2.6) {};
+            \node[svm-red-hidden_circ] at (-2.6, -2.4) {};
+
+            % --- Vectors and Labels ---
+            % Vector w (orthogonal to the solid line)
+            \draw[-Stealth, ultra thick] (0, 0) -- (1.2, 1.2) node[right] {$\mathbf{w}$};
+
+            % Margin width arrow (2/||w||)
+            \draw[Stealth-Stealth, thick] (1, -1) -- (2.5, 0.5) 
+                node[midway, below right, yshift=-2pt] {$\frac{2}{\|\mathbf{w}\|}$};
+        \end{tikzpicture}
+    }
+    \caption{Highlighting Support Vectors in hard Margin SVM}
+\end{figure}
 The points that satisfy the second condition are called \textbf{support vectors}, as they are the only points that influence the position of the decision boundary.
 All the other points have $\alpha_i = 0$ and do not affect the decision function.
 \\\\The bias term $w_0$ can be computed using any of the support vectors, using the condition that they lie on the margin boundary.
 This is usually done by averaging the values obtained from all support vectors to improve numerical stability.
+
 \subsection{Soft Margin SVM}
 In practice, there is one big problem with the assumption made by hard margin SVMs: \textbf{assuming that all data is correctly classified} is often unrealistic and can lead to overfitting.
 \\To address this issue, we introduce the concept of \textbf{soft margin SVMs}, which allow for some misclassifications in the training data.
@@ -157,7 +287,10 @@ This can be done by adding \textbf{slack variables} to the constraints, leading 
         \end{cases}
     \end{aligned}
 \end{equation}
-where $C > 0$ is a regularization parameter that controls the \textbf{trade-off} between \textbf{maximizing the margin} and \textbf{minimizing the misclassification error}.
+where $C > 0$ is a regularization parameter that controls the \textbf{trade-off} between 
+\textbf{maximizing the margin} and \textbf{minimizing the misclassification error}.
+If we set $C$ to a very large value (e.g., $C \to \infty$), we recover the hard margin SVM formulation, 
+as misclassifications are heavily penalized.
 
 \subsubsection{Regularization theory}
 The problem in (\ref{eq:soft_svm_opt}) can be interpreted from a regularization perspective.
@@ -166,7 +299,9 @@ The objective function can be seen as a combination of two terms:
     \item The first term, $\frac{||\boldsymbol{w}||^2}{2}$, encourages the model to have a small norm, which corresponds to a large margin;
     \item The second term, $C \sum_{i=1}^{m} \xi_i$, penalizes the misclassifications, with $C$ controlling the strength of this penalty.
 \end{itemize}
-This can be seen a a \textbf{Regularized loss minimization}:
+This can be seen a a \textbf{Regularized loss minimization}. 
+We can substitute the slack variables $\xi_i$ with a suitable loss function $L(y_i, f(\boldsymbol{x}_i))$ 
+that measures the error made by the classifier on each training example, removing the explicit constraints on $\xi_i$.
 \begin{equation}
     \min_{\boldsymbol{w} \in X, w_0 \in \mathbb{R}, \boldsymbol{\xi} \in \mathbb{R}^m} \frac{||\boldsymbol{w}||^2}{2} + C \sum_{i=1}^{m} L(y_i, f(\boldsymbol{x}_i))
 \end{equation}
@@ -182,7 +317,17 @@ Considering the constraints in (\ref{eq:soft_svm_opt}), we can define the \textb
         \end{aligned}
     \end{equation}
 }
+The hinge loss penalizes predictions that are either incorrect or within the margin. 
+\begin{itemize}
+    \item For correct predictions outside the margin ($y_i f(\boldsymbol{x}_i) > 1$), the loss is zero.
+    \item The more the prediction deviates from  the margin ($0 < y_i f(\boldsymbol{x}_i) \leq 1$), the higher the loss.
+\end{itemize}
+This is exactly equivalent to the slack variable formulation.
+
 \subsubsection{Lagrangian of the Soft Margin SVM}
+\begin{comment}
+    #TODO: go on from here
+\end{comment}
 We can now derive the Lagrangian for the soft margin SVM optimization problem (\ref{eq:soft_svm_opt}).
 The Lagrangian is defined as:
 \begin{equation}\label{eq:soft_svm_lagrangian}
