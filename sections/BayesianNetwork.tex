@@ -66,11 +66,40 @@ There can be additional independencies in $p$ that are not encoded in $\mathcal{
 We say that a distribution $p$ \textbf{factorizes} according to a BN structure $\mathcal{G}$ if $p$ can be expressed as:
 \[ p(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m) = \prod_{i=1}^{m} p(\boldsymbol{x}_i | \text{Parents}_{\boldsymbol{x}_i}) \]
 We have that $\mathcal{G}$ is an I-map for $p$ if and only if $p$ factorizes according to $\mathcal{G}$.
-\begin{comment}
-%#TODO: Add proof here
 \begin{proof}
+(\textit{I-Map}$\Rightarrow$\textit{Factorization}) 
+\begin{itemize}
+    \item Assume that $\mathcal{G}$ is an I-map for $p$;
+    \item We know that $p$ satisfies the local independencies encoded in $\mathcal{G}$:
+    \[ \{\forall i\; \boldsymbol{x}_i \perp \text{NonDescendants}_{\boldsymbol{x}_i} | \text{Parents}_{\boldsymbol{x}_i} \}\]
+    \item We can order the variables in a topological order, such that each variable always comes after its parents;
+    \item We can decompose the joint distribution using the chain rule of probability:
+    \[ p(x_1, x_2, \ldots, x_m) = \prod_{i=1}^{m} p(x_i | x_1, x_2, \ldots, x_{i-1}) \]
+    \item Since we ordered the variables in a topological order, now $\text{Parents}_{x_i} \subseteq \{x_1, x_2, \ldots, x_{i-1}\}$.
+    We derive that:
+    \[ p(x_i | x_1, x_2, \ldots, x_{i-1}) = p(x_i | \text{Parents}_{x_i}) \]
+\end{itemize}
+Combining the last two equations, we obtain the factorization property:
+\[ p(x_1, x_2, \ldots, x_m) = \prod_{i=1}^{m} p(x_i | \text{Parents}_{x_i}) \]
+
+(\textit{Factorization}$\Rightarrow$\textit{I-Map}) 
+\begin{itemize}
+    \item If $p$ factorizes according to $\mathcal{G}$, then the joint distribution can be expressed as:
+    \[ p(x_1, x_2, \ldots, x_m) = \prod_{i=1}^{m} p(x_i | \text{Parents}_{x_i}) \]
+    \item Consider now the variable $x_m$; By the product rule ($p(X, Y) = p(Y|X) p(X)$), we can express the conditional distribution as:
+    \[ p(x_m | x_1, x_2, \ldots, x_{m-1}) = \frac{p(x_1,\ldots, x_m)}{p(x_1, \ldots, x_{m-1})} \]
+    \item We can apply the sum rule to the denominator, marginalizing over $x_m$:
+    \[ p(x_m | x_1, \ldots, x_{m-1}) = \frac{p(x_1,\ldots, x_m)}{\sum_{x_m} p(x_1,\ldots, x_m)} \]
+    \item Applying the factorization property, we obtain:
+    \[ = \frac{\prod_{i=1}^{m} p(x_i | \text{Parents}_{x_i})}{\sum_{x_m} \prod_{i=1}^{m} p(x_i | \text{Parents}_{x_i})} \]
+    \item We can rearrange the equation isolating the term for $x_m$:
+    \[ = \frac{p(x_m| \text{Parents}_{x_m}) \prod_{i=1}^{m-1} p(x_i | \text{Parents}_{x_i})}{\sum_{x_m} p(x_m| \text{Parents}_{x_m}) \prod_{i=1}^{m-1} p(x_i | \text{Parents}_{x_i})} \]
+\end{itemize}
+At this point we can simplify the equation, since $\sum_{x_m} p(x_m| \text{Parents}_{x_m}) = 1$, obtaining:
+\[
+p(x_m | x_1, \ldots, x_{m-1}) = p(x_m| \text{Parents}_{x_m})
+\]
 \end{proof}
-\end{comment}
 
 \subsection{Bayesian Network definition}
 A Bayesian Network (BN) is a pair $\mathcal{B} = (\mathcal{G}, \mathcal{P})$, where:
@@ -383,10 +412,6 @@ the weaker the dependency between the parents becomes.
     }
     \caption{D-separation rules summary}
 \end{figure}
-
-\begin{comment}
-    #TODO: maybe add example exercises here??
-\end{comment}
 
 \subsubsection{General D-separation criterion}
 \defib{D-separation}{

@@ -146,11 +146,26 @@ The EM algorithm iteratively estimates these statistics based on the current par
 and then updates the parameters using these estimated statistics.
 \\The algorithm consists of two main steps:
 \begin{itemize}
-    \item \textbf{Expectation step (E-step)}: given the current parameter estimates
+    \item \textbf{Expectation step (E-step)}: compute the expected sufficient statistics for the complete data,
+    with respect to the joint distribution for $\boldsymbol{X}$ conditioned on the current
+    value of $\theta$ (current estimates of the parameters) and the known data $\mathcal{D}$:
+    \begin{equation}
+        E[N_{ijk}] = \sum_{l=1}^{n} P(X_i(l) = x_{k}, Pa_i(l) = pa_{j} | \boldsymbol{X}_l, \theta)
+    \end{equation}
+    Where:
+    \begin{itemize}
+        \item $N_{ijk}$ is the count of occurrences where variable $X_i$ takes value $x_k$
+        and its parents $Pa_i$ take configuration $pa_j$;
+        \item $\boldsymbol{X}_l$ is the $l$-th data point in the dataset $\mathcal{D}$ (observed values);
+        \item if $X_i(l)$ or $Pa_i(l)$ are observed for $X_l$ in the dataset $\mathcal{D}$, then the probability is either 0 or 1;
+        \item Otherwise, we run Bayesian inference to compute the probability.
+    \end{itemize}
+    \item \textbf{Maximization step (M-step)}: compute the parameters maximizing likelihood of the
+    complete dataset $D_c$, using the expected counts from the E-step:
+    \begin{equation}
+        \theta_{ijk}^{\max} = \frac{E[N_{ijk}]}{\sum_{k} E[N_{ijk}]}
+    \end{equation}
 \end{itemize}
-\begin{comment}
-    #TODO: complete this part
-\end{comment}
 \subsection{Structure Learning}
 There are different approaches to learn the structure of a Bayesian Network from data.
 Some of this approaches include:
