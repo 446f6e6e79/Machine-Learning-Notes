@@ -25,7 +25,8 @@ We can distinguish \textbf{learning models} between \textbf{generative models} a
     In example, it is not possible to generate new data points from the learned model.
 \end{itemize}
 
-\subsection{Linear Discriminant Functions}
+\subsection{Definition}
+\label{sec:linear_discriminant_functions}
 A \textbf{linear discriminant model} uses a \textbf{linear function} to make predictions. 
 The \textbf{decision boundary} (discriminant function) is a linear combination of the input features:
 \begin{equation} \label{eq:linear_discriminant}
@@ -75,11 +76,18 @@ The weight vector $\boldsymbol{w}$ is \textbf{orthogonal} to the decision bounda
     It can be seen as the \textbf{confidence} of the model in the prediction for that point. 
     A larger absolute value of the functional margin indicates a higher confidence in the prediction.
 }
-
-\defib{Geometric margin}{The distance from a point $\boldsymbol{x}$ to the decision boundary $H$ is called \textbf{geometric margin}.
-\begin{equation}\label{eq:geometric_margin}
-    r^x = \frac{f(\boldsymbol{x})}{||\boldsymbol{w}||}
-\end{equation}
+The functional margin is not normalized, meaning that its value depends on the scale of the weight vector $\boldsymbol{w}$.
+For example, if we multiply $\boldsymbol{w}$ and $w_0$ by a constant factor $\alpha > 1$, 
+the functional margin will also increase by the same factor, even though the decision boundary remains unchanged.
+Without normalization, we could arbitrarily increase the functional margin by scaling the weights, 
+which does not reflect a true increase in confidence.
+\\\\To address this, we introduce the concept of \textbf{geometric margin}, 
+which normalizes the functional margin by the norm of the weight vector.
+\defib{Geometric margin}{
+    The distance from a point $\boldsymbol{x}$ to the decision boundary $H$ is called \textbf{geometric margin}.
+    \begin{equation}\label{eq:geometric_margin}
+        r^x = \frac{f(\boldsymbol{x})}{||\boldsymbol{w}||}
+    \end{equation}
 }
 
 The distance from the origin to the decision boundary is given by:

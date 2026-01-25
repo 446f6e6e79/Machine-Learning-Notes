@@ -1,5 +1,15 @@
 \section{Perceptron}
+Perceptron are one of the simplest types of artificial neural networks, based on the concept of linear classifiers (\ref{sec:linear_discriminant_functions}).
+They are based on the idea of simulating the behavior of a biological neuron.
 \subsection{Biological Motivation}
+The human brain is composed of densily interconnected neurons. They process information based on the following principles:
+\begin{itemize}
+    \item Electrochemical reactions allow signals to propagate through the neuron;
+    \item Sinapses connect neurons together, they can either \textbf{excite} or \textbf{inhibit} the receiving neuron;
+    \item When the incoming signals exceed a certain threshold, the neuron \textbf{fires} and transmits the signal to the next neuron.
+\end{itemize}
+Artificial neural networks aim to mimic this behavior using mathematical models. 
+The threshold is modeled using an \textbf{activation function}, while the synapses are represented by \textbf{weights}.
 
 \subsection{Single Neuron Architecture}
 A single neuron perceptron is a specific learning model that implements a linear binary classifier. It can be represented as:
@@ -7,13 +17,38 @@ A single neuron perceptron is a specific learning model that implements a linear
     \label{eq:perceptron}
     f(\boldsymbol{x}) = sign(\boldsymbol{w}^T \boldsymbol{x} + w_0)
 \end{equation}
-The function is a \textbf{linear combination} of the input features $\boldsymbol{x}$, where:
-\begin{itemize}
-    \item $\boldsymbol{w}$ is the weight vector, can be seen as the \textbf{synapses} of the neuron;
-    \item $w_0$ is the bias term, which allows to shift the decision boundary;
-    \item The weighted signals are summed up and passed through an \textbf{activation function}.
-\end{itemize}
+The function is a \textbf{linear combination} of the input features $\boldsymbol{x}$.
+\begin{figure}[H]
+    \begin{tikzpicture}
+        \node[input-node] (bias) at (0, 2) {1};
+        \node[left=0.2cm of bias] {\textbf{Bias}};
+        
+        \node[input-node] (x1) at (0, 1) {$x^1$};
+        \node[input-node] (x2) at (0, 0) {$x^2$};
+        \node (dots) at (0, -0.8) {$\vdots$};
+        \node[input-node] (xm) at (0, -1.8) {$x^m$};
+        
+        \node[left=0.5cm of x2] (inputs-label) {Inputs};
 
+        % 2. Draw Summation and Activation Nodes
+        \node[sum-node] (sum) at (4, 0.4) {\Large $\Sigma$};
+        \node[activation-node, right=1.2cm of sum] (act) {
+            \begin{tikzpicture}[scale=0.2] 
+                \draw[blue, thick] (-1,-1) -- (0,-1) -- (0,1) -- (1,1); 
+            \end{tikzpicture}
+        };
+        % Connection
+        \draw[connection] (bias) -- (sum) node[midway, above] {$w_0$};
+        \draw[connection] (x1) -- (sum) node[midway, above] {$w_1$};
+        \draw[connection] (x2) -- (sum) node[midway, above] {$w_2$};
+        \draw[connection] (xm) -- (sum) node[midway, above] {$w_m$};
+        \draw[connection] (sum) -- (act);
+        \draw[connection] (act) -- ++(2,0) node[right] {Output};
+
+        \node[above=0.3cm of act] {Activation func};
+
+    \end{tikzpicture}
+\end{figure}
 \subsubsection{Augmented feature / weight vector}
 To simplify the notation, we can introduce an \textbf{augmented feature vector}. We can rewrite the 
 equation \eqref{eq:perceptron} as:
@@ -51,6 +86,7 @@ with the ground truth $y_i$.
 \begin{equation}
     E(\boldsymbol{w}, D) = \sum_{(\boldsymbol{x},y) \in \mathcal{D}} \ell(f(\boldsymbol{x}), y)
 \end{equation}
+This is simply the sum of the losses over all training examples.
 
 \subsubsection{Gradient descent}
 This is an optimization problem where we want to find the weights $\boldsymbol{w}$ that minimize the error function $E$.
@@ -60,10 +96,12 @@ There is no closed-form solution for this problem, so we need to use an iterativ
     \item Initialize the weights $\boldsymbol{w}$ randomly or with zeros.
     \item Iterate until gradient is approximately zero, updating the weights as:
     \begin{equation}
-        \boldsymbol{w} = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}, \mathcal{D})
+        \boldsymbol{w} = \boldsymbol{w}' - \eta \nabla E(\boldsymbol{w}', \mathcal{D})
     \end{equation}
     where $\eta$ is the learning rate and controls the amount of movement at each step.
 \end{enumerate}
+Since the gradient $\nabla E(\boldsymbol{w}; D)$ points in the direction of \textbf{maximum increase} of the error function,
+we multiply it by $-1$ to move in the direction of \textbf{maximum decrease}.
 This approach is guaranteed to converge to a local optimum of the error function $E(\boldsymbol{w}; D)$ for small enough learning rates $\eta$.
 \begin{itemize}
     \item too \textbf{low} learning rate: slow convergence;
@@ -74,11 +112,11 @@ This approach is guaranteed to converge to a local optimum of the error function
 In order to apply a \textbf{gradient descent} approach, we need to define a \textbf{loss function} which is \textbf{differentiable} (smooth).
 As a consequence, we adopt a different training rule, called \textbf{perceptron training rule}. It's defined as follows:
 \begin{equation}\label{eq:perceptron_error}
-    E(\boldsymbol{w}; \mathcal{D}) = - \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})
+    E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})
 \end{equation}
 where $\mathcal{D}_E$ is the set of \textbf{misclassified} samples in the training set $\mathcal{D}$, for which:
 \[ yf(\boldsymbol{x}) \leq 0 \]
-The error is the \textbf{sum} of the \textbf{functional margins} of the misclassified samples.
+The error is the \textbf{sum} of the \textbf{functional margins} (confidences) of the misclassified samples.
 \\Applying gradient descent to the error function in \eqref{eq:perceptron_error}, we obtain:
 \[\nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})\]
 \[=\nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -y(\boldsymbol{w}^T \boldsymbol{x}) \]
@@ -86,7 +124,8 @@ The error is the \textbf{sum} of the \textbf{functional margins} of the misclass
 Thus, the amount of change in the weights is:
 \[- \eta \nabla E(\boldsymbol{w}; \mathcal{D}) = \eta \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} y \boldsymbol{x} \]
 \subsubsection{Stochastic Gradient Descent}
-In practice, the \textbf{batch gradient descent} approach is rarely used, since it requires to compute the gradient over the entire training set $\mathcal{D}$ at each iteration.
+In practice, the \textbf{batch gradient descent} approach we discussed so far is rarely used, 
+since it requires to compute the gradient over the entire training set $\mathcal{D}$ at each iteration.
 \\A more common approach is to use \textbf{stochastic gradient descent} (SGD). It works as follows:
 \begin{enumerate}
     \item Initialize the weights $\boldsymbol{w}$ randomly;
@@ -98,8 +137,10 @@ In practice, the \textbf{batch gradient descent} approach is rarely used, since 
         \end{equation}
     \end{enumerate}
 \end{enumerate} 
-With this approach, the weights are updated after each misclassified example, rather than after processing the entire training set.
+With this approach, the weights are updated after each misclassified example, 
+rather than after processing the entire training set.
 Each gradient step is \textbf{very fast} and can sometimes avoid local minima.
+
 \subsection{Perceptron Regression}
 Linear models can also be used for \textbf{regression} tasks, where the goal is to predict a continuous output variable $y$ given an input feature vector $\boldsymbol{x}$.
 The problem can be modeled as:
@@ -120,19 +161,28 @@ However this approach has a few problems:
     \item The matrix $X$ is usually not square, so the inverse $X^{-1}$ is not defined;
     \item System of equations is overdetermined (more equations than unknowns) $\implies$ no exact solution exists.
 \end{itemize}
+
 \subsubsection{Error function}
+We can again resort to loss minimization to find an approximate solution.
 Our goal is not to solve the system exactly, but to find the weights $\boldsymbol{w}$ that minimize the \textbf{mean squared error} (MSE) on the training set:
-\begin{equation}
-    E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2 = (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})
+\begin{equation}*
+    E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2
 \end{equation}
-This is a \textbf{convex} function, so it has a single global minimum with a closed-form solution. \textbf{Gradient descent} can still be faster than computing the closed-form solution, especially for large datasets.
+This can be rewritten in matrix form as:
+\begin{equation}
+    \label{eq:mse}
+    E(\boldsymbol{w}; \mathcal{D}) = (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})
+\end{equation}
+This is a \textbf{convex} function, so it has a single global minimum with a closed-form solution. 
+\textbf{Gradient descent} can still be faster than computing the closed-form solution, especially for large datasets.
 
 \subsubsection{Closed form solution}
-To find the weights $\boldsymbol{w}$ that minimize the mean squared error, we can set the gradient of the error function to zero and solve for $\boldsymbol{w}$:
+To find the weights $\boldsymbol{w}$ that minimize the mean squared error, we can set the gradient 
+of the error function (\ref{eq:mse}) to zero and solve for $\boldsymbol{w}$:
 \[\nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})\]
 \[ 2(\boldsymbol{y} - X\boldsymbol{w})^T (-X) = 0\]
 \[-2\boldsymbol{y}^TX + 2\boldsymbol{w}^T X^T X = 0\]
-Rearranging the terms, we get:
+Rearranging the terms and dividing by 2, we get:
 \[\boldsymbol{w}^T X^T X = \boldsymbol{y}^T X\]
 Taking the transpose of both sides:
 \[X^T X \boldsymbol{w} = X^T \boldsymbol{y}\]
