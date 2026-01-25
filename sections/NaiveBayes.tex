@@ -1,1 +1,94 @@
 \section{Naive Bayes}
+Nayve Bayes is a simple classification algorithm based on Bayesian networks.
+\paragraph{Setting}
+\begin{itemize}
+    \item Each instance $x$ is represented by a set of attributes values $\langle a_1, a_2, \ldots, a_m \rangle$;
+    \item The target feature $y$ is the class label we want to predict. It can take any value from a finite set $\mathcal{Y}$;
+    \item The task is predicting the Maximum A Posteriori (MAP) estimate for the class label $y$ given the attribute values.
+    In other words, we want to predict the class $\hat{y}$ that maximizes the posterior probability $P(y | a_1, a_2, \ldots, a_m)$.
+    More formally:
+    \begin{equation}
+        \hat{y} = \arg\max_{y_i \in \mathcal{Y}} P(y_i | a_1, a_2, \ldots, a_m)
+    \end{equation}
+    Using Bayes' theorem, we can rewrite this as:
+    \begin{equation}
+        \hat{y} = \arg\max_{y_i \in \mathcal{Y}} \frac{P(a_1, a_2, \ldots, a_m | y_i) P(y_i)}{P(a_1, a_2, \ldots, a_m)}
+    \end{equation}
+    Since the denominator is constant with respect to $y_i$, we can simplify this to:
+    \begin{equation}
+        \hat{y} = \arg\max_{y_i \in \mathcal{Y}} P(a_1, a_2, \ldots, a_m | y_i) P(y_i)
+    \end{equation}
+\end{itemize}
+
+\subsection{Naive Bayes assumption}
+As the number of attributes increases, estimating the joint probability $P(a_1, a_2, \ldots, a_m | y_i)$ becomes increasingly difficult.
+To simplify this, Naive Bayes makes the assumption that all attributes are independent of each other, given the class label $y_i$.
+We can simplify the MAP estimate to:
+\begin{equation}
+    p(a_1, \ldots, a_m | y_i) = \prod_{j=1}^{m} P(a_j | y_i)
+\end{equation}
+This heavily reduces the number of parameters we need to estimate, making the model more efficient and less prone to overfitting.
+
+\subsection{Naive Bayes classifier}
+Given the assumption of conditional independence, the MAP estimate for the class label becomes:
+\begin{equation}
+    \hat{y} = \arg\max_{y_i \in \mathcal{Y}} \prod_{j=1}^{m} P(a_j | y_i) P(y_i)
+\end{equation}
+We assume that each attribute $A_j$ is modeled using the same type of distribution.
+The probability of an attribute value given the class label $P(a_j | y_i)$ can for example be modeled 
+using a multinomial distribution over the $k$ possible values of attribute $A_j$:
+\begin{equation}
+    P(a_j | y_i) = \prod_{k = 1}^{K} \theta_{kyi}^{z_k(a_j)}
+\end{equation}
+Where:
+\begin{itemize}
+    \item $\theta_{ky_i}$ is the parameter representing the probability of attribute $a_j$ taking value $k$, given class label $y_i$;
+    \item $z_k(a_j)$ is an indicator function that is 1 if attribute $a_j$ takes value $k$, and 0 otherwise.
+\end{itemize}
+
+\subsubsection{Parameter estimation}
+We need to estimate both the class prior probabilities $P(y_i)$ and the conditional probabilities $P(a_j | y_i)$ from the training data.
+\begin{itemize}
+    \item The class prior probabilities $p(y_i)$ can be easily learned as the fraction of training instances having each class label;
+    \item The maximum likelihood estimate for the parameters $\theta_{ky_i}$ can be computed as the relative 
+    frequency of attribute $A_j$ taking value $k$ among all instances with class label $y_i$.
+    More formally:
+    \begin{equation}
+        \theta_{ky_i}^{\max} = \frac{N_{ky_i}}{N_{y_i}}
+    \end{equation}
+\end{itemize}
+As previously mentioned, we can also introduce Dirichlet priors over the parameters to avoid zero probabilities for unseen attribute values:
+\begin{equation}
+    \theta_{ky_i}^{\max} = \frac{N_{ky_i} + \alpha_{ky_i}}{N_{y_i} + \alpha_{c}}
+\end{equation}
+
+\subsection{Example - Text Classification}
+We want to classify documents into one of $C$ possible classes, based only the words they contain.
+Let $V$ be the vocabulary of all possible words and $D$ a dataset of labeled documents.
+\begin{itemize}
+    \item We can easily compute the prior probabilities for each class $y_i$ as:
+    \[
+        P(y_i) = \frac{|D_i|}{|D|}
+    \]
+    \item We can model attributes with a multinomial distribution over $K = |V|$ possible words.
+    \item The parameters $\theta_{ky_i}$ can be estimated as:
+    \[
+        \theta_{ky_i}^{\max} = \frac{\sum_{x\in D_i} \sum_{j = 1}^{|x|} z_k(x_j)}{\sum_{x \in D_i} N_{y_i}(x)}
+    \]
+    Where:
+    \begin{itemize}
+        \item $x$ is a document in the dataset;
+        \item $D_i$ is the subset of documents in class $y_i$;
+        \item $x_j$ is the $j$-th word in document $x$;
+        \item $\sum_{x\in D_i} \sum_{j = 1}^{|x|} z_k(x_j)$ is the total number of occurrences of word $k$ in all documents of class $y_i$;
+        \item $\sum_{x \in D_i} N_{y_i}(x)$ is the total number of words in all documents of class $y_i$.
+    \end{itemize}
+\end{itemize}
+We can then classify a new document by computing the posterior probability for each class and selecting the class with the highest probability.
+\begin{equation}*
+    \hat{y} = \arg\max_{y_i \in \mathcal{Y}} \prod_{j=1}^{|x|} P(x_j | y_i) P(y_i) 
+\end{equation}
+Substituting the multinomial model for $P(x_j | y_i)$ and the prior $P(y_i)$, we get:
+\begin{equation}
+    \hat{y} = \arg\max_{y_i \in \mathcal{Y}} \prod_{j=1}^{|x|} \prod_{k = 1}^{K} \theta_{ky_i}^{z_k(x_j)} \cdot \frac{|D_i|}{|D|}
+\end{equation}
