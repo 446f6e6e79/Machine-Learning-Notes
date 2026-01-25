@@ -1,22 +1,30 @@
 \section{Linear Discriminant Functions}
 We can distinguish \textbf{learning models} between \textbf{generative models} and \textbf{discriminative models}.
 \begin{itemize}
-    \item \textbf{Generative models} aim to model the \textbf{distribution} governing the data. They learn the joint probability distribution $P(x,y)$ and can generate new data points, according to the learned distribution.
-    \item \textbf{Discriminative models} aim to model the \textbf{decision boundary} between classes, rather than the underlying data distribution.
+    \item \textbf{Generative models} aim to model the \textbf{distribution} governing the data. 
+    They learn the joint probability distribution $P(x,y)$ and 
+    can generate new data points, according to the learned distribution.
+    Some examples of generative models are \textbf{Naive Bayes}, \textbf{Gaussian Mixture Models}.
+    \item \textbf{Discriminative models} aim to model the \textbf{decision boundary} between classes, 
+    rather than the underlying data distribution.
 \end{itemize}
 
 \subsection{Advantages and disadvantages of discriminative models}
 \paragraph{Pros:}
 \begin{itemize}
-    \item When data is complex, modelling the underlying distribution can be very challenging (E.g., high resolution images);
+    \item When data is complex, modelling the underlying distribution can be very challenging 
+    (E.g., high resolution images);
     \item If \textbf{data discrimination} is the final goal, then there is no need to model the entire data distribution;
-    \item Discriminative models can focus on learning the parameters that are most relevant for learning the decision boundary, potentially leading to better performance.
+    \item Discriminative models can focus on learning the parameters that are most relevant for learning 
+    the decision boundary, potentially leading to better performance.
 \end{itemize}
 \paragraph{Cons:}
 \begin{itemize}
     \item The learned model is less flexible in its usage;
-    \item It doesn't allow to perform arbitrary inference tasks on the data. In example, it is not possible to generate new data points from the learned model.
+    \item It doesn't allow to perform arbitrary inference tasks on the data. 
+    In example, it is not possible to generate new data points from the learned model.
 \end{itemize}
+
 \subsection{Linear Discriminant Functions}
 A \textbf{linear discriminant model} uses a \textbf{linear function} to make predictions. 
 The \textbf{decision boundary} (discriminant function) is a linear combination of the input features:
@@ -29,8 +37,15 @@ where:
     \item $\boldsymbol{w}$ is the weight vector, representing the importance of each feature;
     \item $w_0$ is the bias term, which allows to shift the decision boundary.
 \end{itemize}
+Multiplying $\boldsymbol{w}^T$ by $\boldsymbol{x}$ computes a weighted sum of the input features,
+and adding $w_0$ shifts the result.
+\\The linear discriminant function is the simplest form of discriminant function. 
+Depending on the specific problem and data, more complex forms of discriminant functions can be used,
+but linear functions should always be considered as a baseline.
+
 \subsection{Linear Binary Classifier}
 In a \textbf{binary classification} problem, the linear discriminant function can be used to classify data points into two classes.
+Since the basic output of the discriminant function is a continuous value, we need to define a threshold to convert it into a binary prediction.
 This is usually done by taking the sign of the discriminant function:
 \begin{equation}
     f(\boldsymbol{x}) = \text{sign}(\boldsymbol{w}^T \boldsymbol{x} + w_0) = 
@@ -54,7 +69,12 @@ The weight vector $\boldsymbol{w}$ is \textbf{orthogonal} to the decision bounda
     \[ \boldsymbol{w}^T (\boldsymbol{x}_1 - \boldsymbol{x}_2) = 0 \]
     This shows that the vector $\boldsymbol{w}^T$ is orthogonal to the vector $(\boldsymbol{x}_1 - \boldsymbol{x}_2)$, which lies on the decision boundary. 
 \end{proof}
-\defib{Functional margin}{The value $f(\boldsymbol{x})$ of the discriminative function for a certain point $\boldsymbol{x}$ is called \textbf{functional margin}. It can be seen as the \textbf{confidence} of the model in the prediction for that point. A larger absolute value of the functional margin indicates a higher confidence in the prediction.}
+\defib{Functional margin}{
+    The value $f(\boldsymbol{x})$ of the discriminative function for a certain point $\boldsymbol{x}$
+    is called \textbf{functional margin}. 
+    It can be seen as the \textbf{confidence} of the model in the prediction for that point. 
+    A larger absolute value of the functional margin indicates a higher confidence in the prediction.
+}
 
 \defib{Geometric margin}{The distance from a point $\boldsymbol{x}$ to the decision boundary $H$ is called \textbf{geometric margin}.
 \begin{equation}\label{eq:geometric_margin}

@@ -141,5 +141,25 @@ With incomplete data, some examples may have missing values for certain variable
 In such cases, counts $N_{x,u}$ cannot be directly computed from the data.
 To address this, we can use an approximate method called the Expectation-Maximization (EM) algorithm.
 \paragraph{EM algorithm}
-
+In a nutshell, as we have said before, sufficient statistics (like counts) are not directly computable from incomplete data.
+The EM algorithm iteratively estimates these statistics based on the current parameter estimates, 
+and then updates the parameters using these estimated statistics.
+\\The algorithm consists of two main steps:
+\begin{itemize}
+    \item \textbf{Expectation step (E-step)}: given the current parameter estimates
+\end{itemize}
+\begin{comment}
+    #TODO: complete this part
+\end{comment}
 \subsection{Structure Learning}
+There are different approaches to learn the structure of a Bayesian Network from data.
+Some of this approaches include:
+\begin{itemize}
+    \item \textbf{Constraint-based methods}: these methods use statistical tests to 
+    identify conditional independencies between variables. 
+    Based on these independencies, a graph structure is proposed.
+    \item \textbf{Score-based methods}: these methods define a scoring for each possible structure based on how well it fits the data.
+    It then searches the space of possible structures to find the one that maximizes the score.
+    \item \textbf{Model-averaging methods}: these methods consider multiple possible structures 
+    and average their predictions, weighted by their probabilities.
+\end{itemize}
