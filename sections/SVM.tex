@@ -325,9 +325,6 @@ The hinge loss penalizes predictions that are either incorrect or within the mar
 This is exactly equivalent to the slack variable formulation.
 
 \subsubsection{Lagrangian of the Soft Margin SVM}
-\begin{comment}
-    #TODO: go on from here
-\end{comment}
 We can now derive the Lagrangian for the soft margin SVM optimization problem (\ref{eq:soft_svm_opt}).
 The Lagrangian is defined as:
 \begin{equation}\label{eq:soft_svm_lagrangian}
@@ -359,8 +356,13 @@ Substituting these expressions back into the Lagrangian (\ref{eq:soft_svm_lagran
         \end{cases}
     \end{aligned}
 \end{equation}
+The only difference with respect to the hard margin case is the additional upper bound constraint on the Lagrange multipliers $\alpha_i$.
+These are called \textbf{box constraints} and ensure that the multipliers do not exceed the regularization parameter $C$.
+This derives from the fact that $\alpha_i = C - \beta_i$ and $\beta_i \geq 0$. 
+Since we are removing from $C$ a non-negative value, $\alpha_i$ cannot be greater than $C$.
+
 \subsubsection{Observations}
-At the saddle point, it must hold that:
+Starting from equation \ref{eq:soft_svm_lagrangian}, at the saddle point, it must hold that:
 \begin{equation}
     \begin{cases}
         \alpha_i(y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 + \xi_i) = 0 \quad \forall i \\
@@ -377,9 +379,64 @@ We can distinguish some cases:
     \item If $\alpha_i = C$, then $\xi_i > 0$ and the point is either inside the margin or misclassified: $y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) < 1$;
     \item If $\alpha_i = 0$, then $\xi_i = 0$ and the point is correctly classified and outside the margin. It doesn't count
 \end{itemize}
+\begin{figure}[H]
+    \label{fig:svm_margin_support_vectors}
+    \resizebox{0.8\textwidth}{!}{
+        \centering
+        \begin{tikzpicture}
+            % Draw Axes
+            \draw[-Stealth, gray!60, thick] (-3,0) -- (5,0) node[below left, black] {$x_1$};
+            \draw[-Stealth, gray!60, thick] (0,-3) -- (0,5) node[below left, black] {$x_2$};
+
+            % Line parameters: x2 = -x1 + c
+            \def\xshift{1.5}
+            \def\xmargin{1}
+            \def\ymargin{0.5}
+            % Margins
+            \draw[thick, dashed] (-3.5 + \xmargin + \xshift, 3.5 + \ymargin) -- (3.5 + \xmargin + \xshift, -3.5 + \ymargin) node[pos=0, left, xshift=-2pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 1$};
+            \draw[thick, dashed] (-3.5 - \xmargin + \xshift, 3.5 - \ymargin) -- (3.5 - \xmargin + \xshift, -3.5 - \ymargin) node[pos=0, left, xshift=-15pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = -1$};
+            \draw[ultra thick] (-3.5 + \xshift, 3.5) -- (3.5 + \xshift, -3.5) node[pos=0, left, xshift=-8pt, yshift=5pt] {$\mathbf{w}^T\mathbf{x} + w_0 = 0$};
+            
+            % Blue Class
+            \node[svm-blue_sq] at (2.8, 0.2) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (-0.5, 3.5) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (-0.4, 2.4) {}; %SUPPORT VECTOR
+            \node[svm-blue_sq] at (-0.4, -1.7) {}; %SUPPORT VECTOR
+            \node[svm-blue-hidden_sq] at (3.5, -0.2) {};
+            \node[svm-blue-hidden_sq] at (1.3, 3.5) {};
+            \node[svm-blue-hidden_sq] at (0.8, 2.5) {};
+            \node[svm-blue-hidden_sq] at (1.8, 2.5) {};
+            \node[svm-blue-hidden_sq] at (3.4, 2.2) {};
+            \node[svm-blue-hidden_sq] at (2, 1.5) {};
+            \node[svm-blue-hidden_sq] at (4, 1) {};
+            % Red Class
+            \node[svm-red_circ] at (1, -1) {}; %SUPPORT VECTOR
+            \node[svm-red_circ] at (2.3, -1.7) {}; %SUPPORT VECTOR
+            \node[svm-red_circ] at (1.4, 2.1) {}; %SUPPORT VECTOR
+            \node[svm-red-hidden_circ] at (-3, 2.4) {};
+            \node[svm-red-hidden_circ] at (-2.5, 1.4) {};
+            \node[svm-red-hidden_circ] at (-1, 0.6) {};
+            \node[svm-red-hidden_circ] at (-3.3, 0.6) {};
+            \node[svm-red-hidden_circ] at (-1, -0.3) {};
+            \node[svm-red-hidden_circ] at (-2, -0.4) {};
+            \node[svm-red-hidden_circ] at (-0.5, -2) {};
+            \node[svm-red-hidden_circ] at (0.2, -2.5) {};
+            \node[svm-red-hidden_circ] at (-1.2, -2.5) {};
+            \node[svm-red-hidden_circ] at (1.7, -2.6) {};
+            \node[svm-red-hidden_circ] at (-2.6, -2.4) {};
+
+            % Vector w (orthogonal to the solid line)
+            \draw[-Stealth, ultra thick] (0, 0) -- (1.2, 1.2) node[right] {$\mathbf{w}$};
+        \end{tikzpicture}
+    }
+    \caption{Highlighting Support Vectors in Soft Margin SVM}
+\end{figure}
+
 \subsection{Large Scale SVM}
-When considering large datasets, the standard SVM training algorithms can become computationally expensive due to the quadratic programming involved.
-To address this, several large-scale SVM training methods have been developed, such as \textbf{stochastic gradient descent (SGD)}.
+When considering large datasets, the standard SVM training algorithms can become computationally expensive 
+due to the quadratic programming involved.
+To address this, several large-scale SVM training methods have been developed, 
+such as \textbf{stochastic gradient descent (SGD)}.
 \\When using SGD, we can reformulate the SVM optimization problem as:
 \begin{equation}
     \min_{\boldsymbol{w} \in X} \frac{1}{2} ||\boldsymbol{w}||^2  + \frac{1}{m} \sum_{i=1}^{m} |1 - y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle|_+
@@ -392,16 +449,16 @@ There is a problem with this approach: the hinge loss is not differentiable at t
 To handle this, we can use the concept of \textbf{subgradients}, which generalizes the notion of gradients to non-differentiable functions.
 The gradients then become:
 \begin{equation}
-    \nabla_{\boldsymbol{w}} E(\boldsymbol{w}; \bold{x}_i, y_i) = \lambda \boldsymbol{w} - \mathbb{I}[y_i \langle \boldsymbol{w}, \bold{x}_i \rangle \l 1] y_i \bold{x}_i
+    \nabla_{\boldsymbol{w}} E(\boldsymbol{w}; \bold{x}_i, y_i) = \lambda \boldsymbol{w} - \mathbb{I}[y_i \langle \boldsymbol{w}, \bold{x}_i \rangle < 1] y_i \bold{x}_i
 \end{equation}
 where $\mathbb{I}[\cdot]$ is the indicator function which can be written as:
 \[
-\mathbb{I}[y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle \l 1] = \begin{cases}
-1 & \text{if } y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle \l 1 \\
+\mathbb{I}[y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle < 1] = \begin{cases}
+1 & \text{if } y_i \langle \boldsymbol{w}, \boldsymbol{x}_i \rangle < 1 \\
 0 & \text{otherwise}\\
 \end{cases}
 \]
-\subsection{Margin Error Buond}
+\subsection{Margin Error Bound}
 The performance of SVMs can be theoretically analyzed using the concept of \textbf{margin error bounds}.
 The probability of misclassification on unseen data is bound from above by:
 \begin{equation}
