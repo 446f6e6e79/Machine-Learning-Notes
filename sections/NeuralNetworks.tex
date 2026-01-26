@@ -1,8 +1,7 @@
 \section{Neural Networks}
-\subsection{Why Neural Networks?}
 Neural networks are needed to resolve the limitations of other seen models. More in depth:
 \begin{itemize}
-    \item \textbf{Perceptron:} can only learn linearly separable functions;
+    \item \textbf{Perceptron:} are a linear model. They can only learn linearly separable functions;
     \item \textbf{Kernel Machines:} add the concept of non-linearity, but the choice of the appropriate kernel is not trivial;
 \end{itemize}
 \subsection{Multi Layer Perceptron}
@@ -111,25 +110,30 @@ This makes impossible to use gradient-based optimization methods for training.
 
 \paragraph{Sigmoid activation:}
 The sigmoid activation function is defined as:
-\[ f(\boldsymbol{x} = \sigma(\boldsymbol{w}^T \boldsymbol{x}) = \frac{1}{1 + e^{-\boldsymbol{w}^T \boldsymbol{x}}} \]
-\begin{tikzpicture}
-\begin{axis}[
-    axis lines = middle,
-    xlabel = {$z = \mathbf{w}^\top \mathbf{x}$},
-    ylabel = {$f(z)$},
-    ymin = -0.1, ymax = 1.1,
-    samples = 200,
-    domain = -8:8,
-    width=10cm,
-    height=6cm,
-    thick,
-]
+\[ f(\boldsymbol{x}) = \sigma(\boldsymbol{w}^T \boldsymbol{x}) = \frac{1}{1 + e^{-\boldsymbol{w}^T \boldsymbol{x}}} \]
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+    \begin{axis}[
+        axis lines = middle,
+        xlabel = {$z = \mathbf{w}^\top \mathbf{x}$},
+        ylabel = {$f(z)$},
+        ymin = -0.1, ymax = 1.1,
+        samples = 200,
+        domain = -8:8,
+        width=8cm,
+        height=5cm,
+        thick,
+    ]
 
-\addplot[blue] {1/(1 + exp(-x))};
-\end{axis}
-\end{tikzpicture}
+    \addplot[blue] {1/(1 + exp(-x))};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Sigmoid activation function}
+\end{figure}
 It represents a smooth approximation of the threshold function. It is approximately linear around zero, which helps in gradient-based optimization.
 However, for large positive or negative values of $z$, the function saturates (approaches 0 or 1), causing the gradient to vanish.
+
 \subsubsection{Output Layer}
 The output layer of a neural network produces the final predictions. The function used can be 
 different from the one used in hidden layers and heavily depends on the task at hand.
@@ -142,14 +146,17 @@ To obtain the final class label, a threshold (usually 0.5) is applied:
 \[ y^* = sign(f(\boldsymbol{x}) - 0.5) \]
 
 \paragraph{Multi-class Classification:} for multi-class classification, similar to what was done with single layer perceptrons, a one vs all approach can be used.
-This requires $K$ output neurons, one for each class. The softmax activation function is commonly used in this case, defined as:
-\[ f_i(\boldsymbol{x}) = \frac{e^{o_i(\boldsymbol{x})}}{\sum_{j=1}^{K} e^{o_j(\boldsymbol{x})}} \quad \text{for } i = 1, 2, \ldots, K \]
-This function converts the raw output scores into probabilities that sum to 1 across all classes. This is not activated element-wise, but
+This requires $K$ output neurons, one for each class. 
+The softmax activation function is commonly used in this case, defined as:
+\[ f_i(\boldsymbol{x}) = \frac{\exp(o_i(\boldsymbol{x}))}{\sum_{j=1}^{K} \exp(o_j(\boldsymbol{x}))} \quad \text{for } i = 1, 2, \ldots, K \]
+Where $o_i(\boldsymbol{x})$ is the raw output score of the $i$-th output neuron.
+\\This function converts the raw output scores into probabilities that sum to 1 across all classes. This is not activated element-wise, but
 it is a layer-wise activation function.
 The predicted class is the one with the highest probability:
 \[ y^* = \arg\max_{i} f_i(\boldsymbol{x}) \] 
 
 \paragraph{Regression:} for regression tasks, where the output is a continuous value, the decision is the value of the output neuron itself.
+\[f(\boldsymbol{x}) = o(\boldsymbol{x}) \]
 
 \subsubsection{representational power of MLPs}
 In this section we will analyze the representational power of MLPs on different tasks.
@@ -166,11 +173,20 @@ Similarly to other models, MLPs are trained by minimizing a loss function on the
 \paragraph{Binary Classification:}
 For binary classification tasks, the binary cross-entropy loss is commonly used. It is defined as:
 \[ L(y, f(\boldsymbol{x})) = - (y \log(f(\boldsymbol{x})) + (1 - y) \log(1 - f(\boldsymbol{x}))) \]
-This can be interpreted as a switch function between two log-likelihoods, depending on the true label $y$. By putting the minus sign,
-we convert the maximization problem into a minimization one (from a likelihood to a loss).
+This can be interpreted as a switch function between two log-likelihoods, depending on the true label $y$. 
+In fact:
+\[
+  \begin{cases}
+  L(y, f(\boldsymbol{x})) = - \log(f(\boldsymbol{x})) & \text{if } y = 1 \\
+  L(y, f(\boldsymbol{x})) = - \log(1 - f(\boldsymbol{x})) & \text{if } y = 0
+  \end{cases}
+\]
+This is needed because, as mentioned before, $f(\boldsymbol{x})$ represents the predicted probability of belonging to the positive class. 
+\\By putting the minus sign, we convert the maximization problem into a minimization one (from a likelihood to a loss).
+This way, making the argument of the log function closest to 1 (correct prediction) will minimize the loss.
 
 \paragraph{Multi-class Classification:}
-For multi-class classification tasks, the cross-entropy loss is used. It is defined as:
+For multi-class classification tasks, the cross-entropy loss is redefined for multiple classes. It is defined as:
 \[ L(y, \boldsymbol{f}(\boldsymbol{x})) = - \log f_y(\boldsymbol{x}) \]
 Where $f_y(\boldsymbol{x})$ is the predicted probability for the true class $y$.
 
@@ -182,16 +198,49 @@ For regression tasks, the mean squared error (MSE) loss is commonly used. It is 
 In order to train MLPs, we use Stochastic Gradient Descent (SGD) to minimize the chosen loss function. 
 As example, chossing mean squared error (MSE) as loss function, we would have:
 \[ E(W) = \frac{1}{2} (y - f(\boldsymbol{x}))^2 \]
-Where $W$ represents all the weights in the network.
+Where $W$ represents all the weights in the network. Note that $\frac{1}{2}$ is added to simplify 
+the derivative computation.
+\\To minimize the loss function, we need to compute the gradient of the loss with respect to each weight in the network.
 The relative gradient update is given by:
 \[ w_{lj} = w_{lj} - \eta \frac{\partial E(W)}{\partial w_{lj}} \]
-Where $\eta$ is the learning rate, $w_{lj}$ is the weight connecting neuron $j$ (source node) in the previous layer, to neuron $l$ (target node) in the current layer.
-To compute the partial derivative can be quite complex when the weights are really far from the output layer, where we actually compute the loss.
+Where $\eta$ is the learning rate, $w_{lj}$ is the weight connecting neuron $j$ (source node) 
+in the previous layer, to neuron $l$ (target node) in the current layer.
+\\To compute the partial derivative can be quite complex when the weights are really far from the output layer, 
+where we actually compute the loss (we need the output of the network to compute the loss).
 \\To solve this problem, we use the Backpropagation algorithm, which efficiently computes the gradients using the chain rule of differentiation.
+
 \subsubsection{Backpropagation}
 The idea behind backpropagation is to compute the gradients layer by layer, starting from the output layer and moving backwards to the input layer.
 Since each neuron's output depends on the outputs of the previous layer, which in turn depend on their own weights, we can apply the chain rule to compute the gradients.
-We can define the derivative as follows:
+\\\\Let's now zoom in on a single node. Suppose we want to compute the gradient of the loss function with respect to a weight $w_{lj}$ 
+connecting neuron $j$ in the previous layer to neuron $l$ in the current layer.
+\begin{figure}[H]
+    \begin{tikzpicture}
+        \node[input-node] (x1) at (0, 1.8) {};
+        \node (dots) at (0, 1) {$\vdots$};
+        \node[input-node, label=above right:$\phi_j$] (pred) at (0, 0) {$x_j$};
+        \node (dots) at (0, -0.8) {$\vdots$};
+        \node[input-node] (xm) at (0, -1.8) {};
+        \node[left=0.5cm of x2] (inputs-label) {Input node $j$};
+
+        % Node l
+        \node[circle, draw, minimum size=4cm, label=above:$x_l$] (node_l) at (5, 0) {};
+        \node[sum-node] (sum) at (4, 0) {\Large $\Sigma$};
+        \node[activation-node, right=1.2cm of sum] (act) {
+            \begin{tikzpicture}[scale=0.2] 
+                \draw[blue, thick] (-1,-1) -- (0,-1) -- (0,1) -- (1,1); 
+            \end{tikzpicture}
+        };
+
+        % Connection
+        \draw[connection] (x1) -- (sum) node[midway, above] {};
+        \draw[connection] (x2) -- (sum) node[midway, above] {$w_{lj}$};
+        \draw[connection] (xm) -- (sum) node[midway, above] {};
+        \draw[connection] (sum) -- (act) node[midway, above] {$a_l$};
+        \draw[connection] (act) -- ++(1,0) node[right] {$\phi_l$};
+    \end{tikzpicture}
+\end{figure}
+The chain rule gives us:
 \[
 \frac{\partial E(W)}{\partial w_{lj}}
 = \underbrace{\frac{\partial E(W)}{\partial a_l}}_{\delta_l}
@@ -200,20 +249,25 @@ We can define the derivative as follows:
 \]
 where:
 \begin{itemize}
-    \item $a_l$ is the weighted sum of inputs to neuron $l$. It is passed to the activation function to produce the output;
+    \item $\delta_l$ represents the error term for neuron $l$. 
+    Represents how much the output of neuron $l$ contributes to the final error;
     \item $\phi_j$ is the output of neuron $j$ in the previous layer. It is one of the inputs of the node $l$;
-    \item $\frac{\partial a_l}{\partial w_{lj}}$ is the input $\phi_j$, since $a_l = \sum_{i} w_{li} \phi_i$.
-    \item $\delta_l$ represents the error term for neuron $l$. Its computation depends on whether neuron $l$ is in the output layer or in a hidden layer.
+    \item $\frac{\partial a_l}{\partial w_{lj}}$ is the input $\phi_j$. Since $a_l = \sum_{i} w_{li} \phi_i$,
+    if we derive with respect to $w_{lj}$ all terms are constant except for the one with $i = j$, which gives $\phi_j$.
 \end{itemize}
-The gradient of a weight $w_{lj}$ is given by the product of the error term  
+The final update rule for weight $w_{lj}$ is simply the error term $\delta_l$ multiplied by the input $\phi_j$ coming from the previous layer.
+\\The computation of $\delta_l$ depends on whether neuron $l$ is in the output layer or in a hidden layer. We will analyze both cases.
+
 \paragraph{Output layers:}
-Since neuron $l$ is in the output layer, we can directly compute the derivative of the loss function with respect to the output of the network.
-Considering the MSE loss function, we have:
+Since neuron $l$ is in the output layer, we can directly compute the derivative 
+of the loss function with respect to the output of the network. Considering the MSE loss function, we have:
 \[\delta_{o} = \frac{\partial E(W)}{\partial a_{o}} = \frac{\partial \frac{1}{2} (y - f(\boldsymbol{x}))^2}{\partial a_{o}} \]
 Since we do not apply a non-linear activation function in the output layer for regression tasks, we have that $f(\boldsymbol{x}) = a_{o}$, so:
 \[ = \frac{\partial \frac{1}{2} (y - a_0)^2}{\partial a_{o}} = -(y - a_{o}) \]
+
 \paragraph{Hidden layers:}
-Here the node $l$ is in a hidden layer. Since we compute $\delta_l$ using the chain rule, we need to consider the contributions from the neurons in the next layer.
+Here the node $l$ is in a hidden layer. Since we compute $\delta_l$ using the chain rule, 
+we need to consider the contributions from the neurons in the next layer.
 \[\delta_{l} = \frac{\partial E(W)}{\partial a_{l}} = \sum_{k \in \text{children}(l)} \frac{\partial E(W)}{\partial a_{k}} \frac{\partial a_{k}}{\partial a_{l}} \]
 Where $k$ are the neurons in the next layer connected to neuron $l$. Intuitively, we are computing the contribution of neuron $l$ to the final error, by considering all the paths from $l$ to the output layer.
 \\The term $\frac{\partial E(W)}{\partial a_{k}}$ is simply $\delta_k$, already computed in the next layer. We derive that:
