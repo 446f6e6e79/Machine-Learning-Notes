@@ -5,16 +5,20 @@ With what we have seen so far about SVMs, we find out that:
     \item \textbf{Soft Margin SVMs} can address linearly separable problems with some degree of misclassification;
     \item \textbf{Non-linearly separable problems} need higher expressive power to be addressed.
 \end{itemize}
-\textbf{Kernel Machines} are an extension of SVMs that can address non-linearly separable problems, mantaining the same underlying principles of SVMs (large margin and theoretical guarantees).
-\\The key idea is to \textit{map} the input data into a higher dimensional space, where it is more likely to be linearly separable and perform a linear separation in that space.
+\textbf{Kernel Machines} are an extension of SVMs that can address non-linearly separable problems, 
+mantaining the same underlying principles of SVMs (large margin and theoretical guarantees).
+\\The key idea is to \textit{map} the input data into a higher dimensional feature space, where it is more likely 
+to be linearly separable and perform a linear separation in that space.
 \subsection{Feature Map}
 \defib{Feature Map}{
     \[
         \phi: \mathcal{X} \rightarrow \mathcal{H}
     \]
-    A feature map $\phi$ is a function that maps the input space $\mathcal{X}$ to a higher dimensional (possibly infinite-dimensional) feature space $\mathcal{H}$.
+    A feature map $\phi$ is a function that maps the input space $\mathcal{X}$ to a higher dimensional 
+    (possibly infinite-dimensional) feature space $\mathcal{H}$.
     \\\\All the examples $\boldsymbol{x}_i$ are replaced by their images $\phi(\boldsymbol{x}_i)$ in the feature space. 
-    This should increase the expressive power of the representation, introducing features that are combinations of the original inputs.
+    This should increase the expressive power of the representation, introducing features that are 
+    combinations of the original inputs. In this new space, the data may become linearly separable.
 }
 An example of feature map is the following:
 \defib{Polynomial Feature Map}{
@@ -28,7 +32,7 @@ An example of feature map is the following:
             x_2^2 \\
         \end{pmatrix}
     \end{equation}
-    This feature map takes a 2D input vector $\boldsymbol{x} = (x_1, x_2)$ and maps it to a 3D feature space by including polynomial terms of degree 2.
+    This feature map takes a 2D input vector $\boldsymbol{x} = (x_1, x_2)$ and maps it to a 3D feature space by including only polynomial terms of degree 2 (Homogeneous).
     \item \textbf{Non-Homogeneous Polynomial Feature Map} of degree $2$:
     \begin{equation} \label{eq:non_homogeneous_polynomial_feature_map}
         \phi\!\left(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}\right) =
@@ -41,8 +45,63 @@ An example of feature map is the following:
         \end{pmatrix}
     \end{equation}
     \end{itemize}
-    This feature map is similar to the previous one but includes a bias term (constant $1$) to account for non-homogeneous polynomials.
+    This feature map takes a 2D input vector $\boldsymbol{x} = (x_1, x_2)$ and maps it into all possible polynomial terms up to degree 2 (Non-Homogeneous).
 }
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        dot/.style={circle, draw=black, fill=white, inner sep=2pt},
+        square/.style={rectangle, draw=black, fill=black, inner sep=2pt},
+        >=Stealth
+    ]
+    % --- Left Side: Input Space (2D) ---
+    \draw[->] (-2,0) -- (2,0) node[right] {$x_1$};
+    \draw[->] (0,-2) -- (0,2) node[above] {$x_2$};
+    % Circles
+    \node[dot] at (-1.2, 1) {};
+    \node[dot] at (0.5, 1.3) {};
+    \node[dot] at (1.2, 1.1) {};
+    \node[dot] at (1.4, 0.4) {};
+    \node[dot] at (0.9, -0.7) {};
+    \node[dot] at (-1.3, -0.9) {};
+    \node[dot] at (-1.5, 0) {};
+    % squares
+    \node[square] at (-0.3, 0.3) {};
+    \node[square] at (0.4, 0.4) {};
+    \node[square] at (0.2, -0.3) {};
+    \node[square] at (-0.5, -0.6) {};
+
+    % --- The Mapping Arrow ---
+    \draw[->, bend left=40, thick] (1, 2) to node[above=5pt] {$\Phi$} (5.8, 2.1);
+
+    % --- Right Side: Feature Space (3D) ---
+    \begin{scope}[xshift=7cm, yshift=0cm, scale=1.2]
+        % 3D Axes
+        \draw[->] (-1.5, 0) -- (2, 0) node[right] {$\Phi(x)_1$};
+        \draw[->] (0, -1.5) -- (0, 2) node[above] {$\Phi(x)_2$};
+        \draw[->] (-1.5, -1.5) -- (1.5, 1.5) node[right] {$\Phi(x)_3$};
+        % Hyperplane
+        \draw[thick, fill=gray!5, fill opacity=0.5] (-2.5, -0.5) -- (1, -0.5) -- (2.8, 1.3) -- (-0.7, 1.3) -- cycle;
+        % Circles below the plane
+        \node[dot] at (-1.2, -0.8) {};
+        \node[dot] at (-0.2, -1.2) {};
+        \node[dot] at (0.5, -0.7) {};
+        \node[dot] at (0.9, -1.2) {};
+        \node[dot] at (1.5, -0.7) {};
+        \node[dot] at (-0.5, -0.7) {};
+        \node[dot] at (-0.7, -1.2) {};
+        % Squares above the plane
+        \node[square] at (0.6, 1.5) {};
+        \node[square] at (1.5, 1.2) {};
+        \node[square] at (1.1, 0.4) {};
+        \node[square] at (-0.5, 0.8) {};
+    \end{scope}
+    \end{tikzpicture}
+    \caption{Mapping from 2D input space to 3D feature space using a polynomial feature map of degree 2.}
+    \label{fig:feature_map}
+\end{figure}
+
+
 \subsection{Linear separation in feature space}
 Once the data is mapped into the feature space using the feature map $\phi$, we can apply SVM algorithms, replacing $\boldsymbol{x}$ with $\phi(\boldsymbol{x})$:
 \begin{equation}
@@ -54,9 +113,67 @@ A linear separation in the feature space corresponds to a non-linear separation 
     \phi\!\left(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}\right) = sgn(w_1 x_1^2 + w_2 x_1 x_2 + w_3 x_2^2 + w_0)
 \]
 The linear separator in the $3D$ feature space corresponds to a ellipse in the original $2D$ input space.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        dot/.style={circle, draw=black, fill=white, inner sep=2pt},
+        square/.style={rectangle, draw=black, fill=black, inner sep=2pt},
+        >=Stealth
+    ]
+    \begin{scope}[xshift=0cm, yshift=0cm, scale=1.2]
+        % 3D Axes
+        \draw[->] (-1.5, 0) -- (2, 0) node[right] {$\Phi(x)_1$};
+        \draw[->] (0, -1.5) -- (0, 2) node[above] {$\Phi(x)_2$};
+        \draw[->] (-1.5, -1.5) -- (1.5, 1.5) node[right] {$\Phi(x)_3$};
+        % Hyperplane
+        \draw[thick, fill=gray!5, fill opacity=0.5] (-2.5, -0.5) -- (1, -0.5) -- (2.8, 1.3) -- (-0.7, 1.3) -- cycle;
+        % Circles below the plane
+        \node[dot] at (-1.2, -0.8) {};
+        \node[dot] at (-0.2, -1.2) {};
+        \node[dot] at (0.5, -0.7) {};
+        \node[dot] at (0.9, -1.2) {};
+        \node[dot] at (1.5, -0.7) {};
+        \node[dot] at (-0.5, -0.7) {};
+        \node[dot] at (-0.7, -1.2) {};
+        % Squares above the plane
+        \node[square] at (0.6, 1.5) {};
+        \node[square] at (1.5, 1.2) {};
+        \node[square] at (1.1, 0.4) {};
+        \node[square] at (-0.5, 0.8) {};
+    \end{scope}
+        % --- The Mapping Arrow ---
+        \draw[->, bend left=40, thick] (1, 2) to node[above=5pt] {$f(x)$} (5.8, 2.1);
+
+        % --- Right Side: 2D space ---
+        \begin{scope}[xshift=7cm, yshift=0cm, scale=1.2]
+            \draw[->] (-2,0) -- (2,0) node[right] {$x_1$};
+            \draw[->] (0,-2) -- (0,2) node[above] {$x_2$};
+            % Circles
+            \node[dot] at (-1.2, 1) {};
+            \node[dot] at (0.5, 1.3) {};
+            \node[dot] at (1.2, 1.1) {};
+            \node[dot] at (1.4, 0.4) {};
+            \node[dot] at (0.9, -0.7) {};
+            \node[dot] at (-1.3, -0.9) {};
+            \node[dot] at (-1.5, 0) {};
+            % squares
+            \node[square](d1) at (-0.3, 0.3) {};
+            \node[square](d2) at (0.4, 0.4) {};
+            \node[square](d3) at (0.2, -0.3) {};
+            \node[square](d4) at (-0.5, -0.6) {};
+            % Ellipse centered in 0,0 - x radius 1.5, y radius 1 - rotated 45 degrees counter-clockwise
+            \draw[thick, black] (0,0) ellipse [x radius=1cm, y radius=0.6cm, rotate=45];
+        \end{scope}
+    \end{tikzpicture}
+    \caption{Mapping from 2D input space to 3D feature space using a polynomial feature map of degree 2.}
+    \label{fig:feature_map}
+\end{figure}
+
 \subsection{Kernel trick}
-Computing the feature map $\phi(\boldsymbol{x})$ explicitly can be computationally expensive. In the \textbf{dual formulation} 
-of SVMs, the data points appear only in the form of \textbf{dot products} $\langle \phi(\boldsymbol{x}), \phi(\boldsymbol{x}') \rangle$.
+Computing the feature map $\phi(\boldsymbol{x})$ explicitly can be computationally expensive. 
+However, this is not necessary to compute the SVM decision function.
+\\In the \textbf{dual formulation} of SVMs, the data points appear only in the form of \textbf{dot products} 
+$\langle \phi(\boldsymbol{x}), \phi(\boldsymbol{x}') \rangle$.
 \defib{Kernel trick}{
 The \textbf{kernel trick} consists in replacing the dot product in the feature space with an equivalent \textbf{kernel function} 
     \begin{equation}
@@ -64,7 +181,9 @@ The \textbf{kernel trick} consists in replacing the dot product in the feature s
         = \phi(\boldsymbol{x})^T \phi(\boldsymbol{x}') 
         = K(\boldsymbol{x}, \boldsymbol{x}')
     \end{equation}
-    The \textbf{kernel functions} uses examples in the \textbf{original input space} $\mathcal{X}$ to compute the dot product in the \textbf{feature space} $\mathcal{H}$, without explicitly computing the feature map $\phi$.
+    The \textbf{kernel functions} uses examples in the \textbf{original input space} $\mathcal{X}$ 
+    to compute the dot product in the \textbf{feature space} $\mathcal{H}$, 
+    without explicitly computing the feature map $\phi$.
 }
 \subsubsection{Examples of kernels}
 \paragraph{Homogeneous Polynomial Kernel}:
@@ -80,18 +199,17 @@ Setting $d=2$, we have:
     = (x_1 x_1')^2 + 2 x_1 x_2 x_1' x_2' + (x_2 x_2')^2
 \]
 \[
-= \begin{pmatrix}
-    x_1^2 \\
-    \sqrt{2} x_1 x_2 \\
-    x_2^2
-\end{pmatrix}^T
-\begin{pmatrix}
+= \underbrace{(x_1^2, \sqrt{2} x_1 x_2, x_2^2)}_{\phi(\boldsymbol{x})^T}
+\underbrace{
+    \begin{pmatrix}
     x_1'^2 \\
     \sqrt{2} x_1' x_2' \\
     x_2'^2
-\end{pmatrix}
+    \end{pmatrix}
+}_{\phi(\boldsymbol{x}')}
 \]
 This is equivalent to the dot product in the feature space defined by the homogeneous polynomial feature map of degree $2$, up to a scaling factor $\sqrt{2}$.
+
 \paragraph{Non-Homogeneous Polynomial Kernel}:
 taking in consideration the equation \ref{eq:non_homogeneous_polynomial_feature_map}, we can derive the following kernel:
 \begin{equation}
@@ -102,26 +220,22 @@ Setting $d=2$, we have:
     K(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2' + 1)^2
 \]
 \[
-    = (x_1 x_1')^2 + 2 x_1 x_2 x_1' x_2' + (x_2 x_2')^2 + 2 x_1 x_1' + 2 x_2 x_2D   + 1
+    = (x_1 x_1')^2 + 2 x_1 x_2 x_1' x_2' + (x_2 x_2')^2 + 2 x_1 x_1' + 2 x_2 x_2' + 1
 \]
-\[= \begin{pmatrix}
-    x_1^2 \\
-    \sqrt{2} x_1 x_2 \\
-    x_2^2 \\
-    \sqrt{2} x_1 \\
-    \sqrt{2} x_2 \\
-    1
-\end{pmatrix}^T
-\begin{pmatrix}
+\[ = \underbrace{(1, \sqrt{2} x_1, \sqrt{2} x_2, x_1^2, \sqrt{2} x_1 x_2, x_2^2)}_{\phi(\boldsymbol{x})^T}
+\underbrace{
+    \begin{pmatrix}
     x_1'^2 \\
     \sqrt{2} x_1' x_2' \\
     x_2'^2 \\
     \sqrt{2} x_1' \\
     \sqrt{2} x_2' \\
     1
-\end{pmatrix}
+    \end{pmatrix}
+}_{\phi(\boldsymbol{x}')}
 \]
 This is equivalent to the dot product in the feature space defined by the non-homogeneous polynomial feature map of degree $2$, up to a scaling factor $\sqrt{2}$.
+
 \subsubsection{Valid Kernels}
 \defib{Valid Kernel}{
     A kernel function $K : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is valid if it corresponds to a dot product in some feature space $\mathcal{H}$:
@@ -130,25 +244,39 @@ This is equivalent to the dot product in the feature space defined by the non-ho
     \end{equation}
 }
 The kernel generalizes the concept of similarity between data points in arbitrary feature spaces.
-\defib{Gram Matrix}{
-    Given examples $\{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m\}$, and a kernel function $k$, the \textbf{Gram matrix} $K$ is defined as:
-    \begin{equation}
-        K_{ij} = k(\boldsymbol{x}_i, \boldsymbol{x}_j) \forall i, j
-    \end{equation}
-}
+\begin{figure}[H]
+    \defib{Gram Matrix}{
+        Given examples $\{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m\}$, and a kernel function $k$, the \textbf{Gram matrix} $K$ is defined as:
+        \begin{equation}
+            K_{ij} = k(\boldsymbol{x}_i, \boldsymbol{x}_j) \forall i, j
+        \end{equation}
+    }
+\end{figure}
+
 \defib{Positive definite matrix}{
-    A matrix $M \in \mathbb{R}^{m \times m}$ is positive definite if:
+    A symmetric matrix $K \in \mathbb{R}^{m \times m}$ is positive definite if:
     \begin{equation}
         \sum_{i,j = 1}^m c_i c_j K_{ij} \geq 0 \quad \forall \boldsymbol{c} \in \mathbb{R}^m
     \end{equation}
 }
-A sufficient and necessary condition for a kernel $K$ to be valid is that the corresponding Gram matrix is positive definite for any choice of examples $\{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m\}$.
+Equivalent definitions of positive definiteness include:
+\begin{itemize}
+    \item All eigenvalues of $K$ are non-negative;
+    \item There exists a matrix $A$ such that $K = A^T A$.
+\end{itemize}
+A sufficient and necessary condition for a kernel $K$ to be valid is that 
+the corresponding Gram matrix is positive definite for any choice of examples 
+$\{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m\}$.
 There are several ways to check if a kernel is valid, e.g.:
 \begin{itemize}
     \item Prove its positive definiteness;
     \item Find out a corresponding feature map $\phi$ (as we did before);
     \item Use kernel combination properties (e.g. sum, product yield valid kernels).
+    This is the most common way to build complex kernels from simpler ones.
 \end{itemize}
+\begin{comment}
+    #TODO: add example on support vector regression??
+\end{comment}
 \subsection{Basic Kernels}
 Basic kernels can be useful as building blocks for more complex kernels. Some common examples include:
 \begin{itemize}
@@ -196,9 +324,9 @@ The product of two kernels corresponds to the \textbf{cartesian product} of thei
 = \sum_{i = 1}^n \sum_{j = 1}^m (\phi_{1i}(\boldsymbol{x}) \phi_{2j}(\boldsymbol{x})) (\phi_{1i}(\boldsymbol{x}') \phi_{2j}(\boldsymbol{x}'))
 \]
 \[
-= \sum_{k = 1}^{nm} \psi_{12k}(\boldsymbol{x}) \psi_{12k}(\boldsymbol{x}') = \psi_{12}(\boldsymbol{x})^T \psi_{12}(\boldsymbol{x}')
+= \sum_{k = 1}^{nm} \phi_{12k}(\boldsymbol{x}) \phi_{12k}(\boldsymbol{x}') = \phi_{12}(\boldsymbol{x})^T \phi_{12}(\boldsymbol{x}')
 \]
-where $\psi_{12}(\boldsymbol{x}) = \phi_{1}(\boldsymbol{x}) \times \phi_{2}(\boldsymbol{x})$ is the cartesian product of the two feature maps.
+where $\phi_{12}(\boldsymbol{x}) = \phi_{1}(\boldsymbol{x}) \times \phi_{2}(\boldsymbol{x})$ is the cartesian product of the two feature maps.
 The product can also be between kernel in different spaces.
 \subsubsection{Linear combination of kernels}
 A kernel can be rescaled by a positive constant:
