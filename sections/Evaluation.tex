@@ -44,7 +44,7 @@ Where:
 From the confusion matrix we can derive several performance measures.
 
 \subsubsection{Accuracy}
-\defib{Accuracy}{
+\definition{Accuracy}{
 	\textit{Accuracy} is the fraction of correctly labelled example among all predictions.
 	\begin{equation}
 	\mathit{Acc}= \frac{\mathit{TP}+\mathit{TN}}{\mathit{TP}+\mathit{TN}+\mathit{FP}+\mathit{FN}}
@@ -58,7 +58,7 @@ a high accuracy, but it wouldn't be able to predict any positive example.
 
 \subsubsection{Precision and Recall}
 \begin{figure}[H]
-\defib{Precision}{
+\definition{Precision}{
 	\textit{Precision} is the fraction of correctly predicted positive examples among all predicted positive examples.
 	\begin{equation}
 	\mathit{Prec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FP}}
@@ -68,7 +68,7 @@ a high accuracy, but it wouldn't be able to predict any positive example.
 This metric measures the precision of the learner in predicting positive examples. A problem with precision is that
 the learner can achieve a high precision by predicting only a few positive examples, only when 100\% sure.
 
-\defib{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all
+\definition{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all
 actual positive examples.
 \begin{equation}
 \mathit{Rec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FN}}
@@ -76,7 +76,7 @@ actual positive examples.
 }
 It measures the ability of the learner to find all positive examples.
 \\\\Since these last two metrics are complementary, we can combine them into a single one, called \textbf{F-measure}.
-\defib{F-measure}{\textit{F-measure} combines \textbf{precision} and \textbf{recall}, balancing their trade-off.  
+\definition{F-measure}{\textit{F-measure} combines \textbf{precision} and \textbf{recall}, balancing their trade-off.  
 \begin{equation}
 \mathit{F_\beta} = \frac{(1+\beta^2) \cdot \mathit{Prec} \cdot \mathit{Rec}}{\beta^2 \cdot \mathit{Prec} + \mathit{Rec}}
 \end{equation}
@@ -130,7 +130,7 @@ From this confusion matrix, we can compute precision and recall for each class $
 	\[\mathit{Rec}_i = \frac{n_{ii}}{\sum_{j} n_{ij}}\]
 \end{itemize}
 In addition, we can extend the definition of accuracy to the multiclass setting.
-\defib{Multiclass accuracy}{\textit{Multiclass accuracy} is the fraction of correctly predicted examples among all examples.
+\definition{Multiclass accuracy}{\textit{Multiclass accuracy} is the fraction of correctly predicted examples among all examples.
 \begin{equation}
 	\mathit{MAcc} = \frac{\sum_{i} n_{ii}}{\sum_{i} \sum_{j} n_{ij}}
 \end{equation}}
@@ -138,7 +138,7 @@ In addition, we can extend the definition of accuracy to the multiclass setting.
 \subsection{Regression}
 The typical performance measures in the regression domain is the \textbf{Root Mean Squared Error} (RMSE).
 It represents the \textbf{distance} between the predicted values $f(x_i)$ and the actual values $y_i$.
-\defib{Root Mean Squared Error}{\textit{Root Mean Squared Error} is defined as:
+\definition{Root Mean Squared Error}{\textit{Root Mean Squared Error} is defined as:
 \begin{equation}
 \mathit{RMSE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (f(x_i) - y_i)^2}
 \end{equation}

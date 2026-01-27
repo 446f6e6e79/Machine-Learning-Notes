@@ -1,5 +1,5 @@
-% Pacchetti essenziali
-\usepackage{graphicx} % Required for inserting images
+% Essential packages
+\usepackage{graphicx}
 \usepackage{comment}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -17,7 +17,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tcolorbox} 
-\usepackage{fancyhdr} % Aggiunto per intestazioni personalizzate
+\usepackage{fancyhdr}
 \usepackage{mdframed} 
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, calc, positioning, backgrounds, shapes.geometric, fit}
@@ -35,49 +35,58 @@
   stringstyle=\color{red},
   showstringspaces=false,
   breaklines=true,
-  frame=single, % Aggiunge un bordo attorno al codice
-  numbers=left, % Numeri di riga a sinistra
-  numberstyle=\tiny\color{gray}, % Stile dei numeri di riga
-  stepnumber=1, % Numero di righe da saltare tra i numeri
-  numbersep=-5pt, % Distanza tra i numeri di riga e il codice
-  tabsize=2, % Dimensione del tab
-  captionpos=b, % Posizione della didascalia
+  frame=single, % Adds a border around the code
+  numbers=left, % Line numbers on the left
+  numberstyle=\tiny\color{gray}, % Style of line numbers
+  stepnumber=1, % Number of lines to skip between numbers
+  numbersep=-5pt, % Distance between line numbers and code
+  tabsize=2, % Tab size
+  captionpos=b, % Position of the caption
 }
 
-% Configurazione dell'intestazione
+% Header configuration
 \pagestyle{fancy}
-\fancyhf{} % Pulisce le intestazioni e i piè di pagina
-\fancyhead[L]{\leftmark} % Sezione corrente a sinistra
-\fancyhead[R]{\thepage} % Numero di pagina a destra
-
-% Comandi personalizzati per definizioni
-\newcommand{\definition}[2]{%
-  \paragraph{#1:} #2%
-}
-
-% Alternativa con enfasi sul termine
-\newcommand{\defterm}[2]{%
-  \paragraph{\textbf{#1}:} #2%
-}
-
-% Ambiente per liste di definizioni
-\newenvironment{definitions}{%
-  \begin{description}[font=\normalfont\bfseries\large, leftmargin=0pt, labelindent=0pt]
-}{%
-  \end{description}
-}
-
-% Definizione con box colorato (opzionale)
-\newtcolorbox{defbox}[1]{
-  colback=blue!5!white,
-  colframe=blue!75!black,
-  title=#1,
-  fonttitle=\bfseries
-}
+\fancyhf{} % Clean header and footer
+\fancyhead[L]{\leftmark} % Current section on the top left
+\fancyhead[R]{\thepage} % Page number on the right
 
 % Defines a command for framed definitions with a blue background and a title
-\newcommand{\defi}[1]{\begin{mdframed} [nobreak=true,hidealllines=false,linecolor=blue!40,linewidth=2pt,backgroundcolor=blue!5,]{#1} \end{mdframed}}
-\newcommand{\defib}[2]{\begin{mdframed} [hidealllines=false,linecolor=blue!40,linewidth=2pt,backgroundcolor=blue!5,] \textbf{{#1}} \vspace{2mm} \\ {#2} \end{mdframed}}
+\newcommand{\definition}[2]{%
+\begin{mdframed}[
+    hidealllines=false,
+    linecolor=blue!80!black,
+    linewidth=1pt,
+    backgroundcolor=blue!5,
+    roundcorner=5pt,
+    frametitle={#1},
+    frametitlebackgroundcolor=blue!80!black,
+    frametitlefont=\color{white}\bfseries,
+    innerbottommargin=10pt,
+    skipabove=10pt,
+    skipbelow=10pt
+  ]
+  {#2}
+  \end{mdframed}
+}
+
+% Defines a command for framed Note boxes with green background and a title
+\newcommand{\note}[1]{%
+\begin{mdframed}[
+    hidealllines=false,
+    linecolor=green!80!black,
+    linewidth=1pt,
+    backgroundcolor=green!5,
+    roundcorner=5pt,
+    frametitle={Note},
+    frametitlebackgroundcolor=green!80!black,
+    frametitlefont=\color{white}\bfseries,
+    innerbottommargin=10pt,
+    skipabove=10pt,
+    skipbelow=10pt
+  ]
+  {#1}
+  \end{mdframed}
+}
 
 % Make proof keyword bold
 \makeatletter

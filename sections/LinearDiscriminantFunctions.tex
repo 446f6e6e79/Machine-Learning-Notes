@@ -70,7 +70,7 @@ The weight vector $\boldsymbol{w}$ is \textbf{orthogonal} to the decision bounda
     \[ \boldsymbol{w}^T (\boldsymbol{x}_1 - \boldsymbol{x}_2) = 0 \]
     This shows that the vector $\boldsymbol{w}^T$ is orthogonal to the vector $(\boldsymbol{x}_1 - \boldsymbol{x}_2)$, which lies on the decision boundary. 
 \end{proof}
-\defib{Functional margin}{
+\definition{Functional margin}{
     The value $f(\boldsymbol{x})$ of the discriminative function for a certain point $\boldsymbol{x}$
     is called \textbf{functional margin}. 
     It can be seen as the \textbf{confidence} of the model in the prediction for that point. 
@@ -83,7 +83,7 @@ Without normalization, we could arbitrarily increase the functional margin by sc
 which does not reflect a true increase in confidence.
 \\\\To address this, we introduce the concept of \textbf{geometric margin}, 
 which normalizes the functional margin by the norm of the weight vector.
-\defib{Geometric margin}{
+\definition{Geometric margin}{
     The distance from a point $\boldsymbol{x}$ to the decision boundary $H$ is called \textbf{geometric margin}.
     \begin{equation}\label{eq:geometric_margin}
         r^x = \frac{f(\boldsymbol{x})}{||\boldsymbol{w}||}

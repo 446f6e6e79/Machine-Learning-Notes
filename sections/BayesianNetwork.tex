@@ -50,7 +50,7 @@ Each variable $\boldsymbol{x}_i$ is independent of its non-descendants given its
     \caption{Example of Bayesian Network}
 \end{figure}
 \subsubsection{Independency Map}
-\defib{Independency Map}{
+\definition{Independency Map}{
     \begin{itemize}
         \item Let $p$ be a distribution over a set of random variables $\boldsymbol{X}$;
         \item Let $\mathcal{I}(p)$ be the set of independencies that hold in $p$;
@@ -177,12 +177,12 @@ Before introducing the concept of D-separation, we need to better understand the
 We will then present the basic structures that can appear in a BN.
 
 \subsubsection{Independence and conditional independence}
-\defib{Independence}{
+\definition{Independence}{
 We usually say that, two variables $a, b$ are independent (written $a \perp b|\empty$) if:
     \[ P(a, b) = P(a) P(b) \]
 }
 \begin{figure}[H]
-\defib{Conditional independence}{
+\definition{Conditional independence}{
     We say that two variables $a, b$ are conditionally independent given a third variable $c$ (written $a \perp b | c$) if:
     \[ P(a, b | c) = P(a | c) P(b | c) \]
 }
@@ -414,7 +414,7 @@ the weaker the dependency between the parents becomes.
 \end{figure}
 
 \subsubsection{General D-separation criterion}
-\defib{D-separation}{
+\definition{D-separation}{
     \begin{itemize}
         \item Let $\mathcal{G}$ be a BN structure over a set of random variables $\boldsymbol{X}$;
         \item Given three disjoint subsets of variables $\boldsymbol{A}, \boldsymbol{B}, \boldsymbol{C} \subseteq \boldsymbol{X}$;
@@ -473,14 +473,14 @@ and a set of global independencies $\mathcal{I}(\mathcal{G})$.
 Global independencies are all the independencies that can be derived using the D-separation criterion.
 We can formally define them as:
 \begin{figure}[H]
-\defib{Global independencies}{
+\definition{Global independencies}{
     \[ \mathcal{I}(\mathcal{G}) = \{ (A \perp B| C): \text{D-sep}(A, B| C) \} \]
 }
 \end{figure}
 
 \subsection{Equivalence Classes}
 Different BN structures can represent the same set of independencies assumptions.
-\defib{I-Equivalence}{
+\definition{I-Equivalence}{
     We say that two BN structures $\mathcal{G}, \mathcal{G'}$ are \textbf{I-equivalent} if they encode the same set of independencies:
     \[ \mathcal{I}(\mathcal{G}) = \mathcal{I}(\mathcal{G'}) \]
 }
@@ -489,7 +489,7 @@ necessary that $\mathcal{I}(\mathcal{G}) = \mathcal{I}(p)$ (doesn't need to enco
 \\\\As a consequence, also a fully connected graph (no independencies) is an I-map for any distribution $p$ over the same set of variables.
 Such graph is obviously not very useful, as it doesn't provide any information about independencies in $p$.
 \\To overcome this, we can define a \textbf{minimal I-map}.
-\defib{Minimal I-Map}{
+\definition{Minimal I-Map}{
     A BN structure $\mathcal{G}$ is a \textbf{minimal I-map} for a distribution $p$ if:
     \begin{itemize}
         \item $\mathcal{G}$ is an I-map for $p$;
@@ -500,7 +500,7 @@ This means it's impossible to remove any edge from $\mathcal{G}$ without introdu
 Note that a minimal I-map doesn't necessarily encode all independencies in $p$. 
 For this, we need a stronger definition, namely the \textbf{perfect I-map}.
 
-\defib{Perfect I-Map}{
+\definition{Perfect I-Map}{
     We say that a BN structure $\mathcal{G}$ is a \textbf{perfect I-map} for a distribution $p$ iff it captures
     all and only the independencies that hold in $p$:
     \[ \mathcal{I}(\mathcal{G}) = \mathcal{I}(p) \]

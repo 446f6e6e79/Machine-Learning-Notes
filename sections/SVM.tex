@@ -14,7 +14,7 @@ They are based on the following key concepts:
 SVMs learns the \textbf{central hyperplane} that separates the classes with the \textbf{largest margin}. Intuitively,
 the margin is the distance between the hyperplane and the closest data points from each class (the \textbf{support vectors}).
 To formally define this concept, we first need to introduce the notion of \textbf{classifier margin}.
-\defib{Classifier Margin}
+\definition{Classifier Margin}
 {
     Given a training set $\mathcal{D}$, a classifier confidence margin is:
     \begin{equation}
@@ -34,7 +34,7 @@ In fact, there are infinitely many equivalent formulations for the same hyperpla
 \[ \alpha (\boldsymbol{w}^T \boldsymbol{x} + w_0) = 0 \; \forall \alpha \neq 0\]
 To remove this ambiguity, we can define the \textbf{canonical hyperplane} by imposing the constraint that the closest points 
 to the hyperplane satisfy:
-\defib{Canonical Hyperplane}{
+\definition{Canonical Hyperplane}{
     The canonical hyperplane is defined such that the functional margin of the closest points to the hyperplane is equal to 1:
     \[ \rho = \min_{(\boldsymbol{X}, y) \in \mathcal{D}} yf(\boldsymbol{x}) = 1 \]
     Its geometric margin then becomes:
@@ -269,7 +269,7 @@ This is usually done by averaging the values obtained from all support vectors t
 In practice, there is one big problem with the assumption made by hard margin SVMs: \textbf{assuming that all data is correctly classified} is often unrealistic and can lead to overfitting.
 \\To address this issue, we introduce the concept of \textbf{soft margin SVMs}, which allow for some misclassifications in the training data.
 This is done by introducing \textbf{slack variables} to the optimization problem.
-\defib{Slack variables}{
+\definition{Slack variables}{
     Slack variables $\xi_i \geq 0$ are introduced for each training point to allow for some misclassification.
     \\\\They represent the \textbf{penalty} for the example $i$ being on the wrong side of the margin.
     \\\\The \textbf{sum of the slack variables} $\sum_{i=1}^{m} \xi_i$ has to be minimized along with the norm of the weight vector to find a balance 
@@ -307,7 +307,7 @@ that measures the error made by the classifier on each training example, removin
 \end{equation}
 We need to define a suitable loss function $L(y_i, f(\boldsymbol{x}_i))$ that captures the misclassification error.
 Considering the constraints in (\ref{eq:soft_svm_opt}), we can define the \textbf{hinge loss}.
-\defib{Hinge Loss}{
+\definition{Hinge Loss}{
     The hinge loss is defined as:
     \begin{equation}
         \begin{aligned}

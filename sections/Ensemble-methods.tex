@@ -2,17 +2,19 @@
 \label{sec:ensemble-methods}
 Ensemble methods are techniques that combine multiple ML models to improve the overall performance compared to individual models.
 The idea is based on the principle that group of individuals can make better decisions than a single individual, if they have diverse perspectives.
-Ensemble strategies can be categorized into three main types: 
+\\Ensemble methods need to diversify their predictions. They can be categorized into three main types: 
 \begin{enumerate}
     \item Bagging: diversifies the training sets;
     \item Stacking: diversifies the model architectures being trained;
     \item Boosting: diversifies the weights of the single training example, focusing on the "hard" ones.
 \end{enumerate}
+
 \subsection{Bagging}
 In a nutshell, Bagging is based on this simple tasks:
 \begin{itemize}
     \item Take a learning algorithm $A$;
-    \item Extract from it $m$ different dataset $D^{(i)}$ from the original training set $D$, using \textbf{bootstrap resampling};
+    \item Extract from it $m$ different dataset $D^{(i)}$ from the original training set $D$, 
+    using \textbf{bootstrap resampling} (explained later);
     \item Train one base model on each dataset:
     \[ f^{(i)} = A(D^{(i)}) \]
     \item Combine predictions of different base models:
@@ -74,7 +76,7 @@ Boosting is an ensemble method that combines multiple weak learners to create a 
     \item Combine the learned models into the final model.
 \end{itemize}
 This procedure is particullarly effective with weak learners.
-\defib{Weak learner}{
+\definition{Weak learner}{
     A weak learner is a model that performs slightly better than random guessing. A weak learner is easy
     to implement and train.
     \\Applying boosting with weak learners as the base models, allows to turn them into a strong learner.

@@ -10,7 +10,7 @@ the environment we are working in. We have:
     sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
 \end{itemize}
 \begin{figure}[H]
-\defib{I.I.D.}{
+\definition{I.I.D.}{
     \textit{Independent and Identically Distributed} (i.i.d.) refers to a set of random variables
     that are all drawn from the same probability distribution and are mutually independent.
 }
@@ -30,7 +30,7 @@ in order to make predictions on new examples.
 \end{itemize}
 \begin{figure}[H]
 
-\defib{A posteriori probability}{
+\definition{A posteriori probability}{
     The probability of a class $y_i$ given the features $\boldsymbol{x}$ and the training set $\mathcal{D}$, 
     denoted as $p(y_i|\boldsymbol{x}, \mathcal{D})$, is called the posterior probability. 
     It represents the probability of $x$ belonging to class $y_i$ after observing the data $\mathcal{D}$.
@@ -254,13 +254,13 @@ Where:
 
 \subsection{Sufficient statistics}
 \begin{figure}[H]
-    \defib{Statistic}{
+    \definition{Statistic}{
         Any function on a set of examples $\mathcal{D}$ is called a statistic.
     }
 \end{figure}
 
 \begin{figure}[H]
-    \defib{Sufficient statistic}{
+    \definition{Sufficient statistic}{
         A statistic $\boldsymbol{s} = \phi(\mathcal{D})$ is said to be sufficient for a parameter $\theta$ if:
         \[ P(\mathcal{D}|\boldsymbol{s}, \theta) = P(\mathcal{D}|\boldsymbol{s}) \]
         If $\theta$ is a random variable, then a \textbf{sufficient statistic} contains all the information 
@@ -273,7 +273,7 @@ For example \textbf{sample mean} and \textbf{covariance} are sufficient statisti
 
 \subsection{Conjugate priors}
 \begin{figure}[H]
-    \defib{Conjugate prior}{Given:
+    \definition{Conjugate prior}{Given:
     \begin{itemize}
         \item A likelihood function $p(x|\theta)$;
         \item A prior distribution $p(\theta)$;
