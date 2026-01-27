@@ -48,9 +48,13 @@ Since we are working in an unsupervised setting, we don't have labels to evaluat
 \subsection{Gaussian Mixture Models (GMM)}
 The idea behind Gaussian Mixture Models is to model the data as a mixture of several Gaussian distributions. 
 Each cluster is represented by a Gaussian distribution with its own parameters (mean and covariance).
-It assumes that the number of clusters $k$ is given and that each data point is generated from one of the $k$ Gaussian distributions.
+It assumes that the number of clusters $K$ is given and that each data point is generated from one of the $K$ Gaussian distributions.
 \subsubsection*{Parameter Estimation}
-Maximum Likelihood Estimation (MLE) cannot be used directly, since the cluster assignments are unknown. 
+If we wanted to estimate the parameters of the Gaussians (means and covariances), we could use Maximum Log-Likelihood Estimation (MLE).
+\[ \theta^* = \arg \max_{\theta} \mathcal{L}(\theta|\mathcal{D})\]
+where $\theta$ are the parameters of the Gaussians and $\mathcal{D}$ is the dataset.
+\[ \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log \left( \sum_{h = 1}^{K}p(x_i | \theta_k) \right) \]
+However, MLE cannot be used directly, since the cluster assignments are unknown.
 Instead, we can apply an iterative approach called the \textbf{Expectation-Maximization (EM)}.
 
 \subsubsection*{Expectation-Maximization (EM) Algorithm}
@@ -61,30 +65,34 @@ The EM algorithm consists of two main steps:
     \item Repeat until convergence.
 \end{enumerate}
 \subsubsection*{Example: estimating the mean of k univariate Gaussians}
-Here, we assume to have a dataset of $x_1, x_2, \ldots, x_n$ examples. For each example $x_i$, the cluster assignment is modelled as
-$z_{i1}, z_{i2}, \ldots, z_{ik}$ binary variables, in a one-hot encoding fashion ($z_{ij} = 1$ if $x_i$ belongs to cluster $j$, and $0$ otherwise).
-\\Parameters to estimate are the means of each Gaussian: $\mu_1, \mu_2, \ldots, \mu_k$, assuming that the variances are known and fixed.
+Here, we assume to have a dataset of $x_1, x_2, \ldots, x_n$ examples.
+We assume that the data is generated from $k$ univariate Gaussian distributions with 
+unknown means $\mu_1, \mu_2, \ldots, \mu_k$ and known variance $\sigma^2$.
+We want to estimate the means of the Gaussians using, allowing us to assign points to clusters probabilistically.
 \\The algorithm works as follows:
 \begin{enumerate}
     \item \textbf{Initialization}: randomly initialize the means $h = \langle\mu_1, \mu_2, \ldots, \mu_k \rangle$;
     \item \textbf{Iterate until convergence}: convergence is checked by measuring the change in Maximum Log-Likelihood:
     \begin{itemize}
-        \item \textbf{E-step}: compute the expected value $E[z_{ij}]$ of each latent variable, given the current hypotesis $h$:
-        \[ E[z_{ij}] = \frac{p(x_i | \mu_j)}{\sum_{l=1}^{k} p(x_i | \mu_l)} \]
-        We are basically computing the probability that $x_i$ belongs to cluster $j$ and normalizing it over all clusters. This way, summing
-        over all clusters gives $1$.
+        \item \textbf{E-step}: compute the posterior probability that a datapoint $x_i$ belongs to cluster $j$, 
+        given the current means $h$.
+        \[ \gamma_{ik} = \frac{\pi_k p(x_i | \mu_k)}{\sum_{j=1}^{k} \pi_j p(x_i | \mu_j)} \]
+        We are basically computing the probability that $x_i$ belongs to cluster $j$ and normalizing it over all clusters for each data point.
+        This way, summing over all clusters gives $1$.
+        The term $\pi_j$ represents the prior probability of cluster $j$.
         \\Since we are working with Gaussians, we use the Gaussian probability density function to compute $p(x_i | \mu_j)$.
-        \[ = \frac{\exp - \frac{1}{2\sigma^2}(x_i - \mu_j)^2}{\sum_{l=1}^{k}\exp - \frac{1}{2\sigma^2}(x_i - \mu_l)^2} \]
+        \[ = \frac{\pi_k\exp - \frac{1}{2\sigma^2}(x_i - \mu_k)^2}{\sum_{j=1}^{K}\exp - \frac{1}{2\sigma^2}(x_i - \mu_j)^2} \]
         \item \textbf{M-step}: calculate a new hypotesis $h'$ assuming values of latent variables are their expected values.
         The maximum likelihood estimate of the mean $\mu_j$ is given by the weighted sample mean, where each istance is weighted by its probability of
         belonging to cluster $j$:
-        \[ \mu_j' = \frac{\sum_{i=1}^{n} E[z_{ij}] x_i}{\sum_{i=1}^{n} E[z_{ij}]} \]
+        \[ \mu_j' = \frac{\sum_{i=1}^{n} \gamma_{ik} x_i}{\sum_{i=1}^{n} \gamma_{ik}} \]
     \end{itemize}
 \end{enumerate}
 
 \subsection{Choose the number of clusters k}
 Choosing the right number of clusters $k$ is a crucial step in clustering. Increasing the number of clusters will always
 improve the fit to the data, but it may lead to overfitting. We will now introduce different methods to choose $k$.
+
 \subsubsection{Elbow Method}
 The Elbow Method tries to trade-off the quality of the clustering with quantity. The number of clusters $k$ should stop 
 increasing when the advantage of adding another cluster is limited.
@@ -95,7 +103,35 @@ The approach is composed of the following steps:
     \item Plot $E(k)$ against $k$;
     \item Choose $k$ at the "elbow" point, where the decrease in $E(k)$ starts to slow down.
 \end{itemize}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+    \begin{axis}[
+        title={Optimal number of clusters},
+        xlabel={Number of clusters $k$},
+        ylabel={Sum of Squared Error $E(k)$},
+        xmin=1, xmax=10,
+        ymin=0, ymax=210,
+        xtick={1,2,3,4,5,6,7,8,9,10},
+        ytick={50,100,150,200},
+        grid=none,
+        axis lines=left,
+        title style={at={(0.5,1.1)}, anchor=center, font=\bfseries\large},
+    ]
+    % The Data Points
+    \addplot[color=blue!70!black,mark=*,thick,]
+    coordinates {
+        (1,195) (2,105) (3,80) (4,58) (5,50) (6,45) (7,42) (8,38) (9,40) (10,30)
+    };
+    % The Vertical Dashed "Elbow" Line at k=4
+    \draw [dashed, thick, gray] (axis cs:4,0) -- (axis cs:4,200);
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Elbow Method example plot. The elbow point is at $k=4$.}
+\end{figure}
 This method is really intuitive, but can be ambiguous, since the elbow point is not always clear.
+For example, in the plot above, one could argue that $k=2$ or $k=3$ are also valid choices.
+
 \subsubsection{Silhouette Method}
 Increasing the number of clusters $k$ will always decrease the sum-of-squared error criterion, but it will also increase the 
 similarity between different clusters. The Silhouette Method tries to balance these two aspects.
@@ -110,6 +146,32 @@ The silhouette score for a single point $x_i$ is defined as:
 \end{itemize}
 To choose the number of clusters $k$, we compute the average silhouette score over all points for different values of $k$. As before,
 we plot the average silhouette score against $k$ and choose the value of $k$ that maximizes the score.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+    \begin{axis}[
+        title={Optimal number of clusters},
+        xlabel={Number of clusters $k$},
+        ylabel={Silhouette Score},
+        xmin=1, xmax=10,
+        ymin=0, ymax=0.5,
+        xtick={1,2,3,4,5,6,7,8,9,10},
+        ytick={0,0.1,0.2,0.3,0.4,0.5},
+        grid=none,
+        axis lines=left,
+        title style={at={(0.5,1.1)}, anchor=center, font=\bfseries\large},
+    ]
+    % The Data Points
+    \addplot[color=blue!70!black,mark=*,thick,]
+    coordinates {
+        (1,0.0) (2,0.41) (3,0.3) (4,0.32) (5,0.29) (6,0.27) (7,0.25) (8,0.26) (9,0.25) (10,0.26)
+    };
+    % The Vertical Dashed "Elbow" Line at k=4
+    \draw [dashed, thick, gray] (axis cs:2,0) -- (axis cs:2,0.5);
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Silhouette Method example plot. The optimal number of clusters is at $k=2$.}
+\end{figure}
 \subsubsection{Hierarchical Clustering}
 Hierarchical Clustering is an alternative approach, that assumes that the data is organized in a hierarchy of clusters.
 This structure can be built from examples in two ways:
