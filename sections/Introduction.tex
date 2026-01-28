@@ -95,7 +95,8 @@ The learner is provided with a set of possible \textbf{STATES} $S$, and for each
 While performing an action $a$, the learner is provided with an immediate reward $r(s,a)$.
 The task is to learn a \textbf{POLICY}, that given a state $s$, selects an action $a$ that maximize the overall reward (including future moves).
 
-\subsection{Supervised Learning Task}:
+\subsection{Tasks in Machine Learning}
+\paragraph{Supervised Learning tasks}
 We can have different types of tasks in supervised learning:
 \begin{itemize}
     \item \textbf{CLASSIFICATION}: learning a discrete label (finite number of options). Could be:
@@ -109,7 +110,7 @@ We can have different types of tasks in supervised learning:
     \item \textbf{RANKING}: ordering a set of examples, according to their importance with the task.
 \end{itemize}
 
-\subsection{Unsupervised Learning tasks}:
+\paragraph{Unsupervised Learning tasks}
 \begin{itemize}
     \item \textbf{Dimensionality reduction}: reduce the dimensionality of the data, maintaining as much information as possible. 
     A common example is \textbf{Principal Component Analysis} (PCA);
@@ -117,7 +118,8 @@ We can have different types of tasks in supervised learning:
     \item \textbf{Anomaly detection}:finding instancies in the given examples, that contains errors. This can be used in example for the recognition of anomalous network traffic;
 \end{itemize}
 
-\subsection{Probabilistic reasoning}: reasoning in presence of uncertainty. It can be used for:
+\paragraph{Probabilistic reasoning}
+Reasoning in presence of uncertainty. It can be used for:
 \begin{itemize}
     \item evaluating the effect of a certain piece of evidence on other related variables;
     \item Estimate probability and relations between variables from a set of observation.
@@ -126,11 +128,18 @@ We can have different types of tasks in supervised learning:
 \subsection{Choice of learning algorithms}
 Based on the information about the task available to us, we can choose the learning algorithms accordingly:
 \begin{itemize}
-    \item \textbf{Full knowledge} of distribution of data: \textbf{Bayesian decision theory};
+    \item \textbf{Full knowledge} of distribution of data: \textbf{Bayesian decision theory}. 
+    If we know the distribution of data and the parameters, we can build Bayesian Networks to model the distribution;
     \item Form of \textbf{distribution known}, \textbf{parameters unknown}: parameter estimation from training data. 
-    Once learned, we can use \textbf{generative methods} to model the distribution;
+    Once learned, we can use \textbf{generative methods} to predict the output, given the input;
     \item \textbf{Distribution unknown}, \textbf{training examples available}: \textbf{discriminative methods}, learn a function 
-    predicting the output, given the input.
+    predicting the output, given the input. There are various methods for this, including:
+    \begin{itemize}
+        \item Decision Trees;
+        \item Support Vector Machines;
+        \item Neural Networks;
+        \item etc.
+    \end{itemize}
     \item \textbf{Distribution unknown}, \textbf{training examples unavailable}: \textbf{unsupervised methods}.
 \end{itemize}
 All of these methods will be analyzed in the following sections.

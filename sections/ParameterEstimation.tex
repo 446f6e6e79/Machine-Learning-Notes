@@ -6,7 +6,7 @@ the environment we are working in. We have:
     \item A \textbf{collection of data} sampled from a \textbf{probability distribution} $p(x,y)$;
     \item The \textbf{probability distribution} $p(x,y)$ is \textbf{known}, but the parameters $\theta$ 
     of the distribution are \textbf{unknown};
-    \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_m, y_m)\}$ of $N$ examples,
+    \item There is a \textbf{training set} $\mathcal{D} = \{(x_1, y_1), (x_2, y_2), \ldots, (x_N, y_N)\}$ of $N$ examples,
     sampled \textbf{i.i.d.} from the distribution $p(x,y)$;
 \end{itemize}
 \begin{figure}[H]
@@ -65,11 +65,14 @@ In order to estimate it, we need to estimate the parameter $\theta$ of the distr
 \subsection{Maximum Likelihood Estimation}
 Maximum Likelihood Estimation (\textbf{MLE}) is a method used to estimate the parameters of a statistical model.
 Given a set of training data $\mathcal{D} = \{\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n\}$, the estimation of 
-the parameter $\theta$ is done by finding the combination of parameters that fits at best the distribution 
-of the observed data.
+the parameter $\theta$ is done by finding the parameters with the highest likelihood of generating the observed data.
 \begin{equation}
-    \theta_i^* = \text{argmax}_{\theta} p(\theta_i|\mathcal{D}_i, y_i) = \text{argmax}_{\theta_i} p(\mathcal{D}_i,y_i | \theta_i) p(\theta_i)
+    \theta_i^* = \text{argmax}_{\theta} p(\theta_i|\mathcal{D}_i, y_i) = \text{argmax}_{\theta_i} \frac{p(\mathcal{D}_i,y_i | \theta_i) p(\theta_i)}{p(\mathcal{D}_i,y_i)}
 \end{equation}
+Since the denominator is independent of $\theta_i$, we can ignore it for the purpose of maximization:
+\begin{equation*}
+    \theta_i^* = \text{argmax}_{\theta_i} p(\mathcal{D}_i,y_i | \theta_i) p(\theta_i)
+\end{equation*}
 This equation assumes that a prior distribution $p(\theta_i)$ is given.
 \\\\The most common form of MLE, which doesn't take into account the prior, but only the training samples, is given by:
 \begin{equation}
@@ -253,19 +256,15 @@ Where:
 \end{itemize} 
 
 \subsection{Sufficient statistics}
-\begin{figure}[H]
-    \definition{Statistic}{
-        Any function on a set of examples $\mathcal{D}$ is called a statistic.
-    }
-\end{figure}
-
+Any function on a set of examples $\mathcal{D}$ is called a statistic.
 \begin{figure}[H]
     \definition{Sufficient statistic}{
         A statistic $\boldsymbol{s} = \phi(\mathcal{D})$ is said to be sufficient for a parameter $\theta$ if:
         \[ P(\mathcal{D}|\boldsymbol{s}, \theta) = P(\mathcal{D}|\boldsymbol{s}) \]
         If $\theta$ is a random variable, then a \textbf{sufficient statistic} contains all the information 
-        about $\theta$ that is present in the data $\mathcal{D}$.
-    }
+        that the sample $\mathcal{D}$ provides about the parameter $\theta$.
+        \[ p(\theta|\mathcal{D}, s) = p(\theta|\boldsymbol{s}) \] 
+        }
 \end{figure}
 A sufficient statistic allows to summarize a sample $\mathcal{D}$ into a smaller set of values $\boldsymbol{s}$, 
 without losing information.
@@ -276,11 +275,13 @@ For example \textbf{sample mean} and \textbf{covariance} are sufficient statisti
     \definition{Conjugate prior}{Given:
     \begin{itemize}
         \item A likelihood function $p(x|\theta)$;
-        \item A prior distribution $p(\theta)$;
+        \item A prior distribution on the parameter $\theta$, $p(\theta)$;
     \end{itemize}
     The prior distribution $p(\theta)$ is said to be a \textbf{conjugate prior} for the likelihood function $p(x|\theta)$ 
     if the posterior distribution $p(\theta|x)$ is in the same family as the prior distribution $p(\theta)$.}
 \end{figure}
+This means that if we start with a prior distribution that is conjugate to the likelihood function,
+after observing data and updating our beliefs, the posterior distribution will also be in the same family as the prior.
 
 \subsubsection{Example: Bernoulli distribution}
 Consider a \textbf{Bernoulli distribution} with events $x = 1$ for success and $x = 0$ for failure. Parameters 
@@ -297,9 +298,3 @@ The maximum likelihood estimation of $\theta$ is given by:
 \[\frac{\partial}{\partial \theta} \ln p(\mathcal{D}|\theta) = 0 \implies \frac{\partial}{\partial \theta} \left( h \ln \theta + t \ln (1-\theta) \right) = 0\]
 \[ \implies \frac{h}{\theta} - \frac{t}{1-\theta} = 0 \implies h (1-\theta) = t \theta \implies \theta = \frac{h}{h + t} \]
 $t, h$ are sufficient statistics for the Bernoulli distribution.
-
-\begin{comment}
-    #TODO:
-    - Add example for Baesian estimation 
-    - Add example of conjugate prior for Multinomial distribution
-\end{comment}

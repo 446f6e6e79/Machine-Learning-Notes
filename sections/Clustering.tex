@@ -82,8 +82,8 @@ We want to estimate the means of the Gaussians using, allowing us to assign poin
         The term $\pi_j$ represents the prior probability of cluster $j$.
         \\Since we are working with Gaussians, we use the Gaussian probability density function to compute $p(x_i | \mu_j)$.
         \[ = \frac{\pi_k\exp - \frac{1}{2\sigma^2}(x_i - \mu_k)^2}{\sum_{j=1}^{K}\exp - \frac{1}{2\sigma^2}(x_i - \mu_j)^2} \]
-        \item \textbf{M-step}: calculate a new hypotesis $h'$ assuming values of latent variables are their expected values.
-        The maximum likelihood estimate of the mean $\mu_j$ is given by the weighted sample mean, where each istance is weighted by its probability of
+        \item \textbf{M-step}: calculate a new hypothesis $h'$ assuming values of latent variables are their expected values.
+        The maximum likelihood estimate of the mean $\mu_j$ is given by the weighted sample mean, where each instance is weighted by its probability of
         belonging to cluster $j$:
         \[ \mu_j' = \frac{\sum_{i=1}^{n} \gamma_{ik} x_i}{\sum_{i=1}^{n} \gamma_{ik}} \]
     \end{itemize}

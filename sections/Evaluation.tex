@@ -88,7 +88,7 @@ The \textbf{Precision-Recall curve} is a graphical representation that illustrat
 \\\\Many classifiers output a confidence (probability score) for each prediction. All the evaluation metrics seen so far
 measure the performance of the classifier at a specific threshold.
 We can vary this threshold from min to max to obtain different pairs of precision and recall values, which can be plotted to create the Precision-Recall curve.
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{img/evaluation/precision-recall.png}
 	\caption{Precision-Recall curve example}
@@ -169,7 +169,17 @@ Then, for each $i \in [1, k]$:
 \end{itemize}
 After this iterative procedure, we can compute the \textbf{average score} over all folds:
 \[\bar{S} = \frac{1}{k} \sum_{i=1}^{k} S_i\]
+When applying k-fold cross-validation we obviously get $k$ different performances scores $S_1, S_2, \dots, S_k$.
+The average score $\bar{S}$ is a good estimate of the model's performance, but it is also useful to compute the 
+\textbf{variance} of these scores to understand the stability of the model across different data splits.
+\\\\Assuming that each fold is independent, we can compute the variance as:
+\[\mathit{Var}(\bar{S}) = \mathit{Var}[\frac{S_1, S_2, \dots, S_k}{k}]\]
 
-\begin{comment}
-	#TODO: Add variance of k-fold and hypotesis testing
-\end{comment}
+We can take out the constant $\frac{1}{k}$ as $\mathit{Var}(aX) = a^2 \mathit{Var}(X)$:
+\[\mathit{Var}(\bar{S}) = \frac{1}{k^2} \sum_{j = 1}^{k} \mathit{Var}(S_j)\]
+
+We cannot compute $\mathit{Var}(S_j)$ directly, but we can estimate it using the sample variance formula:
+\[\mathit{Var}(S_j) \approx \frac{1}{k-1} \sum_{i=1}^{k} (S_i - \bar{S})^2\]
+Combining the two equations, we get:
+\[\mathit{Var}(\bar{S}) \approx \frac{1}{k^2} \sum_{j=1}^{k} \underbrace{\left(\frac{1}{k-1} \sum_{i=1}^{k} (S_i - \bar{S})^2\right)}_{\text{Constant wrt } j}\]
+\[ = \frac{1}{k^2} \cdot k \cdot \left(\frac{1}{k-1} \sum_{i=1}^{k} (S_i - \bar{S})^2\right) = \frac{1}{k(k-1)} \sum_{i=1}^{k} (S_i - \bar{S})^2\]
