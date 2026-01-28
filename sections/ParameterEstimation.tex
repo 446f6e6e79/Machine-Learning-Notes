@@ -22,7 +22,7 @@ in order to make predictions on new examples.
 \begin{itemize}
     \item The training set $\mathcal{D}$ can be divided into $c$ subsets $\mathcal{D}_1,\dots,\mathcal{D}_c$,
     where each $\mathcal{D}_i = \{\boldsymbol{x}_1,\dots,\boldsymbol{x}_{n}\}$ contains examples of class $y_i$;
-    \item For any new example $\boldsymbol{x}$, we can compute the posterior probability for each class $y_i$
+    \item For any new example $\boldsymbol{x}$, we want to be able to compute the posterior probability for each class $y_i$
     (what's the probability of $y_i$ given $\boldsymbol{x}$) using Bayes' theorem:
     \begin{equation}\label{eq:multiclass-bayes}
         p(y_i|\boldsymbol{x}, \mathcal{D}) = \frac{p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})}{p(\boldsymbol{x}|\mathcal{D})}
@@ -49,8 +49,8 @@ Starting from the equation \ref{eq:multiclass-bayes}, we can simplify it by maki
     \item The denominator $p(\boldsymbol{x}|\mathcal{D})$ can be computed using the \textbf{law of total probability}:
     \[p(\boldsymbol{x}|\mathcal{D}) = \sum_{i=1}^{c} p(\boldsymbol{x}|y_i, \mathcal{D})p(y_i|\mathcal{D})\]
 \end{itemize}
-At this point the only factor of equation \ref{eq:independence-assumption} that remains unknown is $p(\boldsymbol{x}|y_i, \mathcal{D})$.
-In order to estimate it, we need to estimate the parameter $\theta$ of the distribution.
+At this point the only factor of equation \ref{eq:independence-assumption} that remains unknown is $p(\boldsymbol{x}|y_i, \mathcal{D}_i)$.
+In order to estimate it, we need to estimate the class dependent parameter $\theta_i$ of the distribution.
 \\This can be done in two ways:
 \begin{enumerate}
     \item \textbf{Maximum Likelihood Estimation} (MLE): we assume that the parameter $\theta_i$ is a fixed but unknown values.
@@ -112,7 +112,7 @@ Considering its logarithm, we have:
 \]
 \paragraph{Estimating $\mu$:}
 \[
-    \frac{\partial p(\boldsymbol{x}_j|\theta)}{\partial \mu} = \frac{\partial}{\partial \mu}  \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} 
+    \frac{\partial \log p(\boldsymbol{x}|\theta)}{\partial \mu} = \frac{\partial}{\partial \mu}  \sum_{j = 1}^{n} \left[\ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} \right]
 \]
 The derivative of the first term is zero, so we only need to compute the derivative of the second term, which is:
 \[
@@ -134,12 +134,22 @@ Setting this quantity to zero, we have:
 \]
 Which is the \textbf{sample mean} of the data.
 \paragraph{Estimating $\sigma$:}
-Repating the same process for $\sigma$, we have:
+Repeating the same process for $\sigma$, we have:
 \[
-    \frac{\partial p(\boldsymbol{x}_j|\theta)}{\partial \sigma} = \frac{\partial}{\partial \sigma}  \sum_{j = 1}^{n} \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} 
+    \frac{\partial \log p(\boldsymbol{x}|\theta)}{\partial \sigma} = \frac{\partial}{\partial \sigma}  \sum_{j = 1}^{n} \left[ \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2} \right]
 \]
+Focusing on the first term, we rewrite it as:
 \[
-    = \sum_{j = 1}^{n} \sqrt{2\pi} \sigma  \frac{1}{\sqrt{2 \pi}}(-\sigma^{-2}) - \frac{(\boldsymbol{x}_j - \mu)^2}{2} (-2\sigma^{-3})
+    \ln(\frac{1}{\sqrt{2\pi\sigma^2}}) = \ln([2\pi\sigma^2]^{-\frac{1}{2}}) = -\frac{1}{2} \ln(2\pi\sigma^2)
+\]
+Using the properties of logarithms, we can separate the terms:
+\[
+    = -\frac{1}{2} \ln(2\pi) - \frac{1}{2} \ln(\sigma^2)
+\]
+Since the term $-\frac{1}{2} \ln(2\pi)$ is independent of $\sigma$, its derivative is zero.
+We only need to compute the derivative of:
+\[
+    = \frac{\partial}{\partial \sigma}\sum_{j = 1}^{n} \left[-\frac{1}{2} \ln(\sigma^2) - \frac{(\boldsymbol{x}_j - \mu)^2}{2}(\sigma^{-2})\right]
 \]
 \[
     = \sum_{j = 1}^{n} -\frac{1}{\sigma} + \frac{(\boldsymbol{x}_j - \mu)^2}{\sigma^3}
@@ -150,14 +160,19 @@ if we set the quantity to zero, we have:
 \]
 Multiplying by $\sigma^3$, we have:
 \[
-    \sum_{j = 1}^{n} -\sigma^2 + (\bold{x}_j - \mu)^2 = 0
+    \sum_{j = 1}^{n} -\sigma^2 + (\boldsymbol{x}_j - \mu)^2 = 0
 \]
 \[
-    \sigma^2 = \frac{1}{n} \sum_{j = 1}^{n} (\bold{x}_j - \mu)^2
+    \sigma^2 = \frac{1}{n} \sum_{j = 1}^{n} (\boldsymbol{x}_j - \mu)^2
 \]
+Which is the \textbf{sample variance} of the data.
 \paragraph{Conclusion:}
-By this two derivations, we have found that the parameters that maximize the likelihood 
-of the data are the \textbf{sample mean} and the \textbf{sample variance} of the data.
+By this two derivations, we have found that the maximum likelihood estimators for 
+the parameters of a Gaussian distribution are simply their estimates over the samples:
+\begin{itemize}
+    \item Gaussian mean $\mu$ is estimated by the sample mean;
+    \item Gaussian variance $\sigma^2$ is estimated by the sample variance.
+\end{itemize}
 
 \subsection{Bayesian Estimation}
 With this approach we focus on the estimation of the parameters of our distribution $p(\boldsymbol{x}, y)$ a priori, 
