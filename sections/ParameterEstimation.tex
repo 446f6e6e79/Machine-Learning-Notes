@@ -182,7 +182,7 @@ meaning that we update our knowledge about the parameters $\theta$ based on the 
 \[
     p(\boldsymbol{x}|y_i, \mathcal{D}_i) = \int_{\theta_i} p(\boldsymbol{x},\theta_i|y_i, \mathcal{D}_i) d\theta_i
 \]
-Since probability of $\boldsymbol{x}$ given each class $y_i$ is indipendent of the other classes, we can simplify the equation as:
+Since probability of $\boldsymbol{x}$ given each class $y_i$ is independent of the other classes, we can simplify the equation as:
 \[
     p(\boldsymbol{x}|\mathcal{D}) = \int_{\theta} p(\boldsymbol{x},\theta| \mathcal{D}) d\theta
 \]
@@ -209,7 +209,7 @@ Where $p(\mathcal{D})$ is a constant independent of $\theta$, so we can ignore i
 \subsubsection{Example: Bayesian estimation for Gaussian distribution}
 \paragraph{Unknown $\mu$, known $\sigma$:}
 Assuming that the data is drawn from a Gaussian distribution $p(\boldsymbol{x}|\mu) \sim \mathcal{N}(\mu, \sigma^2)$.
-\\The prior distribution for $\mu$ is also a Gaussian distribution: $p(\mu) \sim \mathcal{N}(\mu_0, \sigma_0^2)$.
+\\The prior distribution for $\theta = \mu$ is also a Gaussian distribution: $p(\mu) \sim \mathcal{N}(\mu_0, \sigma_0^2)$.
 Where:
 \begin{itemize}
     \item $\mu_0$ is the prior mean (our initial guess for the mean of the data);
@@ -220,19 +220,22 @@ Starting from the equation \ref{eq:bayes-posterior} we have:
 \[
     p(\mu|\mathcal{D}) = \frac{p(\mathcal{D}|\mu) p(\mu)}{p(\mathcal{D})}
 \]
-Since we have already seen that $\frac{1}{p(\mathcal{D})}$ is indipendent of $\mu$ and that the examples are i.i.d we can derive:
+Since we have already seen that $\frac{1}{p(\mathcal{D})}$ is independent of $\mu$, we can replace it with a constant $\alpha$.
+Since the examples are i.i.d we can derive:
 \[
    p(\mu|\mathcal{D}) = \alpha p(\mathcal{D}|\mu) p(\mu) = \alpha \prod_{j=1}^{n} p(\boldsymbol{x}_j|\mu) p(\mu)
 \]
 From here we can substitute the two Gaussian distributions:
-\\First, the distribution of the data given $\mu$:
+\begin{enumerate}
+    \item The distribution of the data given $\mu$;
 \[
    p(\boldsymbol{x}_j|\mu) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2}\right)
 \]
-Then the prior distribution of $\mu$:
+\item The prior distribution of $\mu$:
 \[
    p(\mu) = \frac{1}{\sqrt{2\pi}\sigma_0} \exp\left(-\frac{(\mu - \mu_0)^2}{2\sigma_0^2}\right)
 \]
+\end{enumerate}
 Substituting these into our equation for the posterior distribution, we get:
 \[
    p(\mu|\mathcal{D}) = \alpha \prod_{j=1}^{n} \left( \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(\boldsymbol{x}_j - \mu)^2}{2\sigma^2}\right) \right) \left( \frac{1}{\sqrt{2\pi}\sigma_0} \exp\left(-\frac{(\mu - \mu_0)^2}{2\sigma_0^2}\right) \right)
@@ -249,20 +252,25 @@ Which simplifies to:
 \]
 We can in fact see that this composition still behaves like a normal distribution itself.
 \\Solving for $\mu_n$ and $\sigma_n^2$ we have:
-\[   \mu_n = \frac{n\sigma_0^2}{n\sigma_0^2 + \sigma^2} \hat{\mu}_n + \frac{n \sigma_0^2}{n\sigma_0^2 + \sigma^2} \mu_0 \]
+\[   \mu_n = \frac{n\sigma_0^2}{n\sigma_0^2 + \sigma^2} \hat{\mu}_n + \frac{\sigma^2}{n\sigma_0^2 + \sigma^2} \mu_0 \]
+Where $\hat{\mu}_n$ is the sample mean of the data;
 \[   \sigma_n^2 = \frac{\sigma_0^2 \sigma^2}{n\sigma_0^2 + \sigma^2} \]
-Where $\hat{\mu}_n$ is the sample mean of the data.
 
 \paragraph{Interpretation:}
 The Interpretation of the results are the following:
 \begin{itemize}
-    \item the \textbf{mean} of the posterior distribution $\mu_n$ is a \textbf{linear combination} of the prior mean $\mu_0$ and the sample mean $\hat{\mu}_n$;
-    \item the \textbf{more training examples} $(n)$ are seen, the more the sample mean $\hat{\mu}_n$ influences the posterior mean $\mu_n$;
-    \item the more training examples are seen, the \textbf{smaller} the variance $\sigma_n^2$ of the posterior distribution becomes, making the distribution sharper around the mean.
+    \item the \textbf{mean} of the posterior distribution $\mu_n$ is a \textbf{linear combination} of 
+    the prior mean $\mu_0$ and the sample mean $\hat{\mu}_n$;
+    \item the \textbf{more training examples} $(n)$ are seen, the more the sample mean 
+    $\hat{\mu}_n$ influences the posterior mean $\mu_n$ (the sample mean has $n$ both in the numerator and denominator,
+    while the prior mean has only constants in the denominator);
+    \item the more training examples are seen, the \textbf{smaller} the variance $\sigma_n^2$ of the posterior 
+    distribution becomes, making the distribution sharper around the mean.
 \end{itemize}
+
 \paragraph{Computing the conditional density}
 Finally, we can compute the conditional density $p(\boldsymbol{x}|\mathcal{D})$ using the posterior distribution:
-\[    p(\boldsymbol{x}|\mathcal{D}) = \int p()\boldsymbol{x}|\mu) p(\mu|\mathcal{D}) d\mu \]
+\[    p(\boldsymbol{x}|\mathcal{D}) = \int p(\boldsymbol{x}|\mu) p(\mu|\mathcal{D}) d\mu \]
 \[ \sim \mathcal{N} \left( \mu_n, \sigma^2 + \sigma_n^2 \right) \]
 Where:
 \begin{itemize}

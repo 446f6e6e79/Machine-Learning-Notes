@@ -70,12 +70,12 @@ The \textbf{meta-model} should be trained on a separate dataset $D'$ or it will 
 Boosting is an ensemble method that combines multiple weak learners to create a strong learner. The key idea is to train models sequentially, with each new model focusing on the errors made by the previous ones. The process can be summarized in the following steps:
 \begin{itemize}
     \item Take a learner $A$ and train it on $D$;
-    \item Reweight examples in $D$ based on their accuracy according to the trained model (incorrectly classified examples get higher weights);
-    \item Train $A$ again on the reweighted dataset;
+    \item Reweigh examples in $D$ based on their accuracy according to the trained model (incorrectly classified examples get higher weights);
+    \item Train $A$ again on the reweighed dataset;
     \item Repeat the procedure for $m$ times;
     \item Combine the learned models into the final model.
 \end{itemize}
-This procedure is particullarly effective with weak learners.
+This procedure is particularly effective with weak learners.
 \definition{Weak learner}{
     A weak learner is a model that performs slightly better than random guessing. A weak learner is easy
     to implement and train.
