@@ -13,6 +13,13 @@ reliability, and generalizability using specific quantitative metrics and qualit
 		\item \textbf{Computing statistical significance} of results.
 	\end{itemize}
 \end{itemize}
+The performance measure usually differs from the loss function used during training. In fact:
+\begin{itemize}
+	\item The \textbf{loss function} simply measures the cost paid for predicting $f(x)$ when the true output is $y$.
+	It usually has to be differentiable (smooth) to allow optimization;
+	\item The \textbf{performance measure} quantifies how well the model performs on a given task.
+	Usually, different performance measures are used to test different aspects of the model.
+\end{itemize}
 
 \subsection{Binary classification}
 The typical way to evaluate a binary classifier is by means of a \textbf{confusion matrix}:
@@ -183,3 +190,58 @@ We cannot compute $\mathit{Var}(S_j)$ directly, but we can estimate it using the
 Combining the two equations, we get:
 \[\mathit{Var}(\bar{S}) \approx \frac{1}{k^2} \sum_{j=1}^{k} \underbrace{\left(\frac{1}{k-1} \sum_{i=1}^{k} (S_i - \bar{S})^2\right)}_{\text{Constant wrt } j}\]
 \[ = \frac{1}{k^2} \cdot k \cdot \left(\frac{1}{k-1} \sum_{i=1}^{k} (S_i - \bar{S})^2\right) = \frac{1}{k(k-1)} \sum_{i=1}^{k} (S_i - \bar{S})^2\]
+
+\subsection{Hypothesis testing}
+When comparing two learning algorithms, we want to determine if the observed difference 
+in performance is statistically significant or if it could have occurred by chance.
+Hypothesis testing provides a framework to make this determination.
+\\\\Given the hypotheses that we want to test (e.g. "Algorithm $A$ is better than Algorithm $B$"), we first need to define:
+\begin{itemize}
+	\item \textbf{Null hypothesis} ($H_0$): the one rejecting our claim. It usually states that there is no difference between the two algorithms;
+	\item \textbf{Test statistic}: a function $T$ over samples of random variables that summarizes the data. Its value
+	is used to decide whether to reject the null hypothesis.
+\end{itemize}
+
+\subsubsection{T-test}
+In the \textbf{T-test}, the test statistic is given by the standardized mean, defined as:
+\begin{equation}
+	T = \frac{\bar{X} - \mu_0}{ \sqrt{Var[\bar{X}]}} 
+\end{equation}
+Assuming that the samples come from an unknown Normal distribution, the test statistic $T$ follows a 
+t-distribution with $k-1$ degrees of freedom ($k$ is the number of samples).
+\\The null hypothesis $H_0$ is rejected iff the computed statistic $T$ is greater than a critical value $t_{\alpha, k-1}$.
+Formally, in a two-tailed test:
+\begin{equation}
+	H_0 \text{ rejected iff } |T| > t_{\alpha/2, k-1}
+\end{equation}
+Where $\alpha$ is the significance level (usually set to 0.05, means that we accept a 
+5\% chance of rejecting the null hypothesis when it's actually true).
+
+\subsubsection{Example: comparing two algorithms}
+Suppose we have two learning algorithms $A$ and $B$, and we want to compare their performance using k-fold cross-validation.
+We perform the following steps:
+\begin{itemize}
+	\item Run \textit{k-fold cross-validation} for both algorithms, obtaining two sets of performance scores;
+	\item Compute the \textbf{mean difference} $\hat{\delta}$:
+	\begin{equation*}
+		\hat{\delta} = \frac{1}{k} \sum_{i=1}^{k} \delta_i
+	\end{equation*}
+	Where $\delta_i$ is the difference in performance scores for fold $i$. It is computed as:
+	\begin{equation*}
+		\delta_i = S_{D_i}[L_A(T_i)] - S_{D_i}[L_B(T_i)]
+	\end{equation*}
+	This is simply the difference between the scores of algorithm $A$ and $B$ on fold $i$.
+	\item The null hypothesis $H_0$ states that there is no difference in performance between the two algorithms,
+	meaning that $\mu_0 = 0$;
+	\item Compute the \textbf{variance} of the differences:
+	\begin{equation*}
+		Var[\hat{\delta}] = \frac{1}{k(k-1)} \sum_{i=1}^{k} (\delta_i - \hat{\delta})^2
+	\end{equation*}
+	\item Compute the \textbf{test statistic} $T$:
+	\begin{equation*}
+		T = \frac{\hat{\delta} - 0}{\sqrt{Var[\hat{\delta}]}} = \frac{\hat{\delta}}{\sqrt{Var[\hat{\delta}]}}
+	\end{equation*}
+	\item Compare $|T|$ with the critical value $t_{\alpha/2, k-1}$, that can be found in t-distribution tables.
+	If $|T| > t_{\alpha/2, k-1}$, we reject the null hypothesis $H_0$ and conclude that there is a statistically significant difference
+	between the two algorithms.
+\end{itemize}
