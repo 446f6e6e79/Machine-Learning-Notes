@@ -254,14 +254,13 @@ The joint distribution can be expressed as:
 \[ p(a,b,c) = p(b|c) p(c|a) p(a) \]
 Note that, using Bayes' theorem, we can rewrite $p(c|a) p(a)$ as $p(a|c) p(c)$, obtaining:
 \[ p(a,b,c) = p(b|c) p(a|c) p(c) \]
-Given this, we want to understand the independency relationships between $a$ and $b$:
+We can note that this is exactly the same form as the tail-to-tail case \ref{eq:tailToTail}.
+Even though it's trivial, we will repeat the independency analysis for clarity.
 \begin{itemize}
     \item \textbf{Independent}: we need to check that $P(a, b) = P(a) P(b)$;
-    We repeat the same steps as before:
     \[ P(a, b) = \sum_{c} P(a, b, c) = \sum_{c} p(b|c) p(c|a) p(a) \neq P(a) P(b)\]
     So $a$ and $b$ are \textbf{not independent}.
     \item \textbf{Conditionally independent}: we need to check that $P(a, b | c) = P(a | c) P(b | c)$;
-    We repeat the same steps as before:
     \[ P(a, b | c) = \frac{P(a, b, c)}{P(c)} = \frac{p(b|c) p(c|a) p(a)}{P(c)} = P(a | c) P(b | c) \]
     So $a$ and $b$ are \textbf{conditionally independent} given $c$.
 \end{itemize}
@@ -281,7 +280,7 @@ It is called head-to-head because $c$ has two incoming edges (heads) from $a$ an
     % Nodes
     \node[bn-node] (A) at (-2, 0) {a};
     \node[bn-node] (B) at (2, 0) {b};
-    \node[bn-node] (C) at (0, 2) {c};
+    \node[bn-node] (C) at (0, -2) {c};
     % Edges
     \draw[bn-arrow] (A) -- (C);
     \draw[bn-arrow] (B) -- (C);
@@ -456,7 +455,7 @@ Consider the two following examples:\
     \item Are $A$ and $B$ D-separated given $C$?
     \begin{itemize}
         \item Node $F$ is in a tail to tail connection and is not observed. This implies that the path is not blocked;
-        \item Node $E$ is in a head to tail connection and is not observed. One of is child ($C$) is observed, meaning
+        \item Node $E$ is in a head to head connection and is not observed. One of its child ($C$) is observed, meaning
         that they are dependent (the path is not blocked);
         \item Therefore, there exists an unblocked path from $A$ to $B$, so they are \textbf{not D-separated} given $C$.
     \end{itemize}
