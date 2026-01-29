@@ -12,7 +12,7 @@ As just described, it's used to encode $DNF$ logical formulas:
     \item Each path from the root to a leaf is a \textbf{conjunction} of the \textbf{constraints} specified on the node along it.
     For example, in \textbf{fig}\ref{fig:decision_tree}, the leftmost path can be read as:
     \[\text{OUTLOOK = RAIN} \land \text{TRANSPORTATION = Uncovered} \]
-    \item The leaf contains the \textbf{label} to be assigned to istances reaching it;
+    \item The leaf contains the \textbf{label} to be assigned to instances reaching it;
     \item The \textbf{disjunction} of all paths is the logical formula represented by the tree.
 \end{itemize}
 
@@ -104,9 +104,9 @@ There are two possible strategies to prune a decision tree:
 Continuous valued attributes must be discretized in order to be used as internal node tests, or otherwise, we could end up with an infinite decision tree. The procedure follows these next steps:
 \begin{enumerate}
     \item Examples are \textbf{sorted} according to their continuous value;
-    \item For \textbf{each pair of successive examples}, having \textbf{different labels}, a \textbf{candidate treshold} is placed at the average of the two values;
-    \item For \textbf{each candidate treshold}, the \textbf{IG} obtained by splitting the examples, at the given treshold, is computed;
-    \item The treshold with the \textbf{highest IG} is used to discretize the attribute;
+    \item For \textbf{each pair of successive examples}, having \textbf{different labels}, a \textbf{candidate threshold} is placed at the average of the two values;
+    \item For \textbf{each candidate threshold}, the \textbf{IG} obtained by splitting the examples, at the given threshold, is computed;
+    \item The threshold with the \textbf{highest IG} is used to discretize the attribute;
 \end{enumerate}
 \paragraph{Example:} consider the dataset in \textbf{table \ref{tab:continuous-attribute}}:
 \begin{table}[H]
@@ -125,12 +125,12 @@ Continuous valued attributes must be discretized in order to be used as internal
     \caption{Example dataset with continuous attribute A}
     \label{tab:continuous-attribute}
 \end{table}
-The dataset is already sorted according to attribute A. The candidate tresholds are:
+The dataset is already sorted according to attribute A. The candidate thresholds are:
 \begin{itemize}
     \item Between example 2 and 3: (3.0 + 4.5) / 2 = 3.75;
     \item Between example 4 and 5: (5.0 + 6.0) / 2 = 5.5;
 \end{itemize}
-We can then compute the IG for both tresholds, choosing the one with the highest value.
+We can then compute the IG for both thresholds, choosing the one with the highest value.
 
 \subsubsection{Alternative attributes test measure}
 The previously defined \textbf{Information Gain} criterion tends to \textbf{prefer attributes} with a 

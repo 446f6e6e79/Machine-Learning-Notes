@@ -5,8 +5,8 @@ Neural networks are needed to resolve the limitations of other seen models. More
     \item \textbf{Kernel Machines:} add the concept of non-linearity, but the choice of the appropriate kernel is not trivial;
 \end{itemize}
 \subsection{Multi Layer Perceptron}
-A Multi Layer Perceptron (MLP) is a network of interconnected neurons, organized in layers. Neuorns from one layer
-sends their output to the neurons of the next layer. The first layer is called \textit{input layer}, one or mode \textit{hidden layers}
+A Multi Layer Perceptron (MLP) is a network of interconnected neurons, organized in layers. Neurons from one layer
+sends their output to the neurons of the next layer. The first layer is called \textit{input layer}, one or more \textit{hidden layers}
 are in the middle, and the last layer is called \textit{output layer}.
 
 \begin{figure}[H]
@@ -103,7 +103,7 @@ downside is that training is requires more data and more computational power.
 Activation functions introduce non-linearity in the model. We will analyze some proposed functions:
 
 \paragraph{Threshold activation:}
-the treshold activation, already seen in the perceptron model, is defined as:
+the threshold activation, already seen in the perceptron model, is defined as:
 \[ f(\boldsymbol{x}) = sign(\boldsymbol{w}^T \boldsymbol{x}) \]
 It's cannot be used in MLPs, since it's derivative is zero almost everywhere, apart from the discontinuity in zero (not differentiable). 
 This makes impossible to use gradient-based optimization methods for training.
@@ -145,7 +145,7 @@ This output can be interpreted as the probability of belonging to the positive c
 To obtain the final class label, a threshold (usually 0.5) is applied:
 \[ y^* = sign(f(\boldsymbol{x}) - 0.5) \]
 
-\paragraph{Multi-class Classification:} for multi-class classification, similar to what was done with single layer perceptrons, a one vs all approach can be used.
+\paragraph{Multi-class Classification:} for multi-class classification, similar to what was done with single layer perceptron, a one vs all approach can be used.
 This requires $K$ output neurons, one for each class. 
 The softmax activation function is commonly used in this case, defined as:
 \[ f_i(\boldsymbol{x}) = \frac{\exp(o_i(\boldsymbol{x}))}{\sum_{j=1}^{K} \exp(o_j(\boldsymbol{x}))} \quad \text{for } i = 1, 2, \ldots, K \]
@@ -196,7 +196,7 @@ For regression tasks, the mean squared error (MSE) loss is commonly used. It is 
 
 \subsubsection{Stochastic Gradient Descent}
 In order to train MLPs, we use Stochastic Gradient Descent (SGD) to minimize the chosen loss function. 
-As example, chossing mean squared error (MSE) as loss function, we would have:
+As example, choosing mean squared error (MSE) as loss function, we would have:
 \[ E(W) = \frac{1}{2} (y - f(\boldsymbol{x}))^2 \]
 Where $W$ represents all the weights in the network. Note that $\frac{1}{2}$ is added to simplify 
 the derivative computation.
@@ -297,7 +297,7 @@ Each module must be able to compute:
 The error surface of neural networks is non-convex. This implies that there can be multiple local minima and backpropagation is only guaranteed to find a local minimum.
 There are many techniques to improve the training of neural networks, that we will cover later in this section.
 \subsubsection{Stopping Criteria}
-Overtraining the network can increase the possibility of overfitting the training data. When the network is initiallized, the weights are set to small random values. In this phase, we have a very simple surface, which is easy to optimize.
+Overtraining the network can increase the possibility of overfitting the training data. When the network is initialized, the weights are set to small random values. In this phase, we have a very simple surface, which is easy to optimize.
 \\As the weights are updated, the surface becomes more complex, and the risk of overfitting increases.
 To avoid this, a separate validation set is used to monitor the performance of the network during training. When the performance on the validation set starts to degrade, training is stopped.
 \subsubsection{Vanishing gradients}
@@ -406,7 +406,7 @@ This is useful for dimensionality reduction, feature learning, and data compress
 Convolutional Neural Networks (CNNs) are specialized neural networks designed for processing grid-like data, such as images. 
 They use convolutional filters to extract local features from the input data. Pooling layers are used to compose higher-level features from lower-level ones.
 After several convolutional and pooling layers, fully connected layers are used to perform the final classification.
-\subsubsection*{Generativr Adversarial Networks (GANs)}
+\subsubsection*{Generative Adversarial Networks (GANs)}
 Generative Adversarial Networks (GANs) learns to generate items from random noise. 
 They consist of two neural networks: a generator, that generates new data, and a discriminator, that tries to distinguish between real and generated data.
 The two networks are trained simultaneously, with no supervision needed.
@@ -414,4 +414,4 @@ The two networks are trained simultaneously, with no supervision needed.
 Use attention mechanisms to learn input words encodings, that depends on the context of the sentence.
 They can also learn output words encodings, that depends on the context of the already generated words and on the input sentence.
 \subsubsection*{Graph Neural Networks (GNNs)}
-Allow to learn from graph-structured data. Allow to propagate informations from a node to its neighbors, learning a representation that takes into account the graph structure.
+Allow to learn from graph-structured data. Allow to propagate information from a node to its neighbors, learning a representation that takes into account the graph structure.

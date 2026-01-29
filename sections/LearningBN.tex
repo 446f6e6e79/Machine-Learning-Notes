@@ -77,17 +77,17 @@ Because the Conditional Probability Distributions (CPDs) are independent, we can
 \begin{equation}
     P(D|\theta) = \prod_{j=1}^{m} \prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})
 \end{equation}
-This allows us to decompose the MLE problem into $m$ independent subproblems, one for each variable $X_j$:
+This allows us to decompose the MLE problem into $m$ independent subproblem, one for each variable $X_j$:
 \begin{equation}
     \label{eq:mle-subproblem}
     \theta_{X_j|Pa_j}^{\max} = \arg\max_{\theta_{X_j|Pa_j}}\underbrace{\prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})}_{\mathcal{L}(\theta_{X_j|Pa_j, \mathcal{D}})}
 \end{equation}
 When working with discrete variables, we can estimate the parameters using frequency counts from the data.
-A discrete CDP can be represented as a table:
+A discrete CDP $P(X_j | Pa_j)$ can be represented as a table:
 \begin{itemize}
-    \item Each row corresponds to a specific configuration of $x_j$;
+    \item Each row corresponds to a specific configuration of $X_j$;
     \item Each column corresponds to a specific configuration of the parent variables $Pa_j$;
-    \item Each table entry $\theta_{x_j|u}$ represents the probability of the configuration $X = x_j$ and $Pa_j = u$.
+    \item Each table entry $\theta_{x_j|pa_j}$ represents the probability of the configuration $X_j = x_j$ and $Pa_j = pa_j$.
 \end{itemize}
 From equation \ref{eq:mle-subproblem}, we can replace $P(x_j(i) | pa_j(i))$ with the corresponding parameter $\theta_{x_j|u}$.
 The likelihood for a single CDP $X_j$ becomes:

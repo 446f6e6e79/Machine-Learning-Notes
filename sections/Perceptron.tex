@@ -2,10 +2,10 @@
 Perceptron are one of the simplest types of artificial neural networks, based on the concept of linear classifiers (\ref{sec:linear_discriminant_functions}).
 They are based on the idea of simulating the behavior of a biological neuron.
 \subsection{Biological Motivation}
-The human brain is composed of densily interconnected neurons. They process information based on the following principles:
+The human brain is composed of densely interconnected neurons. They process information based on the following principles:
 \begin{itemize}
     \item Electrochemical reactions allow signals to propagate through the neuron;
-    \item Sinapses connect neurons together, they can either \textbf{excite} or \textbf{inhibit} the receiving neuron;
+    \item Synapses connect neurons together, they can either \textbf{excite} or \textbf{inhibit} the receiving neuron;
     \item When the incoming signals exceed a certain threshold, the neuron \textbf{fires} and transmits the signal to the next neuron.
 \end{itemize}
 Artificial neural networks aim to mimic this behavior using mathematical models. 
@@ -193,7 +193,7 @@ Assuming that $X^T X$ is invertible, we can solve for $\boldsymbol{w}$:
 NOTE:
 \begin{itemize}
     \item $(X^T X)^{-1} X^T$ is a pseudoinverse called the \textbf{left inverse} of $X$;
-    \item If $X$ is square, than the left inverse is equal to the regular inverse $X^{-1}$, and this correspomonds to the exact solution of the system of equations;
+    \item If $X$ is square, than the left inverse is equal to the regular inverse $X^{-1}$, and this corresponds to the exact solution of the system of equations;
     \item The left inverse exists only if the columns of $X$ are linearly independent. If this is not the case, we can use \textbf{regularization} techniques to make the matrix invertible.
 \end{itemize}
 
