@@ -17,7 +17,8 @@ A single neuron perceptron is a specific learning model that implements a linear
     \label{eq:perceptron}
     f(\boldsymbol{x}) = sign(\boldsymbol{w}^T \boldsymbol{x} + w_0)
 \end{equation}
-The function is a \textbf{linear combination} of the input features $\boldsymbol{x}$.
+The function $f(\boldsymbol{x})$ is simply a \textbf{linear combination} of the input features $\boldsymbol{x}$, with weights $\boldsymbol{w}$
+and an activation function (sign function).
 \begin{figure}[H]
     \begin{tikzpicture}
         \node[input-node] (bias) at (0, 2) {1};
@@ -75,6 +76,11 @@ In the following sections, we will skip the hat notation for simplicity.
 The single neuron perceptron can only represent \textbf{linearly separable} functions. 
 Examples of this are the \textbf{primitive boolean functions} such as \textbf{AND}, \textbf{OR}, and \textbf{NOT}.
 This implies that any logic formula can be represented by a network of a 2 level perceptron in \textbf{disjunctive normal form} (DNF) or \textbf{conjunctive normal form} (CNF).
+For example, the DNF formula:
+\[(A \land B) \lor (C \land D)\]
+The first layer of the network computes the conjunctions $A \land B$ and $C \land D$ using two perceptrons,
+while the second layer computes the disjunction of their outputs using a third perceptron.
+\\However, this representation require an \textbf{exponential} number of perceptrons in the worst case.
 
 \subsection{Parameter learning}
 Similar to what we saw for \textbf{maximum likelihood estimation}, we need to find a \textbf{function} of the parameters
@@ -84,6 +90,7 @@ This is called \textbf{loss function} $\ell$ and it compares the predicted outpu
 with the ground truth $y_i$.
 \\We can define \textbf{training error} $E$ as:
 \begin{equation}
+    \label{eq:misclassification_error}
     E(\boldsymbol{w}, D) = \sum_{(\boldsymbol{x},y) \in \mathcal{D}} \ell(f(\boldsymbol{x}), y)
 \end{equation}
 This is simply the sum of the losses over all training examples.
@@ -96,7 +103,7 @@ There is no closed-form solution for this problem, so we need to use an iterativ
     \item Initialize the weights $\boldsymbol{w}$ randomly or with zeros.
     \item Iterate until gradient is approximately zero, updating the weights as:
     \begin{equation}
-        \boldsymbol{w} = \boldsymbol{w}' - \eta \nabla E(\boldsymbol{w}', \mathcal{D})
+        \boldsymbol{w}' = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}, \mathcal{D})
     \end{equation}
     where $\eta$ is the learning rate and controls the amount of movement at each step.
 \end{enumerate}
@@ -107,19 +114,25 @@ This approach is guaranteed to converge to a local optimum of the error function
     \item too \textbf{low} learning rate: slow convergence;
     \item too \textbf{high} learning rate: the algorithm may \textbf{diverge} (oscillate around the minimum).
 \end{itemize}
+There are techniques to adaptively change the learning rate during training, allowing for faster convergence.
 
 \subsubsection*{Perceptron training rule}
 In order to apply a \textbf{gradient descent} approach, we need to define a \textbf{loss function} which is \textbf{differentiable} (smooth).
-As a consequence, we adopt a different training rule, called \textbf{perceptron training rule}. It's defined as follows:
+For example, the misclassification error defined in \eqref{eq:misclassification_error} 
+is not differentiable, as it is piecewise constant.
+\\As a consequence, a different training rule is adopted. It's defined as follows:
 \begin{equation}\label{eq:perceptron_error}
     E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})
 \end{equation}
-where $\mathcal{D}_E$ is the set of \textbf{misclassified} samples in the training set $\mathcal{D}$, for which:
+where $\mathcal{D}_E$ is the set of \textbf{misclassified} samples in the training set $\mathcal{D}$, 
+for which it holds that:
 \[ yf(\boldsymbol{x}) \leq 0 \]
 The error is the \textbf{sum} of the \textbf{functional margins} (confidences) of the misclassified samples.
 \\Applying gradient descent to the error function in \eqref{eq:perceptron_error}, we obtain:
 \[\nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -yf(\boldsymbol{x})\]
+We can substitute $f(\boldsymbol{x})$ with the linear function $\boldsymbol{w}^T \boldsymbol{x}$:
 \[=\nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -y(\boldsymbol{w}^T \boldsymbol{x}) \]
+The derivative with respect to $\boldsymbol{w}$ is:
 \[= \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} -y \boldsymbol{x} \]
 Thus, the amount of change in the weights is:
 \[- \eta \nabla E(\boldsymbol{w}; \mathcal{D}) = \eta \sum_{(\boldsymbol{x}, y) \in \mathcal{D}_E} y \boldsymbol{x} \]
@@ -165,9 +178,9 @@ However this approach has a few problems:
 \subsubsection{Error function}
 We can again resort to loss minimization to find an approximate solution.
 Our goal is not to solve the system exactly, but to find the weights $\boldsymbol{w}$ that minimize the \textbf{mean squared error} (MSE) on the training set:
-\begin{equation}*
+\begin{equation*}
     E(\boldsymbol{w}; \mathcal{D}) = \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2
-\end{equation}
+\end{equation*}
 This can be rewritten in matrix form as:
 \begin{equation}
     \label{eq:mse}
@@ -194,7 +207,10 @@ NOTE:
 \begin{itemize}
     \item $(X^T X)^{-1} X^T$ is a pseudoinverse called the \textbf{left inverse} of $X$;
     \item If $X$ is square, than the left inverse is equal to the regular inverse $X^{-1}$, and this corresponds to the exact solution of the system of equations;
-    \item The left inverse exists only if the columns of $X$ are linearly independent. If this is not the case, we can use \textbf{regularization} techniques to make the matrix invertible.
+    \item The left inverse exists only if the columns of $X$ are linearly independent. 
+    This means that each feature is independent from all the others.
+    If this is not the case, we can use remove redundant features using techniques such as 
+    \textbf{Principal Component Analysis} (PCA).
 \end{itemize}
 
 \subsubsection{Gradient descent}

@@ -1,12 +1,14 @@
 \section{Linear Discriminant Functions}
-We can distinguish \textbf{learning models} between \textbf{generative models} and \textbf{discriminative models}.
+Before deep diving into specific learning algorithms, it is important to understand the difference between 
+\textbf{generative models} and \textbf{discriminative models}.
 \begin{itemize}
     \item \textbf{Generative models} aim to model the \textbf{distribution} governing the data. 
     They learn the joint probability distribution $P(x,y)$ and 
     can generate new data points, according to the learned distribution.
     Some examples of generative models are \textbf{Naive Bayes}, \textbf{Gaussian Mixture Models}.
     \item \textbf{Discriminative models} aim to model the \textbf{decision boundary} between classes, 
-    rather than the underlying data distribution.
+    rather than the underlying data distribution. For example, for classification tasks,
+    they directly model the \textbf{decision boundary} that separates different classes.
 \end{itemize}
 
 \subsection{Advantages and disadvantages of discriminative models}
