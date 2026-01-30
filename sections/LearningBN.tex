@@ -83,32 +83,32 @@ This allows us to decompose the MLE problem into $m$ independent subproblem, one
     \theta_{X_j|Pa_j}^{\max} = \arg\max_{\theta_{X_j|Pa_j}}\underbrace{\prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})}_{\mathcal{L}(\theta_{X_j|Pa_j, \mathcal{D}})}
 \end{equation}
 When working with discrete variables, we can estimate the parameters using frequency counts from the data.
-A discrete CDP $P(X_j | Pa_j)$ can be represented as a table:
+A discrete CDP $P(X | U)$ can be represented as a table:
 \begin{itemize}
-    \item Each row corresponds to a specific configuration of $X_j$;
-    \item Each column corresponds to a specific configuration of the parent variables $Pa_j$;
-    \item Each table entry $\theta_{x_j|pa_j}$ represents the probability of the configuration $X_j = x_j$ and $Pa_j = pa_j$.
+    \item Each row corresponds to a specific configuration of $X$;
+    \item Each column corresponds to a specific configuration of the parent variables $U$;
+    \item Each table entry $\theta_{x|u}$ represents the probability of the configuration $X = x$ and $U = u$.
 \end{itemize}
-From equation \ref{eq:mle-subproblem}, we can replace $P(x_j(i) | pa_j(i))$ with the corresponding parameter $\theta_{x_j|u}$.
-The likelihood for a single CDP $X_j$ becomes:
-\begin{equation}*
-    \mathcal{L}(\theta_{X_j|Pa_j}, D) = \prod_{i=1}^{N} \theta_{x(i)|u(i)}
-\end{equation}
+From equation \ref{eq:mle-subproblem}, we can replace $P(x_j(i) | pa_j(i))$ with the corresponding parameter 
+$\theta_{x(i)|u(i)}$. The likelihood for a single CDP $X$ becomes:
+\begin{equation*}
+    \mathcal{L}(\theta_{X|U}, D) = \prod_{i=1}^{N} \theta_{x(i)|u(i)}
+\end{equation*}
 \begin{equation*}
     = \prod_{u \in Val(U)} \left[\prod_{x \in Val(X)} \theta_{x|u}^{N_{x,u}}\right]
 \end{equation*}
-Where $N_{x,u}$ is the count of occurrences in the data where $X_j = x$ and $Pa_j = u$.
-Now, each column in the CPD contains a multinomial distribution over the values of $X_j$, 
-given a specific configuration of its parents $Pa_j = u$.
+Where $N_{x,u}$ is the count of occurrences in the data where $X = x$ and $U = u$.
+Now, each column in the CPD contains a multinomial distribution over the values of $X$, 
+given a specific configuration of its parents $U = u$.
 This implies that each column must sum to 1:
-\[\sum_{x \in Val(X_j)} \theta_{x|u} = 1\]
+\[\sum_{x \in Val(X)} \theta_{x|u} = 1\]
 Parameters of different columns are independent, allowing us to estimate them independently.
 Thus, we can decompose the MLE problem for each column $u$ as follows:
-\begin{equation}*
+\begin{equation*}
     \theta_{x|u}^{\max} = \frac{N_{x,u}}{\sum_{x} N_{x,u}}
-\end{equation}
-This means that the MLE estimate for each parameter $\theta_{x|u}$ is simply the relative frequency of $X_j = x$
-given $Pa_j = u$ in the data.
+\end{equation*}
+This means that the MLE estimate for each parameter $\theta_{x|u}$ is simply the relative frequency of $X = x$
+given $U = u$ in the data.
 
 \subsubsection{Adding priors}
 The maximum likelihood estimation can lead to overfitting on the training data, especially when the dataset is small.
@@ -116,13 +116,13 @@ Also, configuration of variables that do not appear in the training data will ha
 A common solution to these problems is to introduce a prior distribution over the parameters $\theta$,
 based on prior knowledge or assumptions.
 This way, we now want to maximize the posterior distribution of the parameters given the data:
-\begin{equation}*
+\begin{equation*}
     \theta^* = \arg\max_{\theta} P(\theta | D)
-\end{equation}
+\end{equation*}
 Applying Bayes' theorem, we can rewrite this as:
-\begin{equation}*
+\begin{equation*}
     P(\theta | D) =\frac{P(D | \theta) P(\theta)}{P(D)}
-\end{equation}
+\end{equation*}
 Since $P(D)$ is constant with respect to $\theta$, we can simplify the optimization problem to:
 \begin{equation}
     \theta^* = \arg\max_{\theta} P(D | \theta) P(\theta)
@@ -132,13 +132,13 @@ This approach is known as Maximum A Posteriori (MAP) estimation.
 with parameters $\alpha_{x|u}$, for each possible value of $x$.
 The resulting MAP estimate for each parameter $\theta_{x|u}$ becomes:
 \begin{equation}*
-    \theta_{x|u}^{\max} = \frac{N_{x,u} + \alpha_{x|u} - 1}{\sum_{x} (N_{x,u} + \alpha_{x|u} - 1)}
+    \theta_{x|u}^{\max} = \frac{N_{x,u} + \alpha_{x|u}}{\sum_{x} (N_{x,u} + \alpha_{x|u})}
 \end{equation}
 Where $\alpha_{x|u}$ can be interpreted as imaginary samples with configuration $X_j = x$ and $Pa_j = u$.
 
 \subsubsection{Incomplete Data}
 With incomplete data, some examples may have missing values for certain variables.
-In such cases, counts $N_{x,u}$ cannot be directly computed from the data.
+In such cases, counts $N_{x|u}$ cannot be directly computed from the data.
 To address this, we can use an approximate method called the Expectation-Maximization (EM) algorithm.
 \paragraph{EM algorithm}
 In a nutshell, as we have said before, sufficient statistics (like counts) are not directly computable from incomplete data.
@@ -157,7 +157,7 @@ and then updates the parameters using these estimated statistics.
         \item $N_{ijk}$ is the count of occurrences where variable $X_i$ takes value $x_k$
         and its parents $Pa_i$ take configuration $pa_j$;
         \item $\boldsymbol{X}_l$ is the $l$-th data point in the dataset $\mathcal{D}$ (observed values);
-        \item if $X_i(l)$ or $Pa_i(l)$ are observed for $X_l$ in the dataset $\mathcal{D}$, then the probability is either 0 or 1;
+        \item if $X_i(l)$ and $Pa_i(l)$ are observed for $X_l$ in the dataset $\mathcal{D}$, then the probability is either 0 or 1;
         \item Otherwise, we run Bayesian inference to compute the probability.
     \end{itemize}
     \item \textbf{Maximization step (M-step)}: compute the parameters maximizing likelihood of the
