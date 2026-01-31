@@ -4,8 +4,8 @@ They are based on the following key concepts:
 \begin{itemize}
     \item \textbf{Large Margin Classifier:} SVMs aim to find the hyperplane that maximizes 
     the margin between different classes in the feature space. This way each prediction is made with high confidence;
-    \item \textbf{Support Vectors:} the subset of data points that influence the position of the decision boundary. 
-    We will see how they are determined during the training process;
+    \item \textbf{Support Vectors:} only a subset of data points influence the position of the decision boundary.
+    These points are called \textbf{support vectors}, and we will see how they are determined during the training process;
     \item \textbf{Sound Theoretical Foundation:} the \textbf{large margins} help to improve generalization performance;
     \item \textbf{Kernel machines:} SVMs can be extended to non-linear decision boundaries using kernel functions. 
 \end{itemize}
@@ -113,7 +113,8 @@ subject to the constraints:
 Note that:
 \begin{itemize}
     \item The objective function $\frac{1}{2} ||\boldsymbol{w}||^2$ is used 
-    instead of $||\boldsymbol{w}||$ simply for mathematical convenience;
+    instead of $||\boldsymbol{w}||$ simply for mathematical convenience. 
+    The squared function is easier to differentiate and optimize and does not change the location of the minimum;
     \item The constraint guarantees that all points are correctly classified with a margin of at least 1.
     \item This is a convex \textbf{quadratic optimization}, with linear constraints and can be solved 
     efficiently using Lagrange multipliers.
@@ -137,7 +138,7 @@ This formulation works because:
 \begin{itemize}
     \item If, for a given $\hat{z}$, a constraint $g_i(\hat{z})$ is \textbf{not satisfied} (i.e., $g_i(\hat{z}) < 0$), maximizing over $\alpha_i$ will lead to an \textbf{infinite value}. In fact, we are subtracting a negative value multiplied by an unbounded positive value, which can grow indefinitely;
     \item If all constraints are satisfied, maximizing over $\boldsymbol{\alpha}$ will set all $\alpha_i$ to zero.
-    The sum will be zero, and we will simply minimize $f(z)$.
+    The sum will be zero, and we will simply minimize $f(z)$, without any constraints.
 \end{itemize}
 
 \subsubsection{Lagrangian of the SVM problem}
@@ -148,7 +149,7 @@ Applying this to the SVM optimization problem (\ref{eq:svm_opt}), we can define 
 where:
 \begin{itemize}
     \item $\alpha_i \geq 0$ are the Lagrange multipliers associated to each constraint;
-    \item $m = \mathcal{D}$ is the number of training examples. We have one constraint per training example.
+    \item $m = |\mathcal{D}|$ is the number of training examples. We have one constraint per training example.
 \end{itemize}
 The lagrangian is minimized with respect to $\boldsymbol{w}$ and $w_0$, and maximized with respect to the non-negative multipliers $\alpha_i$.
 \\We now try to solve the \textbf{Lagrangian equivalent form}. To do this, we first compute the partial derivatives of $L$ 
@@ -193,7 +194,7 @@ This is a \textbf{dual formulation} of the original SVM optimization problem, si
 multipliers $\alpha_i$ instead of the primal parameters $\boldsymbol{w}$ and $w_0$. It is also a convex quadratic optimization problem, 
 but the constraints are now much simpler than in the primal formulation.
 It's important to note that this formulation has $m$ variables (the $\alpha_i$), equal to the number of training examples,
-while the primal formulation has $d + 1$ variables (the number of features plus the bias term). One could
+while the primal formulation has $d + 1$ variables (size of the weight vector + bias term $w_0$). One could
 choose to solve either the primal or the dual formulation depending on which one is more efficient for the given problem.
 \\\\We can now rewrite the \textbf{decision function} of the SVM in terms of the Lagrange multipliers:
 \begin{equation}
@@ -266,7 +267,8 @@ All the other points have $\alpha_i = 0$ and do not affect the decision function
 This is usually done by averaging the values obtained from all support vectors to improve numerical stability.
 
 \subsection{Soft Margin SVM}
-In practice, there is one big problem with the assumption made by hard margin SVMs: \textbf{assuming that all data is correctly classified} is often unrealistic and can lead to overfitting.
+In practice, there is one big problem with the assumption made by hard margin SVMs: 
+\textbf{assuming that all data can be correctly classified} is often unrealistic and can lead to overfitting.
 \\To address this issue, we introduce the concept of \textbf{soft margin SVMs}, which allow for some misclassifications in the training data.
 This is done by introducing \textbf{slack variables} to the optimization problem.
 \definition{Slack variables}{
@@ -280,7 +282,7 @@ In the soft margin SVM, we still want to maximize the margin (minimize the norm 
 This can be done by adding \textbf{slack variables} to the constraints, leading to the following optimization problem:
 \begin{equation} \label{eq:soft_svm_opt}
     \begin{aligned}
-        & min_{\boldsymbol{w} \in X, w_0 \in \mathbb{R}, \boldsymbol{\xi} \in \mathbb{R}^m} \frac{||\boldsymbol{w}||^2}{2} + C \sum_{i=1}^{m} \xi_i \\
+        & min_{\boldsymbol{w} \in X, w_0 \in \mathbb{R}, \boldsymbol{\xi} \in \mathbb{R}^m} \frac{1}{2}||\boldsymbol{w}||^2 + C \sum_{i=1}^{m} \xi_i \\
         & \text{subject to} \begin{cases}
             y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) \geq 1 - \xi_i, \quad \forall i \\
             \xi_i \geq 0, \quad \forall i
@@ -328,7 +330,7 @@ This is exactly equivalent to the slack variable formulation.
 We can now derive the Lagrangian for the soft margin SVM optimization problem (\ref{eq:soft_svm_opt}).
 The Lagrangian is defined as:
 \begin{equation}\label{eq:soft_svm_lagrangian}
-    L = \frac{1}{2} ||\boldsymbol{w}||^2 + C \sum_{i=1}^{m} \xi_i - \sum_{i=1}^{m} \alpha_i (y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 + \xi_i) - \sum_{i=1}^{m} \beta_i \xi_i
+    L = \underbrace{\frac{1}{2} ||\boldsymbol{w}||^2 + C \sum_{i=1}^{m} \xi_i}_{f(x)} - \underbrace{\sum_{i=1}^{m} \alpha_i (y_i (\boldsymbol{w}^T \boldsymbol{x}_i + w_0) - 1 + \xi_i)}_{g_1(x)} - \underbrace{\sum_{i=1}^{m} \beta_i \xi_i}_{g_2(x)}
 \end{equation}
 In this case the primal variables are $\boldsymbol{w}$, $w_0$ and $\boldsymbol{\xi}$, while the dual variables are the Lagrange multipliers $\alpha_i \geq 0$ and $\beta_i \geq 0$.
 \\We can now compute the partial derivatives of $L$ with respect to the primal variables and set them to zero.

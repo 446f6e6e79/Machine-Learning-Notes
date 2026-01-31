@@ -214,9 +214,15 @@ NOTE:
 \end{itemize}
 
 \subsubsection{Gradient descent}
-In case of large datasets, computing the closed-form solution can be computationally expensive. 
-In such cases, we can use \textbf{gradient descent} to iteratively update the weights until convergence.
+In case of large datasets, computing the closed-form solution can be computationally expensive.
+Also, we are not always interested in finding the exact minimum of the error function, but rather a good enough approximation. 
+\\In such cases, we can use \textbf{gradient descent} to iteratively update the weights until convergence.
+Again, given the gradient of the error function, we can compute the update of the weights as:
+\[\boldsymbol{w}' = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}; \mathcal{D})\]
+To compute the gradient, we start from the error function defined in \eqref{eq:mse}:
 \[\frac{\partial E}{\partial \boldsymbol{w}_i} = \frac{\partial}{\partial \boldsymbol{w}_i} \frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2\]
 \[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} \frac{\partial}{\partial \boldsymbol{w}_i}(y-f(\boldsymbol{x}))^2\]
+\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} 2(y-f(\boldsymbol{x}))\frac{\partial}{\partial \boldsymbol{w}_i} f(\boldsymbol{x})\]
+We can substitute $f(\boldsymbol{x})$ with the linear function $\boldsymbol{w}^T \boldsymbol{x}$:
 \[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} 2(y-f(\boldsymbol{x}))\frac{\partial}{\partial \boldsymbol{w}_i} (y - \boldsymbol{w}^T \boldsymbol{x})\]
 \[= \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x})) (-x_i)\]
