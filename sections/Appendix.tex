@@ -1,0 +1,33 @@
+\section{Principal Component Analysis}
+\label{sec:PCA}
+Principal Component Analysis (PCA) is a widely used technique for dimensionality reduction and 
+feature extraction in machine learning and statistics.
+Let $\boldsymbol{X} \in \mathbb{R}^{n \times d}$ be a data matrix, with correlated coordinates.
+PCA is a linear transformation that transforms the data into a new coordinate system of uncorrelated variables.
+\subsection{PCA Algorithm}
+The PCA algorithm can be summarized in the following steps:
+\begin{enumerate}
+    \item Compute the \textbf{mean} of the data:
+    \begin{equation}
+        \bar{\boldsymbol{x}} = \frac{1}{n} \sum_{i = 1}^{n} \boldsymbol{x}_i
+    \end{equation}
+    \item Center the data by subtracting the mean from each data point:
+    \begin{equation}
+        \boldsymbol{X} = \boldsymbol{X} - \bar{\boldsymbol{x}}
+    \end{equation}
+    We are basically defining a new matrix, where each row is the original data point minus the mean.
+    \item Compute the \textbf{covariance matrix} of the centered data:
+    \begin{equation}
+        \boldsymbol{C} = \frac{1}{n} \boldsymbol{X}^T \boldsymbol{X}
+    \end{equation}
+    Since $x_i = x_i - \bar{x}$, this is equivalent to the usual definition of covariance.
+    In fact we have:
+    \[
+     X^T X = \sum_{i=1}^{n} \boldsymbol{x}_i \boldsymbol{x}_i^T = \sum_{i=1}^{n} (\boldsymbol{x}_i - \bar{\boldsymbol{x}})(\boldsymbol{x}_i - \bar{\boldsymbol{x}})^T = \sum_{i = 1}^{n} (\boldsymbol{x}_i - \bar{\boldsymbol{x}})^2
+    \]
+    \item Compute the \textbf{eigenvalues} and \textbf{eigenvectors} of the covariance matrix $\boldsymbol{C}$.
+    The eigenvectors represent the directions of maximum variance in the data, 
+    while the eigenvalues indicate the amount of variance in the direction of each eigenvector.
+    \item We can then select the top $k$ eigenvectors corresponding to the largest eigenvalues
+    to form a new feature space of reduced dimensionality.
+\end{enumerate}

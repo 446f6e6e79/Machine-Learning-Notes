@@ -162,7 +162,7 @@ The problem can be modeled as:
     \item Let $\boldsymbol{y} \in \mathbb{R}^n$ be the output training Matrix (i.e. $\boldsymbol{y}_i$ is the target value for the i-th training example);
     \item \textbf{Regression learning} can be stated as a set of \textbf{linear equations}:
     \begin{equation*}
-        X\boldsymbol{w} = \boldsymbol{y}
+        f(x) = y \implies X\boldsymbol{w} = \boldsymbol{y}
     \end{equation*}
     Giving as a solution:
     \begin{equation}
@@ -209,8 +209,8 @@ NOTE:
     \item If $X$ is square, than the left inverse is equal to the regular inverse $X^{-1}$, and this corresponds to the exact solution of the system of equations;
     \item The left inverse exists only if the columns of $X$ are linearly independent. 
     This means that each feature is independent from all the others.
-    If this is not the case, we can use remove redundant features using techniques such as 
-    \textbf{Principal Component Analysis} (PCA).
+    If this is not the case, we can use remove redundant features using techniques such as
+    \textbf{Principal Component Analysis} (PCA), discussed in the Appendix \ref{sec:PCA}
 \end{itemize}
 
 \subsubsection{Gradient descent}
