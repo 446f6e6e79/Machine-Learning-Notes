@@ -1,5 +1,5 @@
 \section{Evaluation}
-In this section we will discuss about \textit{Evaluation}, the process of assessing a model's performance, 
+In this section we will discuss \textit{Evaluation}, the process of assessing a model's performance, 
 reliability, and generalizability using specific quantitative metrics and qualitative techniques.
 \begin{itemize}
 	\item Requires to define a \textbf{performance measures} to be optimized. 
@@ -8,7 +8,7 @@ reliability, and generalizability using specific quantitative metrics and qualit
 	introduce some approximations;
 	\item Performance evaluation is needed for
 	\begin{itemize}
-		\item \textbf{Tune} the hyper-parameters of learning methods;
+		\item \textbf{Tune} the hyperparameters of learning methods;
 		\item \textbf{Evaluating} the performance of the learned model;
 		\item \textbf{Computing statistical significance} of results.
 	\end{itemize}
@@ -75,18 +75,20 @@ a high accuracy, but it wouldn't be able to predict any positive example.
 This metric measures the precision of the learner in predicting positive examples. A problem with precision is that
 the learner can achieve a high precision by predicting only a few positive examples, only when 100\% sure.
 
-\definition{Recall}{\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all
-actual positive examples.
-\begin{equation}
-\mathit{Rec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FN}}
-\end{equation}
+\definition{Recall}{
+	\textit{Recall} (or sensitivity) is the fraction of correctly predicted positive examples among all
+	actual positive examples.
+	\begin{equation}
+	\mathit{Rec}= \frac{\mathit{TP}}{\mathit{TP}+\mathit{FN}}
+	\end{equation}
 }
 It measures the ability of the learner to find all positive examples.
 \\\\Since these last two metrics are complementary, we can combine them into a single one, called \textbf{F-measure}.
-\definition{F-measure}{\textit{F-measure} combines \textbf{precision} and \textbf{recall}, balancing their trade-off.  
-\begin{equation}
-\mathit{F_\beta} = \frac{(1+\beta^2) \cdot \mathit{Prec} \cdot \mathit{Rec}}{\beta^2 \cdot \mathit{Prec} + \mathit{Rec}}
-\end{equation}
+\definition{F-measure}{
+	\textit{F-measure} combines \textbf{precision} and \textbf{recall}, balancing their trade-off.  
+	\begin{equation}
+	\mathit{F_\beta} = \frac{(1+\beta^2) \cdot \mathit{Prec} \cdot \mathit{Rec}}{\beta^2 \cdot \mathit{Prec} + \mathit{Rec}}
+	\end{equation}
 }
 $F_1$ is usually a good performance measure in the case of unbalanced datasets.
 

@@ -211,7 +211,7 @@ The joint distribution can be expressed as:
     \label{eq:tailToTail}
     P(a, b, c) = P(a | c) P(b| c) P(c)
 \end{equation}
-Given this, we want to understand the independency relationships between $a$ and $b$:
+Given this, we want to understand the Independency relationships between $a$ and $b$:
 \begin{itemize}
     \item \textbf{Independent}: we need to check that $P(a, b) = P(a) P(b)$;
     To do this, we marginalize over $c$, applying the sum rule:
@@ -309,7 +309,7 @@ Burglary and earthquake are independent events and are both causes of the alarm 
 However, if we know that the alarm has rung, observing a burglary makes an earthquake less likely.
 \paragraph{General head-to-head case}
 Let a \textit{descendant} of a node $x$ be any node that can be reached by following directed edges starting from $x$.
-A head-to-head node $c$ unblocks the dependency path between it's parents $a$ and $b$ if either $c$ or any of its descendants are observed.
+A head-to-head node $c$ unblocks the dependency path between its parents $a$ and $b$ if either $c$ or any of its descendants are observed.
 \\This can be better understood with an example:
 \begin{figure}[H]
     \centering
@@ -508,7 +508,7 @@ Unfortunately, not all distributions $p$ admit a perfect I-map, some cannot be p
 \subsection{Building Bayesian Networks}
 Here are a list of practical guidelines to build a BN structure:
 \begin{itemize}
-    \item Get together with domain experts. This allow to gather prior knowledge about the relationships between variables;
+    \item Get together with domain experts. This allows to gather prior knowledge about the relationships between variables;
     \item Define variables for both entities that are directly observable and that you are interested in predicting. 
     Also, including latent variables can help to better represent the dependencies in the data;
     \item For adding edges, follow causal relationships when possible. 

@@ -210,6 +210,7 @@ Setting $d=2$, we have:
 This is equivalent to the dot product in the feature space defined by the homogeneous polynomial feature map of degree $2$, up to a scaling factor $\sqrt{2}$.
 
 \paragraph{Non-Homogeneous Polynomial Kernel}:
+\label{par:non_homogeneous_polynomial_kernel}
 taking in consideration the equation \ref{eq:non_homogeneous_polynomial_feature_map}, we can derive the following kernel:
 \begin{equation}
     K(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + 1)^d
@@ -283,10 +284,13 @@ Some common examples include:
     \begin{equation}
         K(\boldsymbol{x}, \boldsymbol{x}') = \boldsymbol{x}^T \boldsymbol{x}'
     \end{equation}
+    Apply no feature map, the kernel corresponds to the standard dot product in the input space.
     \item \textbf{Polynomial Kernel}:
     \begin{equation}
         K_{d,c}(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + c)^d
     \end{equation}
+    The kernel depends on two parameters: the degree $d$ and the constant $c$. We have already seen this kernel
+    in paragraph \ref{par:non_homogeneous_polynomial_kernel}.
     \item \textbf{Gaussian Kernel}:
     \begin{equation}
         k_\sigma(\boldsymbol{x}, \boldsymbol{x}') = \exp\left(-\frac{\|\boldsymbol{x} - \boldsymbol{x}'\|^2}{2\sigma^2}\right)
@@ -300,7 +304,7 @@ Basic kernels can be \textbf{combined} using various operations to create more c
 Correctly using combination operators guarantees that the resulting kernel is still positive definite.
 \\We will now analyze some common kernel combination methods.
 \subsubsection*{Kernel Sum}
-The sum of two kernels of two kernels corresponds to the concatenation of their feature spaces:
+The sum of two kernels corresponds to the concatenation of their feature spaces:
 \begin{equation}
     K(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') + K_2(\boldsymbol{x}, \boldsymbol{x}')
 \end{equation}

@@ -5,7 +5,7 @@
     \caption{An example of a \textbf{learned decision tree}, \textit{Go to lesson}}
     \label{fig:decision_tree}
 \end{figure}
-A \textbf{decision Tree} represent a \textit{disjunction} ($\lor$: represent the different path to reach the same outcome) of 
+A \textbf{decision Tree} represents a \textit{disjunction} ($\lor$: represent the different path to reach the same outcome) of 
 \textit{conjunction} ($\land$: represent the \textbf{and} between the conditions on the path to reach the leafs) of constraints over attribute values.
 As just described, it's used to encode $DNF$ logical formulas:
 \begin{itemize}
@@ -20,9 +20,9 @@ As just described, it's used to encode $DNF$ logical formulas:
 There are several tasks where decision trees can be effectively applied. In particular, the task must have these features:
 \begin{itemize}
     \item Binary or multi-class \textbf{classification};
-    \item Instancies are represented as \textbf{attribute value pair} (tabular data);
+    \item Instances are represented as \textbf{attribute value pair} (tabular data);
     \item Different explanation for the same class are possible (disjunction of different paths);
-    \item Some instancies have missing attributes;
+    \item Some instances have missing attributes;
     \item There is a \textbf{need} for an \textbf{interpretable explanation} for the output.
     In fact, decision trees can be easily visualized and understood by humans.
 \end{itemize}
@@ -34,7 +34,7 @@ To learn \textbf{decision trees}, there is a simple \textbf{greedy top-down} str
     \item Choose best attribute to be evaluated (\textbf{fig}\ref{fig:decision_tree}: \textbf{outlook} is the first chosen attribute);
     \item Add a child node for each attribute value (\textbf{fig}\ref{fig:decision_tree}: rain, overcast and sunny are \textbf{all possible values} for outlook);
     \item Split the node training set into children nodes, according to the attribute values;
-    \item \textbf{Stop splitting} a node if all it's training set belongs to a single class (\textbf{homogeneous leaf}), or there are no more attributes to test
+    \item \textbf{Stop splitting} a node if all its training set belongs to a single class (\textbf{homogeneous leaf}), or there are no more attributes to test
 \end{enumerate}
 
 \subsubsection{Choosing the best attribute}
@@ -83,8 +83,8 @@ Requiring that each leaf contains only examples of a certain class can lead to v
 \\To solve this problem, it's possible to accept impure leaves, assigning them the label of the majority of their training examples. This process is called \textbf{pruning}.
 There are two possible strategies to prune a decision tree:
 \begin{itemize}
-    \item \textbf{pre-pruning}: decide whether to stop splitting a node, even if it contains training examples with different labels.
-    \item \textbf{post-pruning}: learn the full tree and successively prune it, removing sub-trees.
+    \item \textbf{Pre-pruning}: decide whether to stop splitting a node, even if it contains training examples with different labels.
+    \item \textbf{Post-pruning}: learn the full tree and successively prune it, removing subtrees.
 \end{itemize}
 
 \paragraph{Reduces Error Pruning:} a \textbf{post-pruning} strategy, using the validation set. The procedure follows these next steps:
@@ -163,7 +163,7 @@ Assuming an \textbf{example} $x$, belonging to \textbf{class} $c(x)$ has a missi
 When the attribute $A$ is to be tested at node $n$, we can apply two solutions:
 \begin{itemize}
     \item \textbf{SIMPLE SOLUTION}: Assign, to the example $x$, the most common attribute $A$ values among the training examples at node $n$;
-    \item \textbf{COMPLEX SOLUTION}: propagate $x$ to each children of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
+    \item \textbf{COMPLEX SOLUTION}: propagate $x$ to each child of n, with a fractional value equal to the proportion of examples with the corresponding attribute value.
     \\At test times for each candidate class (since more leaf nodes are reached), all fraction belonging to the same class are summed. The example is assigned the class with the highest overall value.
 \end{itemize}
 \paragraph{Example of complex solution:}
