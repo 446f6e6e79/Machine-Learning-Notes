@@ -170,20 +170,23 @@ Setting this to zero gives:
 We can now substitute these expressions back into the Lagrangian (\ref{eq:svm_lagrangian}) to eliminate the parameters $\boldsymbol{w}$ and $w_0$.
 This gives us the \textbf{dual formulation} of the SVM optimization problem:
 \[
-\frac{1}{2} \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j
-- \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j
+\frac{1}{2} \sum_{i,j=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \alpha_j y_j \mathbf{x}_j
+- \sum_{i,j=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \alpha_j y_j \mathbf{x}_j
 - \underbrace{\sum_{i=1}^{m} \alpha_i y_i}_{\text{ = 0}} w_0
 + \sum_{i=1}^{m} \alpha_i =
 \]
 Applying the simplifications, our objective becomes:
 \begin{equation}
-    L(\alpha) = \sum_{i=1}^{m} \alpha_i - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j
+    L(\alpha) = \sum_{i=1}^{m} \alpha_i 
+    -\frac{1}{2} \sum_{i,j=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \alpha_j y_j \mathbf{x}_j
 \end{equation}
 We did get rid of the primal parameters $\boldsymbol{w}$ and $w_0$, and now we have to maximize $L(\alpha)$ with respect to the multipliers $\alpha_i$.
 \\Our new optimization problem is:
 \begin{equation}
+    \label{eq:svm_dual}
     \begin{aligned}
-        & max_{\alpha \in \mathbb{R}^m } \sum_{i=1}^{m} \alpha_i - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j \\
+        & max_{\alpha \in \mathbb{R}^m } \sum_{i=1}^{m} \alpha_i 
+        - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \alpha_j y_j \mathbf{x}_j\\
         & \text{subject to} \begin{cases}
             \sum_{i=1}^{m} \alpha_i y_i = 0 \\
             \alpha_i \geq 0, \quad \forall i
@@ -350,8 +353,10 @@ In this case the primal variables are $\boldsymbol{w}$, $w_0$ and $\boldsymbol{\
 \end{itemize}
 Substituting these expressions back into the Lagrangian (\ref{eq:soft_svm_lagrangian}), we obtain the dual formulation of the soft margin SVM optimization problem:
 \begin{equation}
+    \label{eq:soft_svm_dual}
     \begin{aligned}
-        & max_{\alpha \in \mathbb{R}^m } \sum_{i=1}^{m} \alpha_i - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i \alpha_j y_i y_j \mathbf{x}_i^{T} \mathbf{x}_j \\
+        & max_{\alpha \in \mathbb{R}^m } \sum_{i=1}^{m} \alpha_i 
+        - \frac{1}{2} \sum_{i,j=1}^{m} \alpha_i y_i \mathbf{x}_i^{T} \alpha_j y_j \mathbf{x}_j \\
         & \text{subject to} \begin{cases}
             \sum_{i=1}^{m} \alpha_i y_i = 0 \\
             0 \leq \alpha_i \leq C, \quad \forall i
@@ -382,7 +387,7 @@ We can distinguish some cases:
     \item If $\alpha_i = 0$, then $\xi_i = 0$ and the point is correctly classified and outside the margin. It doesn't count
 \end{itemize}
 \begin{figure}[H]
-    \label{fig:svm_margin_support_vectors}
+    \label{fig:svm_soft_support_vectors}
     \resizebox{0.8\textwidth}{!}{
         \centering
         \begin{tikzpicture}

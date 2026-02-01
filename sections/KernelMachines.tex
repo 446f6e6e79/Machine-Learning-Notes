@@ -1,7 +1,7 @@
 \section{Kernel Machines}
 With what we have seen so far about SVMs, we find out that:
 \begin{itemize}
-    \item \textbf{Hard Margin SVMs} can address linearly separable data only;
+    \item \textbf{Hard Margin SVMs} can address linearly separable data only, with no misclassification;
     \item \textbf{Soft Margin SVMs} can address linearly separable problems with some degree of misclassification;
     \item \textbf{Non-linearly separable problems} need higher expressive power to be addressed.
 \end{itemize}
@@ -98,7 +98,6 @@ An example of feature map is the following:
     \end{scope}
     \end{tikzpicture}
     \caption{Mapping from 2D input space to 3D feature space using a polynomial feature map of degree 2.}
-    \label{fig:feature_map}
 \end{figure}
 
 
@@ -172,7 +171,7 @@ The linear separator in the $3D$ feature space corresponds to a ellipse in the o
 \subsection{Kernel trick}
 Computing the feature map $\phi(\boldsymbol{x})$ explicitly can be computationally expensive. 
 However, this is not necessary to compute the SVM decision function.
-\\In the \textbf{dual formulation} of SVMs, the data points appear only in the form of \textbf{dot products} 
+\\In the \textbf{dual formulation} of SVMs (equations \ref{eq:svm_dual}, \ref{eq:soft_svm_dual}), the data points appear only in the form of \textbf{dot products} 
 $\langle \phi(\boldsymbol{x}), \phi(\boldsymbol{x}') \rangle$.
 \definition{Kernel trick}{
 The \textbf{kernel trick} consists in replacing the dot product in the feature space with an equivalent \textbf{kernel function} 
@@ -220,7 +219,7 @@ Setting $d=2$, we have:
     K(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2' + 1)^2
 \]
 \[
-    = (x_1 x_1')^2 + 2 x_1 x_2 x_1' x_2' + (x_2 x_2')^2 + 2 x_1 x_1' + 2 x_2 x_2' + 1
+    = (x_1 x_1')^2 + 2 x_1 x_1' x_2 x_2' + (x_2 x_2')^2 + 2 x_1 x_1' + 2 x_2 x_2' + 1
 \]
 \[ = \underbrace{(1, \sqrt{2} x_1, \sqrt{2} x_2, x_1^2, \sqrt{2} x_1 x_2, x_2^2)}_{\phi(\boldsymbol{x})^T}
 \underbrace{
@@ -236,7 +235,7 @@ Setting $d=2$, we have:
 \]
 This is equivalent to the dot product in the feature space defined by the non-homogeneous polynomial feature map of degree $2$, up to a scaling factor $\sqrt{2}$.
 
-\subsubsection{Valid Kernels}
+\subsection{Valid Kernels}
 \definition{Valid Kernel}{
     A kernel function $K : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is valid if it corresponds to a dot product in some feature space $\mathcal{H}$:
     \begin{equation}
@@ -250,6 +249,8 @@ The kernel generalizes the concept of similarity between data points in arbitrar
         \begin{equation}
             K_{ij} = k(\boldsymbol{x}_i, \boldsymbol{x}_j) \forall i, j
         \end{equation}
+        It can be interpreted as a matrix of pairwise similarities between the examples in the dataset,
+        according to the kernel function $k$.
     }
 \end{figure}
 
@@ -274,11 +275,9 @@ There are several ways to check if a kernel is valid, e.g.:
     \item Use kernel combination properties (e.g. sum, product yield valid kernels).
     This is the most common way to build complex kernels from simpler ones.
 \end{itemize}
-\begin{comment}
-    #TODO: add example on support vector regression??
-\end{comment}
-\subsection{Basic Kernels}
-Basic kernels can be useful as building blocks for more complex kernels. Some common examples include:
+\subsubsection{Basic Kernels}
+As just mentioned, basic kernels can be useful as building blocks for more complex kernels using kernel combination properties. 
+Some common examples include:
 \begin{itemize}
     \item \textbf{Linear Kernel}:
     \begin{equation}
@@ -296,11 +295,11 @@ Basic kernels can be useful as building blocks for more complex kernels. Some co
     The kernel depends on a parameter $\sigma$ that controls the width of the Gaussian function. The smaller the $\sigma$, the more localized the influence of each training example.
 \end{itemize}
 The Gaussian kernel is an example of \textbf{universal kernel}, which means that it can approximate any continuous function on a compact domain given enough data.
-\subsection{Kernel combinations}
+\subsubsection{Kernel Combinations}
 Basic kernels can be \textbf{combined} using various operations to create more complex kernels from simpler ones. 
 Correctly using combination operators guarantees that the resulting kernel is still positive definite.
 \\We will now analyze some common kernel combination methods.
-\subsubsection{Kernel Sum}
+\subsubsection*{Kernel Sum}
 The sum of two kernels of two kernels corresponds to the concatenation of their feature spaces:
 \begin{equation}
     K(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') + K_2(\boldsymbol{x}, \boldsymbol{x}')
@@ -312,7 +311,7 @@ Applying the definition of kernel:
 \[
 = (\phi_1(\boldsymbol{x}) + \phi_2(\boldsymbol{x}))^T (\phi_1(\boldsymbol{x}') + \phi_2(\boldsymbol{x}'))
 \]
-\subsubsection{Kernel Product}
+\subsubsection*{Kernel Product}
 The product of two kernels corresponds to the \textbf{cartesian product} of their features:
 \begin{equation}
     (k_1 \times k_2)(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') K_2(\boldsymbol{x}, \boldsymbol{x}')
@@ -328,14 +327,14 @@ The product of two kernels corresponds to the \textbf{cartesian product} of thei
 \]
 where $\phi_{12}(\boldsymbol{x}) = \phi_{1}(\boldsymbol{x}) \times \phi_{2}(\boldsymbol{x})$ is the cartesian product of the two feature maps.
 The product can also be between kernel in different spaces.
-\subsubsection{Linear combination of kernels}
+\subsubsection*{Linear combination of kernels}
 A kernel can be rescaled by a positive constant:
 \[ k_{\beta}(\boldsymbol{x}, \boldsymbol{x}') = \beta k(\boldsymbol{x}, \boldsymbol{x}')\]
 We can define a linear combination of kernels as:
 \[k_{sum}(\boldsymbol{x}, \boldsymbol{x}') = \sum_{k=1}^K \beta_k k_k(\boldsymbol{x}, \boldsymbol{x}') \]
 Since understanding what kernel works best for a given problem can be challenging, combining multiple kernels allows us to leverage the strengths of each individual kernel.
 With \textbf{kernel learning} the weights $\beta_k$ of the combination can be learned from data, allowing the model to adaptively combine multiple kernels.
-\subsubsection{Kernel normalization}
+\subsubsection*{Kernel Normalization}
 Kernel values can be influenced by the dimension of objects. I.E., in text classification, longer documents tend to have higher dot products simply because they contain more words.
 \\To mitigate this effect, we can normalize the kernel:
 \begin{equation}
