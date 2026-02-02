@@ -105,7 +105,7 @@ This implies that each column must sum to 1:
 Parameters of different columns are independent, allowing us to estimate them independently.
 Thus, we can decompose the MLE problem for each column $u$ as follows:
 \begin{equation*}
-    \theta_{x|u}^{\max} = \frac{N_{x,u}}{\sum_{x} N_{x,u}}
+    \theta_{x|u}^{\max} = \frac{N_{u,x}}{\sum_{x} N_{u,x}}
 \end{equation*}
 This means that the MLE estimate for each parameter $\theta_{x|u}$ is simply the relative frequency of $X = x$
 given $U = u$ in the data.
@@ -132,7 +132,7 @@ This approach is known as Maximum A Posteriori (MAP) estimation.
 with parameters $\alpha_{x|u}$, for each possible value of $x$.
 The resulting MAP estimate for each parameter $\theta_{x|u}$ becomes:
 \begin{equation}*
-    \theta_{x|u}^{\max} = \frac{N_{x,u} + \alpha_{x|u}}{\sum_{x} (N_{x,u} + \alpha_{x|u})}
+    \theta_{x|u}^{\max} = \frac{N_{u,x} + \alpha_{x|u}}{\sum_{x} (N_{u,x} + \alpha_{x|u})}
 \end{equation}
 Where $\alpha_{x|u}$ can be interpreted as imaginary samples with configuration $X_j = x$ and $Pa_j = u$.
 
@@ -165,6 +165,7 @@ and then updates the parameters using these estimated statistics.
     \begin{equation}
         \theta_{ijk}^{\max} = \frac{E[N_{ijk}]}{\sum_{k} E[N_{ijk}]}
     \end{equation}
+    This is the same formula as in the complete data case, but using expected counts instead of actual counts.
 \end{itemize}
 \subsection{Structure Learning}
 There are different approaches to learn the structure of a Bayesian Network from data.

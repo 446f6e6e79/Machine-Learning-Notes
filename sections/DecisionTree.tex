@@ -141,7 +141,7 @@ The previously defined \textbf{Information Gain} criterion tends to \textbf{pref
 \paragraph{Attribute Value Entropy:} 
 To resolve this issue, a measure of the entropy of the dataset $S$, with respect to the values of an attribute $A$ is defined:
 \begin{equation}
-    H_A(S) = - \sum_{v\in Values(A)} \frac{|S_v|}{S} \log_2 \frac{|S_v|}{S}
+    H_A(S) = - \sum_{v\in Values(A)} \frac{|S_v|}{|S|} \log_2 \frac{|S_v|}{|S|}
 \end{equation}
 \begin{itemize}
     \item If, for a certain attribute (ex: ID), every value is unique, then $H_A(S)$ is very high;

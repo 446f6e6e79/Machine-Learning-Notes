@@ -252,7 +252,7 @@ It is called head-to-tail because $c$ has one incoming edge (head) from $a$ and 
 \end{figure}
 The joint distribution can be expressed as:
 \[ p(a,b,c) = p(b|c) p(c|a) p(a) \]
-Note that, using Bayes' theorem, we can rewrite $p(c|a) p(a)$ as $p(a|c) p(c)$, obtaining:
+Note that, using Bayes' theorem, we can rewrite $p(c|a) p(a)$ as $\frac{p(a|c) p(c)}{p(a)}$, obtaining:
 \[ p(a,b,c) = p(b|c) p(a|c) p(c) \]
 We can note that this is exactly the same form as the tail-to-tail case \ref{eq:tailToTail}.
 Even though it's trivial, we will repeat the independency analysis for clarity.

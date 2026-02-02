@@ -11,7 +11,7 @@ are in the middle, and the last layer is called \textit{output layer}.
 
 \begin{figure}[H]
   \centering
-  \resizebox{0.8\textwidth}{!}{
+  \resizebox{1\textwidth}{!}{
   \begin{tikzpicture}[
       node distance=12mm,
       every node/.style={draw,circle,minimum size=8mm},
@@ -28,7 +28,7 @@ are in the middle, and the last layer is called \textit{output layer}.
   \node[input] (i4) at (3.6,0) {};
   \node[input] (i5) at (4.8,0) {};
   \node[draw=none] at (2.4,-1) {$x$};
-  \node[draw=none] at (-1.3,0) {Input layer};
+  \node[draw=none] at (-1.5,0) {Input layer};
 
   % LAYER 1 (3 nodes)
   \node[hidden] (h11) at (1.0,1.5)  {};
@@ -91,7 +91,7 @@ Where:
     \item $\boldsymbol{x}$ is the input vector;
     \item $\phi_i(x)$ is the output of layer $i$, learned from the data during training.
     \[\phi_i(x) = \sigma(W_i \boldsymbol{x})\]
-    \item $W_i$ is the weight matrix of layer $i$. It's dimensions depend on the number of neurons in layer $i$. 
+    \item $W_i$ is the weight matrix of layer $i$. Its dimensions depend on the number of neurons in layer $i$. 
     Each row contains the weights associated to a neuron. Computing $W_i \boldsymbol{x}$ will return a vector
     which contains the weighted sum of the inputs for each neuron in layer $i$.
     \item $\sigma(\cdot)$ is a non-linear activation function, applied element-wise.
@@ -135,11 +135,12 @@ It represents a smooth approximation of the threshold function. It is approximat
 However, for large positive or negative values of $z$, the function saturates (approaches 0 or 1), causing the gradient to vanish.
 
 \subsubsection{Output Layer}
-The output layer of a neural network produces the final predictions. The function used can be 
-different from the one used in hidden layers and heavily depends on the task at hand.
+The output layer of a neural network produces the final predictions. The function used in this layer can be 
+very different from the one used in hidden layers and heavily depends on the task at hand.
 \\We will now analyze the activation functions used in the output layer for different tasks.
 \paragraph{Binary Classification:} for binary classification tasks, only one output neuron $o(\boldsymbol{x})$ is needed.
-The output activation function is usually the sigmoid activation function, which maps the output to the range (0, 1). It is defined as:
+The output activation function is usually the sigmoid activation function, which maps the output to the range (0, 1). 
+It is defined as:
 \[ f(\boldsymbol{x}) = \sigma(o(\boldsymbol{x})) = \frac{1}{1 + e^{-o(\boldsymbol{x})}} \]
 This output can be interpreted as the probability of belonging to the positive class.
 To obtain the final class label, a threshold (usually 0.5) is applied:
@@ -158,7 +159,7 @@ The predicted class is the one with the highest probability:
 \paragraph{Regression:} for regression tasks, where the output is a continuous value, the decision is the value of the output neuron itself.
 \[f(\boldsymbol{x}) = o(\boldsymbol{x}) \]
 
-\subsubsection{representational power of MLPs}
+\subsubsection{Representational power of MLPs}
 In this section we will analyze the representational power of MLPs on different tasks.
 \begin{itemize}
     \item \textbf{Boolean functions:} any boolean function can be represented by a MLP with two layers of units. This can be done using CNF or DNF, but it would require
