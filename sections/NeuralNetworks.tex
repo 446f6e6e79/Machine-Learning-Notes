@@ -90,9 +90,9 @@ Where:
 \begin{itemize}
     \item $\boldsymbol{x}$ is the input vector;
     \item $\phi_i(x)$ is the output of layer $i$, learned from the data during training.
-    \[\phi_i(x) = \sigma(W_i \boldsymbol{x})\]
+    \[\phi_i(x) = \sigma(W_i^T \boldsymbol{x})\]
     \item $W_i$ is the weight matrix of layer $i$. Its dimensions depend on the number of neurons in layer $i$. 
-    Each row contains the weights associated to a neuron. Computing $W_i \boldsymbol{x}$ will return a vector
+    Each row contains the weights associated to a neuron. Computing $W_i^T \boldsymbol{x}$ will return a vector
     which contains the weighted sum of the inputs for each neuron in layer $i$.
     \item $\sigma(\cdot)$ is a non-linear activation function, applied element-wise.
 \end{itemize}
@@ -283,7 +283,7 @@ Where we used the derivative of the sigmoid activation function $(\frac{\partial
 \subsection{Modular Structure of Neural Networks}
 Neural networks can be seen as a combination of different modules, each with a specific function. Each of these modules has an interface to communicate with other modules.
 Each layer $j$ takes as input  $\phi_{j-1}$ and it's weights $W_j$, and produces as output $\phi_{j} = F(\phi_{j-1}, W_j)$. Once we get to the output layer, we can compute the loss function and the gradients using backpropagation.
-\[\frac{\partial E(W)}{\partial W_j} = \frac{\partial E(W)}{\partial \partial \phi_j} \frac{\partial \phi_j}{\partial W_j}  = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial W_j}\]
+\[\frac{\partial E(W)}{\partial W_j} = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial \phi_j}{\partial W_j}  = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial W_j}\]
 Each layer computes:
 \[ \frac{\partial E(W)}{\partial \phi_{j-1}} = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial \phi_j}{\partial \phi_{j-1}} = \frac{\partial E(W)}{\partial \phi_j} \frac{\partial F_j(\phi_{j-1}, W_j)}{\partial \phi_{j-1}} \]
 Each module must be able to compute:
@@ -372,12 +372,13 @@ Where:
 \end{itemize}
 
 \paragraph{Adaptive Learning Rates:}
-Adaptive learning rate methods adjust the learning rate for each weight individually. Some popular methods include:
+Adaptive learning rate methods adjust the learning rate during training based on the progress made.
+Some popular methods are:
 \begin{itemize}
     \item \textbf{Decreasing learning rate:} gradually decrease the learning rate over time.
     \[\eta_t = \begin{cases}
-    (1 - \frac{t}{\tau})\eta_0 + \frac{t}{\tau} \eta_t  & \text{if } t \le \tau \\
-    \eta_{\text{min}} & \text{if } t > \tau
+    (1 - \frac{t}{\tau})\eta_0 + \frac{t}{\tau} \eta_{\text{min}}  & \text{if } t < \tau \\
+    \eta_{\text{min}} & \text{if } t \ge \tau
     \end{cases}
     \]
     The idea is to start with a high learning rate to explore the error surface, and then decrease to avoid oscillations around minima.

@@ -1,7 +1,9 @@
 \section{Unsupervised Learning - Clustering}
-What we have seen so far are all examples of \textbf{supervised learning}, which required a labeled dataset to learn from. This process
-is usually extremely expensive and it could happen that we don't have access to labeled data at all. 
-\\In such cases, we can resort to \textbf{unsupervised learning} techniques, which can be used to group data points into \textbf{clusters}. 
+What we have seen so far are all examples of \textbf{supervised learning}, which required a labeled dataset to learn from.
+The process of obtaining labeled data is usually extremely expensive, and it could happen that we 
+don't have access to labeled data at all.
+\\In such cases, we can resort to \textbf{unsupervised learning} techniques, 
+which can be used to group data points into \textbf{clusters}. 
 
 \subsection{K-Means Clustering}
 One of the most popular clustering algorithms is \textbf{K-Means Clustering}. The setting is the following:
@@ -32,7 +34,8 @@ To compute the distance between points and cluster means, we have to choose a di
     \[d(\boldsymbol{x}, \boldsymbol{x}') = 1 - \frac{\boldsymbol{x}^T  \boldsymbol{x}'}{||\boldsymbol{x}|| \, ||\boldsymbol{x}'||}\]
 \end{itemize}
 \subsection{Quality of Clustering}
-Since we are working in an unsupervised setting, we don't have labels to evaluate the quality of our clustering. However, we can define the following metrics:
+Since we are working in an unsupervised setting, we don't have true labels to evaluate the quality of our clustering. 
+However, we can define the following metric:
 \definition{Sum-of-Squared error criterion}
 {
     The sum-of-squared error criterion is defined as:
@@ -53,7 +56,16 @@ It assumes that the number of clusters $K$ is given and that each data point is 
 If we wanted to estimate the parameters of the Gaussians (means and covariances), we could use Maximum Log-Likelihood Estimation (MLE).
 \[ \theta^* = \arg \max_{\theta} \mathcal{L}(\theta|\mathcal{D})\]
 where $\theta$ are the parameters of the Gaussians and $\mathcal{D}$ is the dataset.
-\[ \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log \left( \sum_{h = 1}^{K}p(x_i | \theta_k) \right) \]
+\\Assuming that the data points are independent, we can write the likelihood as:
+\[ \mathcal{L}(\theta|\mathcal{D}) = \prod_{i = 1}^{N} p(x_i | \theta) \]
+Taking the logarithm (to simplify the optimization), we get the log-likelihood:
+\[ \log \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log p(x_i | \theta) \]
+In the case of Gaussian Mixture Models, the probability of a data point $x_i$ is given by 
+the sum of the probabilities of the $K$ Gaussians:
+\[ p(x_i | \theta) = \sum_{k = 1}^{K}p(x_i | \theta_k) \]
+where $\theta_k$ are the parameters of the $k$-th Gaussian.
+\\Substituting this into the log-likelihood, we get:
+\[ \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log \left( \sum_{k = 1}^{K}p(x_i | \theta_k) \right) \]
 However, MLE cannot be used directly, since the cluster assignments are unknown.
 Instead, we can apply an iterative approach called the \textbf{Expectation-Maximization (EM)}.
 
