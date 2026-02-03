@@ -53,20 +53,20 @@ The idea behind Gaussian Mixture Models is to model the data as a mixture of sev
 Each cluster is represented by a Gaussian distribution with its own parameters (mean and covariance).
 It assumes that the number of clusters $K$ is given and that each data point is generated from one of the $K$ Gaussian distributions.
 \subsubsection*{Parameter Estimation}
-If we wanted to estimate the parameters of the Gaussians (means and covariances), we could use Maximum Log-Likelihood Estimation (MLE).
-\[ \theta^* = \arg \max_{\theta} \mathcal{L}(\theta|\mathcal{D})\]
+If we wanted to estimate the parameters of the Gaussians (means and covariances), we could use Maximum Likelihood Estimation (MLE).
+\[ \theta^* = \arg \max_{\theta} \mathcal{L}(\theta|\mathcal{D}) = \arg \max_{\theta} p(\mathcal{D} | \theta) \]
 where $\theta$ are the parameters of the Gaussians and $\mathcal{D}$ is the dataset.
 \\Assuming that the data points are independent, we can write the likelihood as:
 \[ \mathcal{L}(\theta|\mathcal{D}) = \prod_{i = 1}^{N} p(x_i | \theta) \]
 Taking the logarithm (to simplify the optimization), we get the log-likelihood:
-\[ \log \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log p(x_i | \theta) \]
+\[ \log \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{N} \log p(x_i | \theta) \]
 In the case of Gaussian Mixture Models, the probability of a data point $x_i$ is given by 
 the sum of the probabilities of the $K$ Gaussians:
-\[ p(x_i | \theta) = \sum_{k = 1}^{K}p(x_i | \theta_k) \]
-where $\theta_k$ are the parameters of the $k$-th Gaussian.
+\[ p(x_i | \theta) = \sum_{k = 1}^{K} \pi_k p(x_i | \theta_k) \]
+where $\theta_k$ are the parameters of the $k$-th Gaussian and $\pi_k$ is the prior probability of cluster $k$.
 \\Substituting this into the log-likelihood, we get:
-\[ \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{n} \log \left( \sum_{k = 1}^{K}p(x_i | \theta_k) \right) \]
-However, MLE cannot be used directly, since the cluster assignments are unknown.
+\[ \log \mathcal{L}(\theta|\mathcal{D}) = \sum_{i=1}^{N} \log \left( \sum_{k = 1}^{K} \pi_k p(x_i | \theta_k) \right) \]
+However, since cluster assignments are latent, we cannot directly maximize this log-likelihood.
 Instead, we can apply an iterative approach called the \textbf{Expectation-Maximization (EM)}.
 
 \subsubsection*{Expectation-Maximization (EM) Algorithm}
@@ -77,27 +77,25 @@ The EM algorithm consists of two main steps:
     \item Repeat until convergence.
 \end{enumerate}
 \subsubsection*{Example: estimating the mean of k univariate Gaussians}
-Here, we assume to have a dataset of $x_1, x_2, \ldots, x_n$ examples.
+Here, we assume to have a dataset of $x_1, x_2, \ldots, x_N$ examples.
 We assume that the data is generated from $k$ univariate Gaussian distributions with 
 unknown means $\mu_1, \mu_2, \ldots, \mu_k$ and known variance $\sigma^2$.
-We want to estimate the means of the Gaussians using, allowing us to assign points to clusters probabilistically.
+We want to estimate the means of the Gaussians using the EM algorithm, allowing us to assign points to clusters probabilistically.
 \\The algorithm works as follows:
 \begin{enumerate}
     \item \textbf{Initialization}: randomly initialize the means $h = \langle\mu_1, \mu_2, \ldots, \mu_k \rangle$;
     \item \textbf{Iterate until convergence}: convergence is checked by measuring the change in Maximum Log-Likelihood:
     \begin{itemize}
-        \item \textbf{E-step}: compute the posterior probability that a datapoint $x_i$ belongs to cluster $j$, 
+        \item \textbf{E-step}: compute the posterior probability that a datapoint $x_i$ belongs to cluster $k$, 
         given the current means $h$.
-        \[ \gamma_{ik} = \frac{\pi_k p(x_i | \mu_k)}{\sum_{j=1}^{k} \pi_j p(x_i | \mu_j)} \]
-        We are basically computing the probability that $x_i$ belongs to cluster $j$ and normalizing it over all clusters for each data point.
+        \[ \gamma_{ik} = \frac{\pi_k p(x_i | \mu_k)}{\sum_{j=1}^{K} \pi_j p(x_i | \mu_j)} \]
+        We are basically computing the probability that $x_i$ belongs to cluster $k$ and normalizing it over all clusters for each data point.
         This way, summing over all clusters gives $1$.
         The term $\pi_j$ represents the prior probability of cluster $j$.
-        \\Since we are working with Gaussians, we use the Gaussian probability density function to compute $p(x_i | \mu_j)$.
-        \[ = \frac{\pi_k\exp - \frac{1}{2\sigma^2}(x_i - \mu_k)^2}{\sum_{j=1}^{K}\exp - \frac{1}{2\sigma^2}(x_i - \mu_j)^2} \]
         \item \textbf{M-step}: calculate a new hypothesis $h'$ assuming values of latent variables are their expected values.
-        The maximum likelihood estimate of the mean $\mu_j$ is given by the weighted sample mean, where each instance is weighted by its probability of
-        belonging to cluster $j$:
-        \[ \mu_j' = \frac{\sum_{i=1}^{n} \gamma_{ik} x_i}{\sum_{i=1}^{n} \gamma_{ik}} \]
+        The maximum likelihood estimate of the mean $\mu_k$ is given by the weighted sample mean, where each instance is weighted by its probability of
+        belonging to cluster $k$:
+        \[ \mu_k' = \frac{\sum_{i=1}^{N} \gamma_{ik} x_i}{\sum_{i=1}^{N} \gamma_{ik}} \]
     \end{itemize}
 \end{enumerate}
 
