@@ -141,13 +141,13 @@ but it aims to learn them through interaction with the environment.
 \\There are two main approaches to deal with this partial knowledge:
 \begin{itemize}
     \item \textbf{Policy Evaluation}: the policy is given, environment is learned through experience (passive agent). 
-    The environment simply learns the transition model while following a fixed policy.
+    The agent simply learns the transition model while following a fixed policy.
     \item \textbf{Policy Improvement}: both the policy and the environment are learned through experience (active agent). 
 \end{itemize}
 
-\subsubsection{Policy Evaluation}
+\subsection{Policy Evaluation}
 \label{policyevaluation}
-\subsubsection*{Adaptive Dynamic Programming (ADP)}
+\subsubsection{Adaptive Dynamic Programming (ADP)}
 In ADP, the agent maintains counts of useful transitions to estimate the transition model:
 \begin{itemize}
     \item $N_{sa}$: number of times action $a$ has been taken in state $s$;
@@ -180,13 +180,13 @@ In ADP, the agent maintains counts of useful transitions to estimate the transit
     \end{algorithmic}
 \end{algorithm}
 \definition{Remark:}{
-    the outer loop is needed to ensure any significant results. Each iteration of the outer loop is called an \textbf{Episode}.
+    The outer loop is needed to ensure any significant results. Each iteration of the outer loop is called an \textbf{Episode}.
 }
 The algorithm performs maximum likelihood estimation of the transition model based on observed counts. 
 It then updates the utilities of each state, based on the current learned transition model, using standard policy Evaluation.
 This approach is really expensive, since it requires computing the policy evaluation at every step.
 
-\subsubsection*{Temporal-Difference Learning (TD Learning)}
+\subsubsection{Temporal-Difference Learning (TD Learning)}
 TD Learning tries to approximate the utility of states, without needing to run full policy evaluation at every step. This is done by assuming a deterministic transition model (no real transition model is learned).
 If the agent is in state $s$ and takes action $a$, arriving in state $s'$, we assume that $s'$ is the only possible successor of $s$:
 \begin{itemize}
@@ -199,7 +199,7 @@ Where $\alpha$ is the learning rate, controlling how much new information overri
 It should be decreasing over time, to ensure convergence.
 \\Basically, the idea is to adjust the utility of the current state $s$, making it closer to the approximation
 of the utility based on the observed transition to $s'$.
-\begin{algorithm}
+\begin{algorithm}[H]
     \caption{TD Learning}
     \begin{algorithmic}
         \Repeat
@@ -217,7 +217,7 @@ of the utility based on the observed transition to $s'$.
         \Until{convergence}
     \end{algorithmic}
 \end{algorithm}
-\subsubsection*{Differences}
+\subsubsection{Differences}
 \begin{itemize}
     \item TD Learning does not learn a transition model (simply estimates the utility), while ADP does (it uses maximum likelihood estimation);
     \item Each step of TD Learning is computationally cheaper than ADP, since it does not require running policy evaluation;
@@ -225,21 +225,21 @@ of the utility based on the observed transition to $s'$.
 \end{itemize}
 We can say that TD Learning is a rough approximation of ADP.
 
-\subsubsection{Policy Improvement}
+\subsection{Policy Improvement}
 As we have said before, in policy improvement both the optimal policy and the environment are learned through experience.
-\subsubsection*{A simple solution}
+\subsubsection{A simple solution}
 \label{simplepolicyimprovement}
 A simple solution to this problem consists in using a variation of ADP, where the policy evaluation is replaced with the computation of the 
 optimal policy (both value and policy iteration can be used).
 \[ U(s) = R(s) + \gamma \max_{a \in A} \sum_{s' \in S} P(s'|s,a) U(s') \]
 This approach theoretically works, but it has two main issues:
-\begin{itemize}
+\begin{enumerate}
     \item It is computationally expensive, since it requires computing the optimal policy at every step;
     \item This is a greedy approach, which may lead to suboptimal policies. The space is not explored enough, and the agent tend to overfit to the current knowledge of the environment.
-\end{itemize}
+\end{enumerate}
 To resolve the exploration vs exploitation trade-off, non entirely greedy algorithms should be defined, to encourage exploration of the state space.
 
-\subsubsection*{Trade off strategies}
+\subsubsection{Trade off strategies}
 There are two main strategies to deal with the exploration vs exploitation trade-off:
 \begin{itemize}
     \item \textbf{$\epsilon$-greedy}: with probability $1 - \epsilon$, the agent chooses the action that maximizes the expected utility (the greedy action). With probability $\epsilon$, the agent chooses a random action (exploration).
@@ -251,7 +251,7 @@ There are two main strategies to deal with the exploration vs exploitation trade
 Both these strategies help with the suboptimal policies issue, but still require computing the optimal 
 policy at every step, which is computationally expensive.
 
-\subsubsection*{Utilities of an action:}
+\subsubsection{Utilities of an action:}
 To resolve the computational issue we could follow the idea used in section \ref{policyevaluation} and use TD Learning to approximate the utilities of states.
 However, TD Learning cannot be directly applied in this context. Here, we are learning both the policy and the environment.
 \\\\As we have seen in equation \ref{optpolicy}, the optimal policy depends on the transition model, which is not computed in TD Learning.
@@ -314,6 +314,7 @@ Q-Learning is an off-policy TD learning algorithm. It uses different policies fo
         \Until{convergence}
     \end{algorithmic}
 \end{algorithm}
+
 \subsection{Scaling to Large Problems}
 All the techniques we have seen so far assume a tabular representation of the utility functions. This is not feasible
 for large state or action spaces, since the tables would become too large to store and update efficiently.
