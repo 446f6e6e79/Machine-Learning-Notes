@@ -4,16 +4,16 @@ Ensemble methods are techniques that combine multiple ML models to improve the o
 The idea is based on the principle that group of individuals can make better decisions than a single individual, if they have diverse perspectives.
 \\Ensemble methods need to diversify their predictions. They can be categorized into three main types: 
 \begin{enumerate}
-    \item Bagging: diversifies the training sets;
-    \item Stacking: diversifies the model architectures being trained;
-    \item Boosting: diversifies the weights of the single training example, focusing on the "hard" ones.
+    \item \textbf{Bagging}: diversifies the training sets, while keeping the model architecture the same;
+    \item \textbf{Stacking}: diversifies the model architectures being trained;
+    \item \textbf{Boosting}: diversifies the weights of the single training example, focusing on the "hard" ones.
 \end{enumerate}
 
 \subsection{Bagging}
 In a nutshell, Bagging is based on this simple tasks:
 \begin{itemize}
     \item Take a learning algorithm $A$;
-    \item Extract from it $m$ different dataset $D^{(i)}$ from the original training set $D$, 
+    \item Extract $m$ different datasets $D^{(i)}$ from the original training set $D$, 
     using \textbf{bootstrap resampling} (explained later);
     \item Train one base model on each dataset:
     \[ f^{(i)} = A(D^{(i)}) \]
