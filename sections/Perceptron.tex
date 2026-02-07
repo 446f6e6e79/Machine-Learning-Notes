@@ -220,9 +220,8 @@ Also, we are not always interested in finding the exact minimum of the error fun
 Again, given the gradient of the error function, we can compute the update of the weights as:
 \[\boldsymbol{w}' = \boldsymbol{w} - \eta \nabla E(\boldsymbol{w}; \mathcal{D})\]
 To compute the gradient, we start from the error function defined in \eqref{eq:mse}:
-\[\frac{\partial E}{\partial \boldsymbol{w}_i} = \frac{\partial}{\partial \boldsymbol{w}_i} \frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2\]
-\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} \frac{\partial}{\partial \boldsymbol{w}_i}(y-f(\boldsymbol{x}))^2\]
-\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} 2(y-f(\boldsymbol{x}))\frac{\partial}{\partial \boldsymbol{w}_i} f(\boldsymbol{x})\]
-We can substitute $f(\boldsymbol{x})$ with the linear function $\boldsymbol{w}^T \boldsymbol{x}$:
-\[=\frac{1}{2} \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} 2(y-f(\boldsymbol{x}))\frac{\partial}{\partial \boldsymbol{w}_i} (y - \boldsymbol{w}^T \boldsymbol{x})\]
-\[= \sum_{(\boldsymbol{X}, y) \in \mathcal{D}} (y - f(\boldsymbol{x})) (-x_i)\]
+\[ \nabla E(\boldsymbol{w}; \mathcal{D}) = \nabla \sum_{(\boldsymbol{x}, y) \in \mathcal{D}} (y - f(\boldsymbol{x}))^2  \]
+We can rewrite the error function in matrix form:
+\[ = \nabla (\boldsymbol{y} - X\boldsymbol{w})^2 \] 
+\[= \nabla (\boldsymbol{y} - X\boldsymbol{w})^T (\boldsymbol{y} - X\boldsymbol{w})\]
+\[ = 2(\boldsymbol{y} - X\boldsymbol{w})^T (-X) \]
