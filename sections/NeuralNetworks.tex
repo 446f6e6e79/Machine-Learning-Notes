@@ -241,7 +241,13 @@ connecting neuron $j$ in the previous layer to neuron $l$ in the current layer.
         \draw[connection] (act) -- ++(1,0) node[right] {$\phi_l$};
     \end{tikzpicture}
 \end{figure}
-The chain rule gives us:
+Remembering that the chain rule is defined as:
+\begin{equation*}
+  y = f(z), z = g(x) \Rightarrow \frac{dy}{dx} = \frac{dy}{dz} \cdot \frac{dz}{dx}
+\end{equation*}
+Applying it to our case, we have that the weight $w_{lj}$ affects the loss function
+through the input of the activation function of neuron $l$, which in turn affects the loss function. 
+Therefore, we can write:
 \[
 \frac{\partial E(W)}{\partial w_{lj}}
 = \underbrace{\frac{\partial E(W)}{\partial a_l}}_{\delta_l}
@@ -253,11 +259,13 @@ where:
     \item $\delta_l$ represents the error term for neuron $l$. 
     Represents how much the output of neuron $l$ contributes to the final error;
     \item $\phi_j$ is the output of neuron $j$ in the previous layer. It is one of the inputs of the node $l$;
-    \item $\frac{\partial a_l}{\partial w_{lj}}$ is the input $\phi_j$. Since $a_l = \sum_{i} w_{li} \phi_i$,
+    \item $\frac{\partial a_l}{\partial w_{lj}}$ is $\phi_j$. Since $a_l = \sum_{i} w_{li} \phi_i$,
     if we derive with respect to $w_{lj}$ all terms are constant except for the one with $i = j$, which gives $\phi_j$.
 \end{itemize}
 The final update rule for weight $w_{lj}$ is simply the error term $\delta_l$ multiplied by the input $\phi_j$ coming from the previous layer.
-\\The computation of $\delta_l$ depends on whether neuron $l$ is in the output layer or in a hidden layer. We will analyze both cases.
+\\\\While $\phi_j$ is easily computed during the forward pass, $\delta_l$ is more complex to compute, since it depends on the error of the output layer 
+and on the structure of the network.
+Also, the computation of $\delta_l$ depends on whether neuron $l$ is in the output layer or in a hidden layer. We will analyze both cases.
 
 \paragraph{Output layers:}
 Since neuron $l$ is in the output layer, we can directly compute the derivative 
@@ -267,19 +275,23 @@ Since we do not apply a non-linear activation function in the output layer for r
 \[ = \frac{\partial \frac{1}{2} (y - a_0)^2}{\partial a_{o}} = -(y - a_{o}) \]
 
 \paragraph{Hidden layers:}
-Here the node $l$ is in a hidden layer. Since we compute $\delta_l$ using the chain rule, 
-we need to consider the contributions from the neurons in the next layer.
+Here the node $l$ is in a hidden layer. To compute $\delta_l$, we need to use again the chain rule.
+In this case, the output of neuron $l$ affects the final loss through all possible paths from $l$ to the output layer. 
+Therefore, we need to consider all the neurons in the next layer that are connected to neuron $l$ (children of $l$), and sum their contributions to the error.
 \[\delta_{l} = \frac{\partial E(W)}{\partial a_{l}} = \sum_{k \in \text{children}(l)} \frac{\partial E(W)}{\partial a_{k}} \frac{\partial a_{k}}{\partial a_{l}} \]
-Where $k$ are the neurons in the next layer connected to neuron $l$. Intuitively, we are computing the contribution of neuron $l$ to the final error, by considering all the paths from $l$ to the output layer.
+Where $k$ are the neurons in the next layer connected to neuron $l$. 
 \\The term $\frac{\partial E(W)}{\partial a_{k}}$ is simply $\delta_k$, already computed in the next layer. We derive that:
 \[\delta_{l} = \sum_{k \in \text{children}(l)} \delta_k \frac{\partial a_{k}}{\partial a_{l}} \]
-Remembering that $a_k = \sum_{m} w_{km} \phi_m$, where $\phi_m$ is the output of neuron $m$ in the previous layer, we have that:
+Remembering that $a_k = \sum_{m} w_{km} \phi_m$ (the weighted sum of all inputs of node $k$), we have that a change in $a_l$ 
+will affect $a_k$ through the output of neuron $l$ $\phi_l$. Therefore, we can write:
 \[\frac{\partial a_{k}}{\partial a_{l}} = \frac{\partial a_{k}}{\partial \phi_{l}} \frac{\partial \phi_{l}}{\partial a_{l}}\]
 The first term is simply the weight $w_{kl}$. The second term is the derivative of the activation function $\sigma(\cdot)$ used in neuron $l$.
-Putting everything together, we have:
+This gives us the final formula for $\delta_l$:
+\[ \delta_{l} = \sum_{k \in \text{children}(l)} \delta_k w_{kl} \frac{\partial \sigma(a_{l})}{\partial a_{l}} \]
+Remembering that we are using the sigmoid activation function, we can compute its derivative as:
+\[ \frac{\partial \sigma(a_{l})}{\partial a_{l}} = \sigma(a_{l})(1 - \sigma(a_{l})) \]
+Substituting this back into the formula for $\delta_l$, we get:
 \[\delta_{l} = \sum_{k \in \text{children}(l)} \delta_k w_{kl} \sigma(a_{l})(1 - \sigma(a_{l})) \]
-Where we used the derivative of the sigmoid activation function $(\frac{\partial \sigma(x)}{\partial x} = \sigma(x)(1 - \sigma(x)))$.
-
 \subsection{Modular Structure of Neural Networks}
 Neural networks can be seen as a combination of different modules, each with a specific function. Each of these modules has an interface to communicate with other modules.
 Each layer $j$ takes as input  $\phi_{j-1}$ and it's weights $W_j$, and produces as output $\phi_{j} = F(\phi_{j-1}, W_j)$. Once we get to the output layer, we can compute the loss function and the gradients using backpropagation.
