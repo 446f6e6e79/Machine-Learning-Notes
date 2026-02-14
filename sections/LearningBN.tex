@@ -4,7 +4,7 @@ In this section, we will discuss both tasks in detail.
 
 \subsection{Parameter Learning}
 For parameter learning, we assume that the structure $G$ of the Bayesian Network is given.
-We are given a dataset $D = \{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_n\}$, 
+We are given a dataset $D = \{\boldsymbol{x}(1), \boldsymbol{x}(2), \ldots, \boldsymbol{x}(N)\}$, 
 where each $\boldsymbol{x}_i$ is a configuration of all (\textbf{complete data}) or 
 some (\textbf{incomplete data}) of the variables in the network.
 \\The goal is to estimate the parameters $\theta$ of the model (one parameter per variable) from the data.
@@ -15,12 +15,12 @@ Again, the simplest approach consists in finding the parameters that maximize th
 Given the complete data $D$, since every datapoint is \textit{i.i.d.} (independent and identically distributed), 
 we can express the likelihood of the data as:
 \begin{equation}
-    P(D|\theta) = \prod_{i=1}^{n} P(\boldsymbol{x}(i) | \theta)
+    P(D|\theta) = \prod_{i=1}^{N} P(\boldsymbol{x}(i) | \theta)
 \end{equation}
 Instead of working with the entire structure $G$ for each data point, we can exploit the 
 factorization property of Bayesian Networks. This allows us to express $p(\boldsymbol{x}(i) | \theta)$ as:
 \begin{equation}
-    P(D|\theta) = \prod_{i=1}^{n} \prod_{j=1}^{m} P(\boldsymbol{x}_{j}(i) | \text{Pa}_{j}(i),\theta)
+    P(D|\theta) = \prod_{i=1}^{N} \prod_{j=1}^{m} P(\boldsymbol{x}_{j}(i) | \text{Pa}_{j}(i),\theta)
 \end{equation}
 Where:
 \begin{itemize}
