@@ -83,14 +83,14 @@ This allows us to decompose the MLE problem into $m$ independent subproblem, one
     \theta_{X_j|Pa_j}^{\max} = \arg\max_{\theta_{X_j|Pa_j}}\underbrace{\prod_{i=1}^{N} P(x_j(i) | pa_j(i), \theta_{X_j|Pa_j})}_{\mathcal{L}(\theta_{X_j|Pa_j, \mathcal{D}})}
 \end{equation}
 When working with discrete variables, we can estimate the parameters using frequency counts from the data.
-A discrete CDP $P(X | U)$ can be represented as a table:
+A discrete CPD $P(X | U)$ can be represented as a table:
 \begin{itemize}
     \item Each row corresponds to a specific configuration of $X$;
     \item Each column corresponds to a specific configuration of the parent variables $U$;
     \item Each table entry $\theta_{x|u}$ represents the probability of the configuration $X = x$ and $U = u$.
 \end{itemize}
 From equation \ref{eq:mle-subproblem}, we can replace $P(x_j(i) | pa_j(i))$ with the corresponding parameter 
-$\theta_{x(i)|u(i)}$. The likelihood for a single CDP $X$ becomes:
+$\theta_{x(i)|u(i)}$. The likelihood for a single CPD $X$ becomes:
 \begin{equation*}
     \mathcal{L}(\theta_{X|U}, D) = \prod_{i=1}^{N} \theta_{x(i)|u(i)}
 \end{equation*}
