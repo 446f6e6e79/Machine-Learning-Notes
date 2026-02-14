@@ -178,7 +178,7 @@ The \textbf{kernel trick} consists in replacing the dot product in the feature s
     \begin{equation}
         \langle \phi ( \boldsymbol{x}), \phi (\boldsymbol{x}') \rangle
         = \phi(\boldsymbol{x})^T \phi(\boldsymbol{x}') 
-        = K(\boldsymbol{x}, \boldsymbol{x}')
+        = k(\boldsymbol{x}, \boldsymbol{x}')
     \end{equation}
     The \textbf{kernel functions} uses examples in the \textbf{original input space} $\mathcal{X}$ 
     to compute the dot product in the \textbf{feature space} $\mathcal{H}$, 
@@ -188,11 +188,11 @@ The \textbf{kernel trick} consists in replacing the dot product in the feature s
 \paragraph{Homogeneous Polynomial Kernel}:
 taking in consideration the equation \ref{eq:homogeneous_polynomial_feature_map}, we can derive the following kernel:
 \begin{equation}
-    K(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}')^d
+    k(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}')^d
 \end{equation}
 Setting $d=2$, we have:
 \[
-    K(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2')^2
+    k(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2')^2
 \]
 \[
     = (x_1 x_1')^2 + 2 x_1 x_2 x_1' x_2' + (x_2 x_2')^2
@@ -213,11 +213,11 @@ This is equivalent to the dot product in the feature space defined by the homoge
 \label{par:non_homogeneous_polynomial_kernel}
 taking in consideration the equation \ref{eq:non_homogeneous_polynomial_feature_map}, we can derive the following kernel:
 \begin{equation}
-    K(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + 1)^d
+    k(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + 1)^d
 \end{equation}
 Setting $d=2$, we have:
 \[
-    K(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2' + 1)^2
+    k(\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \begin{pmatrix} x_1' \\ x_2' \end{pmatrix}) = (x_1 x_1' + x_2 x_2' + 1)^2
 \]
 \[
     = (x_1 x_1')^2 + 2 x_1 x_1' x_2 x_2' + (x_2 x_2')^2 + 2 x_1 x_1' + 2 x_2 x_2' + 1
@@ -225,12 +225,12 @@ Setting $d=2$, we have:
 \[ = \underbrace{(1, \sqrt{2} x_1, \sqrt{2} x_2, x_1^2, \sqrt{2} x_1 x_2, x_2^2)}_{\phi(\boldsymbol{x})^T}
 \underbrace{
     \begin{pmatrix}
+    1 \\
+    \sqrt{2} x_1' \\
+    \sqrt{2} x_2' \\
     x_1'^2 \\
     \sqrt{2} x_1' x_2' \\
     x_2'^2 \\
-    \sqrt{2} x_1' \\
-    \sqrt{2} x_2' \\
-    1
     \end{pmatrix}
 }_{\phi(\boldsymbol{x}')}
 \]
@@ -238,9 +238,9 @@ This is equivalent to the dot product in the feature space defined by the non-ho
 
 \subsection{Valid Kernels}
 \definition{Valid Kernel}{
-    A kernel function $K : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is valid if it corresponds to a dot product in some feature space $\mathcal{H}$:
+    A kernel function $k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is valid if it corresponds to a dot product in some feature space $\mathcal{H}$:
     \begin{equation}
-        K(\boldsymbol{x}, \boldsymbol{x}') = \langle \phi(\boldsymbol{x}), \phi(\boldsymbol{x}') \rangle
+        k(\boldsymbol{x}, \boldsymbol{x}') = \langle \phi(\boldsymbol{x}), \phi(\boldsymbol{x}') \rangle
     \end{equation}
 }
 The kernel generalizes the concept of similarity between data points in arbitrary feature spaces.
@@ -266,7 +266,7 @@ Equivalent definitions of positive definiteness include:
     \item All eigenvalues of $K$ are non-negative;
     \item There exists a matrix $A$ such that $K = A^T A$.
 \end{itemize}
-A sufficient and necessary condition for a kernel $K$ to be valid is that 
+A sufficient and necessary condition for a kernel $k$ to be valid is that 
 the corresponding Gram matrix is positive definite for any choice of examples 
 $\{\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m\}$.
 There are several ways to check if a kernel is valid, e.g.:
@@ -282,12 +282,12 @@ Some common examples include:
 \begin{itemize}
     \item \textbf{Linear Kernel}:
     \begin{equation}
-        K(\boldsymbol{x}, \boldsymbol{x}') = \boldsymbol{x}^T \boldsymbol{x}'
+        k(\boldsymbol{x}, \boldsymbol{x}') = \boldsymbol{x}^T \boldsymbol{x}'
     \end{equation}
     Apply no feature map, the kernel corresponds to the standard dot product in the input space.
     \item \textbf{Polynomial Kernel}:
     \begin{equation}
-        K_{d,c}(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + c)^d
+        k_{d,c}(\boldsymbol{x}, \boldsymbol{x}') = (\boldsymbol{x}^T \boldsymbol{x}' + c)^d
     \end{equation}
     The kernel depends on two parameters: the degree $d$ and the constant $c$. We have already seen this kernel
     in paragraph \ref{par:non_homogeneous_polynomial_kernel}.
@@ -306,7 +306,7 @@ Correctly using combination operators guarantees that the resulting kernel is st
 \subsubsection*{Kernel Sum}
 The sum of two kernels corresponds to the concatenation of their feature spaces:
 \begin{equation}
-    K(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') + K_2(\boldsymbol{x}, \boldsymbol{x}')
+    k(\boldsymbol{x}, \boldsymbol{x}') = k_1(\boldsymbol{x}, \boldsymbol{x}') + k_2(\boldsymbol{x}, \boldsymbol{x}')
 \end{equation}
 Applying the definition of kernel:
 \[
@@ -318,7 +318,7 @@ Applying the definition of kernel:
 \subsubsection*{Kernel Product}
 The product of two kernels corresponds to the \textbf{cartesian product} of their features:
 \begin{equation}
-    (k_1 \times k_2)(\boldsymbol{x}, \boldsymbol{x}') = K_1(\boldsymbol{x}, \boldsymbol{x}') K_2(\boldsymbol{x}, \boldsymbol{x}')
+    (k_1 \times k_2)(\boldsymbol{x}, \boldsymbol{x}') = k_1(\boldsymbol{x}, \boldsymbol{x}') k_2(\boldsymbol{x}, \boldsymbol{x}')
 \end{equation}
 \[
 = \sum_{i = 1}^n \phi_{1i}(\boldsymbol{x})\phi_{1i}(\boldsymbol{x}') \sum_{j = 1}^m \phi_{2j}(\boldsymbol{x})\phi_{2j}(\boldsymbol{x}')
@@ -342,7 +342,7 @@ With \textbf{kernel learning} the weights $\beta_k$ of the combination can be le
 Kernel values can be influenced by the dimension of objects. I.E., in text classification, longer documents tend to have higher dot products simply because they contain more words.
 \\To mitigate this effect, we can normalize the kernel:
 \begin{equation}
-    \hat{K}(\boldsymbol{x}, \boldsymbol{x}') = \frac{K(\boldsymbol{x}, \boldsymbol{x}')}{\sqrt{K(\boldsymbol{x}, \boldsymbol{x}) K(\boldsymbol{x}', \boldsymbol{x}')}}
+    \hat{k}(\boldsymbol{x}, \boldsymbol{x}') = \frac{k(\boldsymbol{x}, \boldsymbol{x}')}{\sqrt{k(\boldsymbol{x}, \boldsymbol{x}) k(\boldsymbol{x}', \boldsymbol{x}')}}
 \end{equation}
 This is a \textbf{cosine normalization}, which takes into account the angle between the feature vectors rather than their magnitudes.
 \subsection{Kernel on Graphs}

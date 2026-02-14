@@ -130,7 +130,7 @@ This way, we have a model with $k$ \textbf{hyperplanes}, each separating one cla
 At prediction time, we evaluate all $K$ classifiers and assign the input $\boldsymbol{x}$ to the class with the maximum \textbf{functional margin}.
 \subsubsection{One-vs-One (OvO)}
 The idea is to train a binary classifier for every pair of classes. For $K$ classes, we need to train $\frac{K(K-1)}{2}$ classifiers.
-The model predicts a a new example $\boldsymbol{x}$ in the class winning the most pairwise comparisons, as in a tournament.
+The model predicts a new example $\boldsymbol{x}$ in the class winning the most pairwise comparisons, as in a tournament.
 \subsubsection{Onve-vs-One (OvO) vs One-vs-All (OvA)}
 \begin{itemize}
     \item OvA requires to train $K$ classifiers, each on the entire dataset;
